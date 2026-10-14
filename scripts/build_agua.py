@@ -29,16 +29,30 @@ NOMBRE_CORTO = {"Coahuila de Zaragoza": "Coahuila", "Michoacán de Ocampo": "Mic
 
 
 def poblacion():
-    """Población 2020 por municipio (CVEGEO) y por estado (nombre corto), de los renglones de totales del ITER."""
+    """Población 2020 por municipio (CVEGEO) y por estado (nombre corto).
+
+    Se toma de data/fuentes/poblacion_2020.csv (versionado). Si no existe, se genera a partir de los renglones
+    de totales del ITER de INEGI (data/raw/iter), que solo hace falta la primera vez.
+    """
+    compacto = ROOT / "data" / "fuentes" / "poblacion_2020.csv"
+    if not compacto.exists():
+        with open(ITER, encoding="utf-8-sig") as f, open(compacto, "w", newline="", encoding="utf-8") as out:
+            w = csv.writer(out)
+            w.writerow(["clave", "nombre", "pob"])  # clave de 2 dígitos = estado, de 5 = municipio
+            for r in csv.DictReader(f):
+                if r["LOC"] != "0000" or r["ENTIDAD"] == "00":
+                    continue
+                if r["MUN"] == "000":
+                    w.writerow([r["ENTIDAD"], NOMBRE_CORTO.get(r["NOM_ENT"], r["NOM_ENT"]), r["POBTOT"]])
+                else:
+                    w.writerow([r["ENTIDAD"] + r["MUN"], r["NOM_MUN"], r["POBTOT"]])
     mun, ent = {}, {}
-    with open(ITER, encoding="utf-8-sig") as f:
+    with open(compacto, encoding="utf-8") as f:
         for r in csv.DictReader(f):
-            if r["LOC"] != "0000" or r["ENTIDAD"] == "00":
-                continue
-            if r["MUN"] == "000":
-                ent[NOMBRE_CORTO.get(r["NOM_ENT"], r["NOM_ENT"])] = int(r["POBTOT"])
+            if len(r["clave"]) == 2:
+                ent[r["nombre"]] = int(r["pob"])
             else:
-                mun[r["ENTIDAD"] + r["MUN"]] = int(r["POBTOT"])
+                mun[r["clave"]] = int(r["pob"])
     return mun, ent
 
 
@@ -132,6 +146,13 @@ def main():
             "pctAbsoluta": bajo(500),
         },
     }
+    # Protección: nunca reemplazar con un monitor de sequía más viejo (p. ej. si falló la descarga).
+    previo = ROOT / "src" / "data" / "agua.json"
+    if previo.exists():
+        anterior = json.loads(previo.read_text(encoding="utf-8"))["sequia"]["actual"]["f"]
+        if actual["f"] < anterior:
+            raise SystemExit(f"ABORTADO: el monitor de sequía ({actual['f']}) es anterior al publicado ({anterior}). "
+                             "No se escribió nada.")
     (ROOT / "src" / "data" / "agua.json").write_text(json.dumps(out, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
     a = out["aguaPorPersona"]
     print(f"hoy ({actual['f']}): {actual['pct']}% de la población en sequía ({out['sequia']['personas'] / 1e6:.1f} M), "

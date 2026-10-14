@@ -27,11 +27,20 @@ npm run data        # descarga (data:fetch) + procesa (data:build)
 |  | `scripts/build_data.py` | Historia, estatus, % de territorio en déficit por municipio/estado → `public/data/*.json`, `src/data/resumen.json` |
 |  | `scripts/geo_post.sh` | Geometrías simplificadas: estados, acuíferos, burbujas y un archivo de municipios por estado (`public/data/mun/`) |
 
+### Actualización automática
+
+`.github/workflows/actualizar-datos.yml` corre **lunes y jueves** (y a mano desde la pestaña *Actions* → *Run workflow*):
+baja presas (SIH) y sequía (SMN), recalcula, verifica que el sitio compila y, si hubo cambios, hace commit en `main`.
+Vercel publica con cada push. Si una descarga falla o trae datos más viejos que los publicados, el flujo se detiene
+sin escribir nada.
+
+En local: `npm run data:presas` y `npm run data:agua`.
+
 ### Presas
 
 ```bash
-node scripts/fetch_presas.mjs 1991-01-02 2025-04-23           # una fecha por semana (Chrome vía playwright-core)
-bash scripts/fetch_sih.sh                                     # extensión diaria hasta hoy (SIH)
+npm run data:sina      # solo una vez: baja el SINA 1991–2025 y lo compacta en data/fuentes/ (ya versionado)
+npm run data:presas    # extensión diaria hasta hoy (SIH) + procesamiento
 node scripts/fetch_presas.mjs 1991-01-02 2025-04-23 reverso   # opcional: segundo proceso en paralelo
 python3 -I scripts/build_presas.py
 ```

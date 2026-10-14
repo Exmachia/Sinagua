@@ -1,4 +1,8 @@
-"""Procesa el monitoreo semanal de presas (data/raw/presas/*.json, de fetch_presas.mjs).
+"""Procesa el monitoreo semanal de presas.
+
+Entradas:
+  data/fuentes/sina_presas.csv.gz + sina_catalogo.json   serie del SINA 1991–abr 2025 (compactar_sina.py)
+  data/raw/sih/<clave>.csv                                extensión diaria del SIH hasta hoy (fetch_sih.sh)
 
 Salidas:
   public/data/presas.json          catálogo + estado más reciente + comparación con lo normal
@@ -15,15 +19,18 @@ Notas de método:
 
 from __future__ import annotations
 
+import csv
+import gzip
 import json
 import re
+import sys
 import statistics
 from collections import defaultdict
 from datetime import date, timedelta
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-RAW = ROOT / "data" / "raw" / "presas"
+FUENTES = ROOT / "data" / "fuentes"
 SIH = ROOT / "data" / "raw" / "sih"  # histórico diario por presa (scripts/fetch_sih.sh)
 PUB = ROOT / "public" / "data"
 PANEL_DESDE = 2000
@@ -93,23 +100,17 @@ def limpiar(s: dict[str, tuple[float, float, float]]) -> tuple[dict[str, tuple[f
 def main():
     estados_inegi = json.loads((PUB / "estados.json").read_text(encoding="utf-8"))
     cve_por_nombre = {e["e"]: e["cve"] for e in estados_inegi}
-    archivos = sorted(RAW.glob("*.json"))
     crudo = defaultdict(dict)  # clave → {fecha: (almacenamiento, namo, name)}
-    info = {}
-    for a in archivos:
-        f = a.stem
-        for r in json.loads(a.read_text(encoding="utf-8")):
-            c = limpio(r["clavesih"])
-            if r.get("almacenaactual") is None or not r.get("namoalmac"):
-                continue
-            crudo[c][f] = (float(r["almacenaactual"]), float(r["namoalmac"]), float(r.get("namealmac") or 0))
-            info[c] = r  # se queda con el registro más reciente
+    with gzip.open(FUENTES / "sina_presas.csv.gz", "rt", encoding="utf-8") as f:
+        for r in csv.DictReader(f):
+            crudo[r["clave"]][r["fecha"]] = (float(r["almac"]), float(r["namo"]), float(r["name"]))
+    info = json.loads((FUENTES / "sina_catalogo.json").read_text(encoding="utf-8"))  # registro más reciente
 
     # --- extensión con el SIH (se actualiza a diario; el SINA se detiene en abril de 2025).
     # El SIH no siempre mide igual: en unas presas da exactamente las cifras del SINA y en otras incluye
     # el volumen muerto (un desfase fijo). Se calibra presa por presa con el último año de traslape:
     # si la diferencia SINA − SIH es estable, se aplica como corrección; si no, la presa no se extiende.
-    fin_sina = date.fromisoformat(archivos[-1].stem)
+    fin_sina = date.fromisoformat(max(f for s in crudo.values() for f in s))
     desde_traslape = (fin_sina - timedelta(days=365)).isoformat()
     extra = 0
     calibracion = {"igual": 0, "desfase": 0, "rechazada": [], "sin_archivo": 0}
@@ -171,6 +172,13 @@ def main():
     fechas = sorted(f for f in cuenta if f <= ultima)
     for c in serie:
         serie[c] = {f: v for f, v in serie[c].items() if f <= ultima}
+    # Protección: nunca reemplazar datos publicados con otros más viejos (p. ej. si falló la descarga del SIH).
+    previo = ROOT / "src" / "data" / "presas_resumen.json"
+    if previo.exists():
+        anterior = json.loads(previo.read_text(encoding="utf-8"))["ultima"]
+        if ultima < anterior:
+            sys.exit(f"ABORTADO: la fecha más reciente ({ultima}) es anterior a la publicada ({anterior}). "
+                     "¿Falló la descarga del SIH? No se escribió nada.")
     print(f"{len(fechas)} semanas · {fechas[0]} → {ultima} · {len(serie)} presas")
     print(f"limpieza: {sum(descartes.values())} registros descartados de {sum(len(s) for s in crudo.values())}; "
           f"presas inconsistentes (fuera de agregados): {sorted(inconsistentes)}")
