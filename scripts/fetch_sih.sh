@@ -2,6 +2,8 @@
 # Descarga el histórico diario por presa del Sistema de Información Hidrológica (SIH) de CONAGUA.
 # Complementa el monitoreo del SINA (que se detiene en abril de 2025): se actualiza a diario.
 set -euo pipefail
+# data/raw no está en el repositorio (en GitHub Actions no existe): se crea si hace falta.
+mkdir -p "$(dirname "$0")/../data/raw"
 cd "$(dirname "$0")/../data/raw"
 mkdir -p sih
 BASE="https://sih.conagua.gob.mx/basedatos/Presas"

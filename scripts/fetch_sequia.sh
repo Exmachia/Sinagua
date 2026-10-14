@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 # Monitor de Sequía de México (SMN-CONAGUA): categoría de sequía por municipio, cada quincena desde 2003.
 set -euo pipefail
+# data/raw no está en el repositorio (en GitHub Actions no existe): se crea si hace falta.
+mkdir -p "$(dirname "$0")/../data/raw"
 cd "$(dirname "$0")/../data/raw"
 mkdir -p sequia
 curl -sSL --fail -m 180 -A "Mozilla/5.0 (sinagua; datos abiertos)" \

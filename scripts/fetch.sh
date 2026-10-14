@@ -2,6 +2,7 @@
 # Descarga las fuentes oficiales a data/raw. CONAGUA usa Incapsula: requiere cookie jar.
 set -euo pipefail
 SCRIPTS="$(cd "$(dirname "$0")" && pwd)"
+mkdir -p "$SCRIPTS/../data/raw/dof"
 cd "$SCRIPTS/../data/raw"
 UA="Mozilla/5.0 (sinagua; datos abiertos)"
 JAR=cookies.txt
