@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 # Descarga las fuentes oficiales a data/raw. CONAGUA usa Incapsula: requiere cookie jar.
 set -euo pipefail
-cd "$(dirname "$0")/../data/raw"
+SCRIPTS="$(cd "$(dirname "$0")" && pwd)"
+cd "$SCRIPTS/../data/raw"
 UA="Mozilla/5.0 (sinagua; datos abiertos)"
 JAR=cookies.txt
 BASE="https://sigagis.conagua.gob.mx/gas1/sections"
@@ -28,7 +29,5 @@ if [ ! -s iter/conjunto_de_datos/conjunto_de_datos_iter_00CSV20.csv ]; then
   get "https://www.inegi.org.mx/contenidos/programas/ccpv/2020/datosabiertos/iter/iter_00_cpv2020_csv.zip" iter.zip
   mkdir -p iter && unzip -oq iter.zip -d iter && rm iter.zip
 fi
-echo "SMN — Monitor de Sequía de México, por municipio (se actualiza cada quincena)"
-mkdir -p sequia
-get "https://smn.conagua.gob.mx/tools/RESOURCES/Monitor%20de%20Sequia%20en%20Mexico/MunicipiosSequia.xlsx" sequia/MunicipiosSequia.xlsx
+bash "$SCRIPTS/fetch_sequia.sh"
 rm -f "$JAR"

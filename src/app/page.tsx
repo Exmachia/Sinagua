@@ -15,7 +15,7 @@ import presas from "@/data/presas_resumen.json";
 import proy from "@/data/proyecciones.json";
 import resumen from "@/data/resumen.json";
 
-const HOY = 2026;
+const HOY = Number(agua.sequia.actual.f.slice(0, 4)); // año del dato más reciente: avanza solo con cada actualización
 const actual = proy.serie[proy.serie.length - 1];
 const inicial = proy.serie[0];
 const pa = proy.proyecciones.acuiferos;

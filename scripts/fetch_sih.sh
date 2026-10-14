@@ -18,3 +18,5 @@ for c in $claves; do
   sleep 0.7
 done
 echo "SIH: $n presas descargadas, $fallas sin archivo"
+# Si falla más del 20% (p. ej. bloqueo del servidor), se detiene: mejor no actualizar que publicar datos incompletos.
+if [ $((fallas * 5)) -gt $((n + fallas)) ]; then echo "Demasiadas descargas fallidas" >&2; exit 1; fi
