@@ -1,0 +1,58 @@
+# Agua renovable (disponibilidad natural media) — CONAGUA, vía SEMARNAT, Compendio de Estadísticas Ambientales 2021,
+# tabla D3_AGUA01_12 (https://apps1.semarnat.gob.mx:8443/dgeia/compendio_2021/archivos/01_agua/d3_agua01_12.pdf).
+# Transcrita a mano. hm3 = millones de m³; m3_hab = m³ por habitante al año. Nota de la fuente: 2012 cambió la
+# configuración de regiones hidrológicas; 2011–2013 son valores de referencia constantes.
+ambito,anio,hm3,m3_hab
+Nacional,1998,477625,4986
+Nacional,1999,483271,4964
+Nacional,2001,471891,4841
+Nacional,2002,469199,4685
+Nacional,2003,476456,4547
+Nacional,2004,474638,4505
+Nacional,2005,472194,4573
+Nacional,2006,465137,4416
+Nacional,2007,458100,4312
+Nacional,2008,459351,4288
+Nacional,2009,460237,4263
+Nacional,2010,462583,4090
+Nacional,2011,471498,4076
+Nacional,2012,471498,4028
+Nacional,2013,471498,3982
+Nacional,2014,447260,3736
+Nacional,2015,446777,3692
+Nacional,2016,450828,3687
+Nacional,2017,451585,3656
+Nacional,2018,451585,3620
+Nacional,2019,451585,3586
+Aguascalientes,2019,536,396
+Baja California,2019,3045,827
+Baja California Sur,2019,1235,1443
+Campeche,2019,5815,6046
+Coahuila,2019,3457,1116
+Colima,2019,2159,2799
+Chiapas,2019,113557,20619
+Chihuahua,2019,11759,3054
+Ciudad de México,2019,644,73
+Durango,2019,12594,6874
+Guanajuato,2019,3886,648
+Guerrero,2019,20972,5759
+Hidalgo,2019,7475,2481
+Jalisco,2019,15951,1926
+Estado de México,2019,4786,268
+Michoacán,2019,12633,2679
+Morelos,2019,1848,920
+Nayarit,2019,6660,5075
+Nuevo León,2019,4448,828
+Oaxaca,2019,55901,13612
+Puebla,2019,11382,1771
+Querétaro,2019,1940,915
+Quintana Roo,2019,1741,993
+San Luis Potosí,2019,10862,3815
+Sinaloa,2019,9903,3212
+Sonora,2019,7154,2316
+Tabasco,2019,31941,12897
+Tamaulipas,2019,8962,2423
+Tlaxcala,2019,868,644
+Veracruz,2019,51640,6240
+Yucatán,2019,21813,9799
+Zacatecas,2019,4016,2474

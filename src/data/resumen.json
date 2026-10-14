@@ -1,0 +1,588 @@
+{
+ "anio": 2023,
+ "total": 653,
+ "conteo": {
+  "deficit": 168,
+  "critico": 118,
+  "limite": 172,
+  "disponible": 195
+ },
+ "deficit": 286,
+ "hm3Deficit": 9316.5,
+ "pctTerritorio": 40.6,
+ "municipios": 2475,
+ "municipiosMayoria": 798,
+ "serie": [
+  {
+   "y": 2013,
+   "deficit": 193,
+   "hm3": 6472
+  },
+  {
+   "y": 2015,
+   "deficit": 203,
+   "hm3": 6407
+  },
+  {
+   "y": 2018,
+   "deficit": 245,
+   "hm3": 8063
+  },
+  {
+   "y": 2020,
+   "deficit": 275,
+   "hm3": 9611
+  },
+  {
+   "y": 2023,
+   "deficit": 286,
+   "hm3": 9316
+  }
+ ],
+ "estados": [
+  {
+   "cve": "01",
+   "e": "Aguascalientes",
+   "slug": "aguascalientes",
+   "pct": 99.9,
+   "km2": 5643,
+   "total": 5,
+   "deficit": 5,
+   "critico": 3,
+   "hm3": 134.3,
+   "b": [
+    -102.874,
+    21.622,
+    -101.835,
+    22.46
+   ]
+  },
+  {
+   "cve": "02",
+   "e": "Baja California",
+   "slug": "baja-california",
+   "pct": 27.6,
+   "km2": 73292,
+   "total": 49,
+   "deficit": 17,
+   "critico": 10,
+   "hm3": 691.2,
+   "b": [
+    -118.365,
+    28.0,
+    -112.297,
+    32.719
+   ]
+  },
+  {
+   "cve": "03",
+   "e": "Baja California Sur",
+   "slug": "baja-california-sur",
+   "pct": 75.1,
+   "km2": 72324,
+   "total": 39,
+   "deficit": 22,
+   "critico": 11,
+   "hm3": 105.1,
+   "b": [
+    -115.766,
+    22.872,
+    -109.413,
+    28.0
+   ]
+  },
+  {
+   "cve": "04",
+   "e": "Campeche",
+   "slug": "campeche",
+   "pct": 0.0,
+   "km2": 57815,
+   "total": 5,
+   "deficit": 0,
+   "critico": 0,
+   "hm3": 0,
+   "b": [
+    -92.469,
+    17.813,
+    -89.121,
+    20.848
+   ]
+  },
+  {
+   "cve": "05",
+   "e": "Coahuila",
+   "slug": "coahuila",
+   "pct": 75.2,
+   "km2": 152187,
+   "total": 39,
+   "deficit": 25,
+   "critico": 11,
+   "hm3": 642.6,
+   "b": [
+    -103.96,
+    24.543,
+    -99.843,
+    29.88
+   ]
+  },
+  {
+   "cve": "06",
+   "e": "Colima",
+   "slug": "colima",
+   "pct": 44.1,
+   "km2": 5814,
+   "total": 11,
+   "deficit": 4,
+   "critico": 0,
+   "hm3": 5.6,
+   "b": [
+    -114.76,
+    18.339,
+    -103.486,
+    19.513
+   ]
+  },
+  {
+   "cve": "07",
+   "e": "Chiapas",
+   "slug": "chiapas",
+   "pct": 0.0,
+   "km2": 73731,
+   "total": 17,
+   "deficit": 0,
+   "critico": 0,
+   "hm3": 0,
+   "b": [
+    -94.139,
+    14.532,
+    -90.37,
+    17.985
+   ]
+  },
+  {
+   "cve": "08",
+   "e": "Chihuahua",
+   "slug": "chihuahua",
+   "pct": 55.6,
+   "km2": 248306,
+   "total": 75,
+   "deficit": 41,
+   "critico": 28,
+   "hm3": 3149.4,
+   "b": [
+    -109.075,
+    25.559,
+    -103.307,
+    31.784
+   ]
+  },
+  {
+   "cve": "09",
+   "e": "Ciudad de México",
+   "slug": "ciudad-de-mexico",
+   "pct": 99.5,
+   "km2": 1502,
+   "total": 2,
+   "deficit": 1,
+   "critico": 1,
+   "hm3": 480.4,
+   "b": [
+    -99.365,
+    19.048,
+    -98.94,
+    19.593
+   ]
+  },
+  {
+   "cve": "10",
+   "e": "Durango",
+   "slug": "durango",
+   "pct": 55.3,
+   "km2": 123900,
+   "total": 49,
+   "deficit": 24,
+   "critico": 10,
+   "hm3": 738.1,
+   "b": [
+    -107.21,
+    22.345,
+    -102.473,
+    26.845
+   ]
+  },
+  {
+   "cve": "11",
+   "e": "Guanajuato",
+   "slug": "guanajuato",
+   "pct": 70.6,
+   "km2": 30760,
+   "total": 21,
+   "deficit": 16,
+   "critico": 7,
+   "hm3": 713.9,
+   "b": [
+    -102.097,
+    19.913,
+    -99.671,
+    21.839
+   ]
+  },
+  {
+   "cve": "12",
+   "e": "Guerrero",
+   "slug": "guerrero",
+   "pct": 3.5,
+   "km2": 63953,
+   "total": 39,
+   "deficit": 4,
+   "critico": 1,
+   "hm3": 8.6,
+   "b": [
+    -102.184,
+    16.316,
+    -98.007,
+    18.888
+   ]
+  },
+  {
+   "cve": "13",
+   "e": "Hidalgo",
+   "slug": "hidalgo",
+   "pct": 14.2,
+   "km2": 20927,
+   "total": 25,
+   "deficit": 5,
+   "critico": 1,
+   "hm3": 313.9,
+   "b": [
+    -99.86,
+    19.598,
+    -97.985,
+    21.399
+   ]
+  },
+  {
+   "cve": "14",
+   "e": "Jalisco",
+   "slug": "jalisco",
+   "pct": 55.1,
+   "km2": 79000,
+   "total": 63,
+   "deficit": 37,
+   "critico": 7,
+   "hm3": 465.0,
+   "b": [
+    -105.695,
+    18.926,
+    -101.511,
+    22.75
+   ]
+  },
+  {
+   "cve": "15",
+   "e": "Estado de México",
+   "slug": "estado-de-mexico",
+   "pct": 75.5,
+   "km2": 22469,
+   "total": 17,
+   "deficit": 11,
+   "critico": 3,
+   "hm3": 1047.7,
+   "b": [
+    -100.613,
+    18.367,
+    -98.597,
+    20.286
+   ]
+  },
+  {
+   "cve": "16",
+   "e": "Michoacán",
+   "slug": "michoacan",
+   "pct": 38.2,
+   "km2": 58913,
+   "total": 23,
+   "deficit": 10,
+   "critico": 1,
+   "hm3": 179.7,
+   "b": [
+    -103.738,
+    17.913,
+    -100.063,
+    20.395
+   ]
+  },
+  {
+   "cve": "17",
+   "e": "Morelos",
+   "slug": "morelos",
+   "pct": 43.3,
+   "km2": 4905,
+   "total": 4,
+   "deficit": 1,
+   "critico": 0,
+   "hm3": 0.7,
+   "b": [
+    -99.494,
+    18.332,
+    -98.633,
+    19.132
+   ]
+  },
+  {
+   "cve": "18",
+   "e": "Nayarit",
+   "slug": "nayarit",
+   "pct": 26.4,
+   "km2": 28239,
+   "total": 17,
+   "deficit": 7,
+   "critico": 4,
+   "hm3": 98.8,
+   "b": [
+    -106.688,
+    20.603,
+    -103.721,
+    23.085
+   ]
+  },
+  {
+   "cve": "19",
+   "e": "Nuevo León",
+   "slug": "nuevo-leon",
+   "pct": 55.8,
+   "km2": 64427,
+   "total": 38,
+   "deficit": 24,
+   "critico": 11,
+   "hm3": 622.0,
+   "b": [
+    -101.207,
+    23.163,
+    -98.422,
+    27.799
+   ]
+  },
+  {
+   "cve": "20",
+   "e": "Oaxaca",
+   "slug": "oaxaca",
+   "pct": 13.4,
+   "km2": 94290,
+   "total": 28,
+   "deficit": 2,
+   "critico": 0,
+   "hm3": 10.9,
+   "b": [
+    -98.553,
+    15.657,
+    -93.867,
+    18.67
+   ]
+  },
+  {
+   "cve": "21",
+   "e": "Puebla",
+   "slug": "puebla",
+   "pct": 22.8,
+   "km2": 34492,
+   "total": 19,
+   "deficit": 5,
+   "critico": 0,
+   "hm3": 102.9,
+   "b": [
+    -99.07,
+    17.861,
+    -96.725,
+    20.84
+   ]
+  },
+  {
+   "cve": "22",
+   "e": "Querétaro",
+   "slug": "queretaro",
+   "pct": 65.3,
+   "km2": 11749,
+   "total": 16,
+   "deficit": 9,
+   "critico": 4,
+   "hm3": 333.4,
+   "b": [
+    -100.597,
+    20.015,
+    -99.043,
+    21.67
+   ]
+  },
+  {
+   "cve": "23",
+   "e": "Quintana Roo",
+   "slug": "quintana-roo",
+   "pct": 0.0,
+   "km2": 45075,
+   "total": 4,
+   "deficit": 0,
+   "critico": 0,
+   "hm3": 0,
+   "b": [
+    -89.297,
+    17.894,
+    -86.71,
+    21.606
+   ]
+  },
+  {
+   "cve": "24",
+   "e": "San Luis Potosí",
+   "slug": "san-luis-potosi",
+   "pct": 49.2,
+   "km2": 61428,
+   "total": 28,
+   "deficit": 15,
+   "critico": 10,
+   "hm3": 431.5,
+   "b": [
+    -102.296,
+    21.16,
+    -98.326,
+    24.492
+   ]
+  },
+  {
+   "cve": "25",
+   "e": "Sinaloa",
+   "slug": "sinaloa",
+   "pct": 52.8,
+   "km2": 57631,
+   "total": 15,
+   "deficit": 9,
+   "critico": 4,
+   "hm3": 180.0,
+   "b": [
+    -109.445,
+    22.467,
+    -105.392,
+    27.042
+   ]
+  },
+  {
+   "cve": "26",
+   "e": "Sonora",
+   "slug": "sonora",
+   "pct": 48.8,
+   "km2": 181019,
+   "total": 64,
+   "deficit": 25,
+   "critico": 7,
+   "hm3": 1027.0,
+   "b": [
+    -115.053,
+    26.297,
+    -108.424,
+    32.494
+   ]
+  },
+  {
+   "cve": "27",
+   "e": "Tabasco",
+   "slug": "tabasco",
+   "pct": 0.0,
+   "km2": 24873,
+   "total": 9,
+   "deficit": 0,
+   "critico": 0,
+   "hm3": 0,
+   "b": [
+    -94.13,
+    17.251,
+    -90.987,
+    18.651
+   ]
+  },
+  {
+   "cve": "28",
+   "e": "Tamaulipas",
+   "slug": "tamaulipas",
+   "pct": 15.0,
+   "km2": 80628,
+   "total": 22,
+   "deficit": 8,
+   "critico": 2,
+   "hm3": 217.3,
+   "b": [
+    -100.145,
+    22.207,
+    -97.144,
+    27.679
+   ]
+  },
+  {
+   "cve": "29",
+   "e": "Tlaxcala",
+   "slug": "tlaxcala",
+   "pct": 0.6,
+   "km2": 4018,
+   "total": 8,
+   "deficit": 2,
+   "critico": 0,
+   "hm3": 83.0,
+   "b": [
+    -98.708,
+    19.105,
+    -97.625,
+    19.729
+   ]
+  },
+  {
+   "cve": "30",
+   "e": "Veracruz",
+   "slug": "veracruz",
+   "pct": 12.0,
+   "km2": 72207,
+   "total": 22,
+   "deficit": 4,
+   "critico": 0,
+   "hm3": 64.5,
+   "b": [
+    -98.682,
+    17.137,
+    -93.608,
+    22.472
+   ]
+  },
+  {
+   "cve": "31",
+   "e": "Yucatán",
+   "slug": "yucatan",
+   "pct": 0.0,
+   "km2": 39962,
+   "total": 2,
+   "deficit": 0,
+   "critico": 0,
+   "hm3": 0,
+   "b": [
+    -92.326,
+    19.551,
+    -87.533,
+    22.586
+   ]
+  },
+  {
+   "cve": "32",
+   "e": "Zacatecas",
+   "slug": "zacatecas",
+   "pct": 55.7,
+   "km2": 75624,
+   "total": 47,
+   "deficit": 28,
+   "critico": 14,
+   "hm3": 606.4,
+   "b": [
+    -104.354,
+    21.042,
+    -100.742,
+    25.125
+   ]
+  }
+ ]
+}

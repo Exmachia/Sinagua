@@ -1,0 +1,114 @@
+@import "tailwindcss";
+
+/*
+ * Sistema visual: papel de periódico, tinta negra, cartografía impresa.
+ * Semáforo apagado (verde → amarillo → naranja → rojo; tonos poco saturados para no cansar la vista), validado para daltonismo en todos los pares sobre
+ * #fbfaf7 (dataviz validate_palette --pairs all): además del tono, la luminosidad separa cada paso.
+ * Amarillo y naranja no sirven como color de texto: siempre van como relleno con etiqueta.
+ */
+:root {
+  --bg: #fbfaf7;
+  --surface: #ffffff;
+  --raised: #f3f1ec;
+  --ink: #191714;
+  --ink-2: #4d4943;
+  --ink-3: #6f6a62;
+  --line: #e4e0d8;
+  --line-strong: #c9c3b8;
+
+  --s-disponible: #32856c;
+  --s-limite: #e7d17a;
+  --s-deficit: #d58b4b;
+  --s-critico: #8c3436;
+
+  /* Azul agua: series de tiempo y volúmenes (no indica estado). */
+  --agua: #2a78d6;
+
+  --focus: #1f6fc7;
+  color-scheme: light;
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-raised: var(--raised);
+  --color-ink: var(--ink);
+  --color-ink-2: var(--ink-2);
+  --color-ink-3: var(--ink-3);
+  --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
+  --color-disponible: var(--s-disponible);
+  --color-limite: var(--s-limite);
+  --color-deficit: var(--s-deficit);
+  --color-critico: var(--s-critico);
+  --color-focus: var(--focus);
+  --color-agua: var(--agua);
+
+  --font-serif: var(--font-newsreader);
+  --font-sans: var(--font-schibsted);
+}
+
+html {
+  background: var(--bg);
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-sans), system-ui, sans-serif;
+  font-size: 1rem;
+  line-height: 1.6;
+  font-feature-settings: "tnum" 0;
+}
+
+:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+::selection {
+  background: #f6e3a6;
+}
+
+.num {
+  font-variant-numeric: tabular-nums lining-nums;
+}
+
+/* Enlaces de texto de periódico: subrayado fino que se engrosa al pasar. */
+.link {
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+  text-decoration-color: var(--line-strong);
+  transition: text-decoration-color 150ms;
+}
+.link:hover {
+  text-decoration-color: currentColor;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* MapLibre */
+.maplibregl-ctrl-group {
+  border-radius: 2px !important;
+  box-shadow: 0 0 0 1px var(--line-strong) !important;
+}
+.maplibregl-ctrl-group button {
+  width: 40px !important;
+  height: 40px !important;
+}
+.maplibregl-ctrl-attrib {
+  font-size: 11px;
+}
