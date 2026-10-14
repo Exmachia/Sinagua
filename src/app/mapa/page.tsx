@@ -8,7 +8,7 @@ export const metadata: Metadata = {
 
 export default function MapaPage() {
   return (
-    <main className="h-dvh overflow-hidden">
+    <main className="h-dvh overflow-clip">
       <h1 className="sr-only">Mapa de acuíferos de México</h1>
       <Explorer />
     </main>
