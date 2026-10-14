@@ -1,0 +1,34 @@
+{
+  "name": "sinagua",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint",
+    "data:fetch": "bash scripts/fetch.sh",
+    "data:build": "bash scripts/geo_pre.sh && python3 -I scripts/build_data.py && bash scripts/geo_post.sh && python3 -I scripts/build_poblacion.py && python3 -I scripts/build_proyecciones.py",
+    "data": "npm run data:fetch && npm run data:build",
+    "data:presas": "node scripts/fetch_presas.mjs 1991-01-02 2025-04-23 && bash scripts/fetch_sih.sh && python3 -I scripts/build_presas.py",
+    "data:agua": "python3 -I scripts/build_agua.py"
+  },
+  "dependencies": {
+    "maplibre-gl": "^5.24.0",
+    "next": "16.4.0",
+    "react": "19.3.0",
+    "react-dom": "19.3.0"
+  },
+  "devDependencies": {
+    "@tailwindcss/turbopack": "^4",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "eslint": "^9",
+    "eslint-config-next": "16.4.0",
+    "mapshaper": "^0.7.86",
+    "playwright-core": "^1.48.2",
+    "tailwindcss": "^4",
+    "typescript": "^5"
+  }
+}
