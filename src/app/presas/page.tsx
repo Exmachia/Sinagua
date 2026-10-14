@@ -8,7 +8,7 @@ export const metadata: Metadata = {
 
 export default function PresasPage() {
   return (
-    <main className="h-dvh overflow-hidden">
+    <main className="h-dvh overflow-clip">
       <h1 className="sr-only">Mapa de presas de México</h1>
       <PresasExplorer />
     </main>

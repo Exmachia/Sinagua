@@ -21,6 +21,7 @@ import type { Margen, Vista } from "./AquiferMap";
 import resumen from "@/data/resumen.json";
 import HistoryChart from "./HistoryChart";
 import Conmutador from "./Conmutador";
+import PanelMapa, { visibleMovil, type Nivel } from "./PanelMapa";
 import SearchBox from "./SearchBox";
 import { Ayuda, ayudaAbierta, Burbuja, Cabeza, Cifra, Esqueleto, Fila, Pestanas, Pista, Seccion, VerMas } from "./ui";
 
@@ -87,6 +88,7 @@ export default function Explorer() {
   const [error, setError] = useState(false);
   const [intento, setIntento] = useState(0);
   const [abierto, setAbierto] = useState(true);
+  const [nivel, setNivel] = useState<Nivel>("medio");
   const seccion = useRef<HTMLElement>(null);
   const cuerpo = useRef<HTMLDivElement>(null);
   const hash = useSyncExternalStore(suscribirHash, () => window.location.hash, () => "");
@@ -122,6 +124,7 @@ export default function Explorer() {
       window.dispatchEvent(new Event(NAV_EVENT));
     }
     setAbierto(true);
+    setNivel((n) => (n === "bajo" ? "medio" : n));
   }
 
   // Cada cambio de vista empieza el módulo desde arriba.
@@ -147,7 +150,7 @@ export default function Explorer() {
   const focus: Bbox | null = acuifero && !municipio ? acuifero.b : municipio?.b ?? estado?.b ?? null;
   const margen: Margen = escritorio
     ? { top: 0, right: 48, bottom: 0, left: abierto ? 424 : 0 }
-    : { top: 120, right: 0, bottom: abierto ? Math.round(window.innerHeight * 0.52) : 60, left: 0 };
+    : { top: 120, right: 0, bottom: visibleMovil(nivel, window.innerHeight), left: 0 };
 
   const ruta: { label: string; v: Vista }[] = [{ label: "México", v: { e: null, m: null, a: null } }];
   if (estado) ruta.push({ label: estado.e, v: { e: estado.cve, m: null, a: null } });
@@ -157,7 +160,7 @@ export default function Explorer() {
 
   return (
     <section ref={seccion} id="explorar" aria-label="Mapa de acuíferos"
-      className="relative h-dvh min-h-[480px] overflow-hidden bg-raised">
+      className="relative h-dvh min-h-[480px] overflow-clip bg-raised">
       <div className="absolute inset-0">
         {d && (
           <AquiferMap vista={vista} focus={focus} margen={margen} estados={idx.est} municipios={idx.mun} acuiferos={idx.acu} onNavigate={navegar} />
@@ -173,7 +176,7 @@ export default function Explorer() {
         )}
       </div>
 
-      {/* Columna flotante: buscador + módulo. En móvil el módulo es una hoja inferior. */}
+      {/* Columna flotante: buscador + conmutador. El panel de información es PanelMapa (hoja inferior en móvil). */}
       <div className="pointer-events-none absolute inset-3 z-20 flex flex-col gap-2 lg:right-auto lg:w-[400px]">
         <div className="pointer-events-auto flex items-stretch rounded-[10px] bg-surface shadow-[0_6px_24px_rgba(25,23,20,0.14)] ring-1 ring-black/5">
           <Link href="/" aria-label="Volver al inicio de Sinagua" title="Volver al inicio"
@@ -191,16 +194,12 @@ export default function Explorer() {
 
         <Conmutador actual="/mapa" />
 
-        <div className="flex-1 lg:hidden" aria-hidden />
+      </div>
 
-        <article
-          aria-label="Información de la ubicación"
-          className={`pointer-events-auto flex min-h-0 flex-col overflow-hidden rounded-[10px] bg-surface shadow-[0_10px_40px_rgba(25,23,20,0.18)] ring-1 ring-black/5 transition-[max-height] duration-300 ease-out max-lg:-mx-3 max-lg:-mb-3 max-lg:rounded-b-none lg:absolute lg:top-[118px] lg:max-h-[calc(100%-118px)] lg:w-[400px] ${
-            abierto ? "max-lg:max-h-[52svh]" : "max-lg:max-h-[60px]"
-          }`}
-        >
-          {/* Encabezado: regresar + ruta + plegar */}
-          <header className="flex items-center gap-1 border-b border-line py-1.5 pr-1.5 pl-1.5">
+      <PanelMapa escritorio={escritorio} abierto={abierto} onAbierto={setAbierto} nivel={nivel} onNivel={setNivel}
+        etiqueta="Información de la ubicación" cuerpoRef={cuerpo}
+        encabezado={
+          <>
             {padre ? (
               <button type="button" onClick={() => navegar(padre.v)}
                 className="inline-flex min-h-11 shrink-0 cursor-pointer items-center gap-1 rounded-md px-2.5 text-[14px] font-semibold transition-colors hover:bg-raised">
@@ -218,31 +217,21 @@ export default function Explorer() {
                 </span>
               ))}
             </nav>
-            <button type="button" onClick={() => setAbierto((x) => !x)} aria-expanded={abierto}
-              aria-label={abierto ? "Plegar panel" : "Mostrar panel"}
-              className="ml-auto grid size-11 shrink-0 cursor-pointer place-items-center rounded-md text-ink-2 transition-colors hover:bg-raised hover:text-ink">
-              <svg aria-hidden viewBox="0 0 24 24" className={`size-5 transition-transform duration-200 ${abierto !== escritorio ? "rotate-180" : ""}`} fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-                <path d="M6 15l6-6 6 6" />
-              </svg>
-            </button>
-          </header>
-
-          <div ref={cuerpo} className={`min-h-0 flex-1 overflow-y-auto overscroll-contain ${abierto ? "" : "hidden"}`} aria-live="polite">
-            {!d ? (
-              <Esqueleto />
-            ) : acuifero ? (
-              <ModuloAcuifero a={acuifero} municipio={municipio} />
-            ) : municipio && estado ? (
-              <ModuloMunicipio m={municipio} estado={estado} acu={idx.acu} onPick={(a) => navegar({ ...vista, a })} />
-            ) : estado ? (
-              <ModuloEstado key={estado.cve} e={estado} acu={idx.acu} municipios={d.municipios.filter((m) => m.ent === estado.cve)}
-                onPick={(v) => navegar({ e: estado.cve, ...v })} />
-            ) : (
-              <ModuloNacional estados={d.estados} onPick={(e) => navegar({ e, m: null, a: null })} />
-            )}
-          </div>
-        </article>
-      </div>
+          </>
+        }>
+        {!d ? (
+          <Esqueleto />
+        ) : acuifero ? (
+          <ModuloAcuifero a={acuifero} municipio={municipio} />
+        ) : municipio && estado ? (
+          <ModuloMunicipio m={municipio} estado={estado} acu={idx.acu} onPick={(a) => navegar({ ...vista, a })} />
+        ) : estado ? (
+          <ModuloEstado key={estado.cve} e={estado} acu={idx.acu} municipios={d.municipios.filter((m) => m.ent === estado.cve)}
+            onPick={(v) => navegar({ e: estado.cve, ...v })} />
+        ) : (
+          <ModuloNacional estados={d.estados} onPick={(e) => navegar({ e, m: null, a: null })} />
+        )}
+      </PanelMapa>
 
       <Leyenda modo={estado ? "estatus" : "territorio"} />
     </section>

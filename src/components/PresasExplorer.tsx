@@ -8,6 +8,7 @@ import { fechaCorta, nivel, NIVELES, SIN_DATO, USO_CORTO, type EstadoPresas, typ
 import type { Margen } from "./AquiferMap";
 import Buscador, { type Opcion } from "./Buscador";
 import Conmutador from "./Conmutador";
+import PanelMapa, { visibleMovil, type Nivel } from "./PanelMapa";
 import type { VistaPresas } from "./PresasMap";
 import SerieChart from "./SerieChart";
 import { Ayuda, ayudaAbierta, Burbuja, Cabeza, Cifra, Esqueleto, Fila, Pista, Seccion, VerMas } from "./ui";
@@ -43,6 +44,7 @@ export default function PresasExplorer() {
   const [error, setError] = useState(false);
   const [intento, setIntento] = useState(0);
   const [abierto, setAbierto] = useState(true);
+  const [posHoja, setPosHoja] = useState<Nivel>("medio");
   const cuerpo = useRef<HTMLDivElement>(null);
   const hash = useSyncExternalStore(suscribir, () => window.location.hash, () => "");
   const escritorio = useSyncExternalStore(suscribirMedia, () => window.matchMedia(ESCRITORIO).matches, () => true);
@@ -86,6 +88,7 @@ export default function PresasExplorer() {
       window.dispatchEvent(new Event(NAV));
     }
     setAbierto(true);
+    setPosHoja((n) => (n === "bajo" ? "medio" : n));
   }
 
   // Esc sube un nivel.
@@ -127,7 +130,7 @@ export default function PresasExplorer() {
   const focus: Bbox | null = estado?.b ?? (presa ? [presa.lon - 1, presa.lat - 1, presa.lon + 1, presa.lat + 1] : null);
   const margen: Margen = escritorio
     ? { top: 0, right: 48, bottom: 0, left: abierto ? 424 : 0 }
-    : { top: 120, right: 0, bottom: abierto ? Math.round(window.innerHeight * 0.52) : 60, left: 0 };
+    : { top: 120, right: 0, bottom: visibleMovil(posHoja, window.innerHeight), left: 0 };
 
   const ruta: { label: string; v: VistaPresas }[] = [{ label: "México", v: { e: null, p: null } }];
   if (estado) ruta.push({ label: estado.e, v: { e: estado.cve, p: null } });
@@ -135,7 +138,7 @@ export default function PresasExplorer() {
   const padre = ruta.length > 1 ? ruta[ruta.length - 2] : null;
 
   return (
-    <section aria-label="Mapa de presas" className="relative h-dvh min-h-[480px] overflow-hidden bg-raised">
+    <section aria-label="Mapa de presas" className="relative h-dvh min-h-[480px] overflow-clip bg-raised">
       <div className="absolute inset-0">
         {d && (
           <PresasMap vista={vista} focus={focus} margen={margen} presas={d.presas} estados={idx.resumen} nombres={idx.nombres} onNavigate={navegar} />
@@ -163,13 +166,12 @@ export default function PresasExplorer() {
         </div>
         <Conmutador actual="/presas" />
 
-        <div className="flex-1 lg:hidden" aria-hidden />
+      </div>
 
-        <article aria-label="Información de presas"
-          className={`pointer-events-auto flex min-h-0 flex-col overflow-hidden rounded-[10px] bg-surface shadow-[0_10px_40px_rgba(25,23,20,0.18)] ring-1 ring-black/5 transition-[max-height] duration-300 ease-out max-lg:-mx-3 max-lg:-mb-3 max-lg:rounded-b-none lg:absolute lg:top-[118px] lg:max-h-[calc(100%-118px)] lg:w-[400px] ${
-            abierto ? "max-lg:max-h-[52svh]" : "max-lg:max-h-[60px]"
-          }`}>
-          <header className="flex items-center gap-1 border-b border-line p-1.5">
+      <PanelMapa escritorio={escritorio} abierto={abierto} onAbierto={setAbierto} nivel={posHoja} onNivel={setPosHoja}
+        etiqueta="Información de presas" cuerpoRef={cuerpo}
+        encabezado={
+          <>
             {padre ? (
               <button type="button" onClick={() => navegar(padre.v)}
                 className="inline-flex min-h-11 shrink-0 cursor-pointer items-center gap-1 rounded-md px-2.5 text-[14px] font-semibold transition-colors hover:bg-raised">
@@ -184,25 +186,19 @@ export default function PresasExplorer() {
                 <button key={r.label} type="button" onClick={() => navegar(r.v)} className="link cursor-pointer">{r.label}</button>
               ))}
             </nav>
-            <button type="button" onClick={() => setAbierto((x) => !x)} aria-expanded={abierto} aria-label={abierto ? "Plegar panel" : "Mostrar panel"}
-              className="ml-auto grid size-11 shrink-0 cursor-pointer place-items-center rounded-md text-ink-2 hover:bg-raised hover:text-ink">
-              <svg aria-hidden viewBox="0 0 24 24" className={`size-5 transition-transform duration-200 ${abierto !== escritorio ? "rotate-180" : ""}`} fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M6 15l6-6 6 6" /></svg>
-            </button>
-          </header>
-          <div ref={cuerpo} className={`min-h-0 flex-1 overflow-y-auto overscroll-contain ${abierto ? "" : "hidden"}`} aria-live="polite">
-            {!d ? (
-              <Esqueleto />
-            ) : presa ? (
-              <ModuloPresa key={presa.c} p={presa} />
-            ) : estado ? (
-              <ModuloEstado key={estado.cve} estado={estado} r={idx.resumen.get(estado.cve) ?? null}
-                presas={d.presas.filter((p) => p.ent === estado.cve)} onPick={(c) => navegar({ e: estado.cve, p: c })} />
-            ) : (
-              <ModuloNacional d={d} onPick={(e) => navegar({ e, p: null })} />
-            )}
-          </div>
-        </article>
-      </div>
+          </>
+        }>
+        {!d ? (
+          <Esqueleto />
+        ) : presa ? (
+          <ModuloPresa key={presa.c} p={presa} />
+        ) : estado ? (
+          <ModuloEstado key={estado.cve} estado={estado} r={idx.resumen.get(estado.cve) ?? null}
+            presas={d.presas.filter((p) => p.ent === estado.cve)} onPick={(c) => navegar({ e: estado.cve, p: c })} />
+        ) : (
+          <ModuloNacional d={d} onPick={(e) => navegar({ e, p: null })} />
+        )}
+      </PanelMapa>
 
       <Leyenda modo={estado ? "presas" : "estados"} />
     </section>
