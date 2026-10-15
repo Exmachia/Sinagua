@@ -3,12 +3,13 @@ import Link from "next/link";
 const CAPAS = [
   { href: "/mapa", label: "Acuíferos" },
   { href: "/presas", label: "Presas" },
+  { href: "/sequia", label: "Sequía" },
 ] as const;
 
 /** Cambia entre los mapas del sitio. Vive sobre el mapa, junto al buscador. */
-export default function Conmutador({ actual }: { actual: "/mapa" | "/presas" }) {
+export default function Conmutador({ actual }: { actual: (typeof CAPAS)[number]["href"] }) {
   return (
-    <nav aria-label="Mapas" className="pointer-events-auto grid grid-cols-2 gap-1 rounded-[10px] bg-surface p-1 shadow-[0_6px_24px_rgba(25,23,20,0.14)] ring-1 ring-black/5">
+    <nav aria-label="Mapas" className="pointer-events-auto grid grid-cols-3 gap-1 rounded-[10px] bg-surface p-1 shadow-[0_6px_24px_rgba(25,23,20,0.14)] ring-1 ring-black/5">
       {CAPAS.map((c) => {
         const activo = c.href === actual;
         return (

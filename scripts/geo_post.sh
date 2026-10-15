@@ -36,6 +36,12 @@ $MS -i data/raw/mun23gw/mun23gw.shp \
   -filter-slivers min-area=30km2 \
   -o src/data/estados_preview.json format=geojson precision=0.01 id-field=CVE_ENT
 
+# Todos los municipios del país en un solo archivo ligero (mapa de sequía; los colores llegan aparte).
+$MS -i data/raw/mun23gw/mun23gw.shp \
+  -filter-fields CVEGEO \
+  -simplify percentage=1.5% weighted keep-shapes \
+  -o $OUT/municipios_mx.geojson format=geojson precision=0.001 id-field=CVEGEO
+
 # Municipios: un archivo por estado, se cargan al entrar a cada estado.
 $MS -i data/raw/mun23gw/mun23gw.shp \
   -simplify 12% weighted keep-shapes \
