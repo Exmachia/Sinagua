@@ -3,6 +3,7 @@
  * Fondo oscuro para que resalte entre otras historias. Satori: solo flexbox y estilos en línea.
  */
 import type { Alerta } from "@/lib/urgente";
+import { ilustracion } from "./ilustraciones";
 
 export const TAMANO_HISTORIA = { width: 1080, height: 1920 };
 
@@ -14,6 +15,7 @@ const ROJO = "#c2463f";
 
 export function Historia({ a }: { a: Alerta }) {
   const largo = a.titulo.length > 60;
+  const img = ilustracion(a.ilustracion);
   return (
     <div style={{ width: "100%", height: "100%", display: "flex", flexDirection: "column", justifyContent: "space-between",
       background: FONDO, padding: "230px 90px 250px", fontFamily: "Schibsted", color: TEXTO }}>
@@ -30,19 +32,17 @@ export function Historia({ a }: { a: Alerta }) {
         </div>
 
         <div style={{ display: "flex", marginTop: 80, fontSize: 36, fontWeight: 600, color: ACENTO }}>{a.etiqueta} · {a.lugar}</div>
-        <div style={{ display: "flex", marginTop: 26, fontFamily: "Newsreader", fontSize: largo || a.reporte ? 82 : 96, lineHeight: 1.04, letterSpacing: -2 }}>
+        <div style={{ display: "flex", marginTop: 26, fontFamily: "Newsreader", fontSize: largo ? 82 : 96, lineHeight: 1.04, letterSpacing: -2 }}>
           {a.titulo}
         </div>
 
-        {a.reporte ? (
-          <div style={{ display: "flex", flexDirection: "column", marginTop: 56 }}>
-            <div style={{ display: "flex", fontSize: 40, lineHeight: 1.3, color: TEXTO }}>{a.historia?.texto ?? a.reporte}</div>
-            {(a.historia?.datos ?? a.datosOficiales?.map((d) => d.texto) ?? []).length > 0 && (
-              <div style={{ display: "flex", flexDirection: "column", marginTop: 46, borderTop: `2px solid ${TENUE}`, paddingTop: 30 }}>
-                <div style={{ display: "flex", fontSize: 28, fontWeight: 600, color: TENUE, letterSpacing: 1 }}>DATOS OFICIALES</div>
-                {(a.historia?.datos ?? a.datosOficiales?.map((d) => d.texto) ?? []).map((t) => (
-                  <div key={t} style={{ display: "flex", marginTop: 14, fontSize: 36, lineHeight: 1.3 }}>{t}</div>
-                ))}
+        {a.tipo === "reporte" ? (
+          <div style={{ display: "flex", alignItems: "center", marginTop: 70 }}>
+            {img && <img src={img} width={300} height={442} alt="" />}
+            {a.historia && (
+              <div style={{ display: "flex", flexDirection: "column", marginLeft: 56, flex: 1 }}>
+                <div style={{ display: "flex", fontFamily: "Newsreader", fontSize: 170, lineHeight: 0.95, letterSpacing: -4 }}>{a.historia.cifra}</div>
+                <div style={{ display: "flex", marginTop: 14, fontSize: 40, lineHeight: 1.2, color: TENUE }}>{a.historia.texto}</div>
               </div>
             )}
           </div>

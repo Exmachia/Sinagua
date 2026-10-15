@@ -26,9 +26,9 @@ export type Alerta = {
   fuente: string;
   destino: string; // dónde ver más en el sitio
   // Solo en reportes:
-  reporte?: string;
-  historia?: { texto: string; datos: string[] }; // versión corta para la imagen que se comparte
-  datosOficiales?: { texto: string; fuente: string }[];
+  puntos?: string[]; // lo importante, máximo 3
+  historia?: { cifra: string; texto: string }; // la cifra de la imagen que se comparte
+  ilustracion?: string;
   fuentes?: { nombre: string; url: string }[];
   accion?: string;
   fecha: string; // de cuándo son los datos (AAAA-MM-DD)
@@ -131,9 +131,9 @@ function reportes(): Alerta[] {
     datos: [],
     fuente: c.fuentes.map((f) => f.nombre).join(" · "),
     destino: `/mapa#e=${c.estado}&m=${c.municipio}`,
-    reporte: c.reporte,
+    puntos: c.puntos.slice(0, 3),
     historia: c.historia,
-    datosOficiales: c.datos,
+    ilustracion: c.ilustracion,
     fuentes: c.fuentes,
     accion: c.accion,
     fecha: c.fecha,
