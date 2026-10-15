@@ -223,11 +223,16 @@ def main():
 
     out_dir = ROOT / "public" / "data" / "usos"
     out_dir.mkdir(parents=True, exist_ok=True)
+    por_estado = {}
     for ce, d in est.items():
         if not ce.strip("0"):
             continue
-        datos = {"e": resumen(d), "m": {g: resumen(m) for g, m in mun.items() if g.startswith(ce)}}
+        por_estado[ce] = resumen(d)
+        datos = {"e": por_estado[ce], "m": {g: resumen(m) for g, m in mun.items() if g.startswith(ce)}}
         (out_dir / f"{ce}.json").write_text(json.dumps(datos, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
+    # Resumen por estado para las tarjetas de compartir (las genera el servidor).
+    (ROOT / "src" / "data" / "usos_estados.json").write_text(
+        json.dumps(dict(sorted(por_estado.items())), ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
     (ROOT / "public" / "data" / "usos_acuiferos.json").write_text(
         json.dumps({c: resumen(d) for c, d in acu.items()}, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
 

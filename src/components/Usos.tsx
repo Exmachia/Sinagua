@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { fmt } from "@/lib/acuiferos";
 import { GRUPOS_USO, mayor, QUE_ES, SEMAFORO, USO, type ResumenCalidad, type SitioCalidad, type UsoLugar } from "@/lib/usos";
-import { Ayuda, Burbuja, Seccion } from "./ui";
+import { Ayuda, BotonCompartir, Burbuja, Seccion } from "./ui";
 
 /* ---------- datos bajo demanda (con caché entre fichas) ---------- */
 
@@ -70,7 +70,9 @@ export function AyudaUsos() {
   );
 }
 
-export function BloqueUsos({ u, lugar }: { u: UsoLugar | null | undefined; lugar: string }) {
+export function BloqueUsos({ u, lugar, compartir }: {
+  u: UsoLugar | null | undefined; lugar: string; compartir?: { ruta: string; titulo: string };
+}) {
   const [ver, setVer] = useState(false);
   if (u === undefined) return null; // todavía cargando: no se reserva espacio para no saltar
   if (!u || u.v <= 0) {
@@ -112,6 +114,10 @@ export function BloqueUsos({ u, lugar }: { u: UsoLugar | null | undefined; lugar
             </li>
           )}
         </ol>
+      )}
+      {compartir && (
+        <BotonCompartir ruta={compartir.ruta} titulo={compartir.titulo} className="mb-2 w-full"
+          texto={`${USO[m.grupo].sujeto} ${m.de100} de cada 100 litros de agua en ${lugar}.`} />
       )}
     </Seccion>
   );

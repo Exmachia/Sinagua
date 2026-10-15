@@ -441,7 +441,7 @@ function ModuloEstado({ e, acu, municipios, onPick }: {
         </ul>
         {lista.length > 6 && <VerMas abierto={todos} total={lista.length} onClick={() => setTodos((x) => !x)} />}
       </div>
-      <BloqueUsos u={usos ? usos.e : undefined} lugar={e.e} />
+      <BloqueUsos u={usos ? usos.e : undefined} lugar={e.e} compartir={{ ruta: `/compartir/usos-estado/${e.slug}`, titulo: `¿Quién se lleva el agua en ${e.e}? — Sinagua` }} />
       <BloqueCalidad sup={cal.superficie} pozo={cal.pozo} />
       <div className="px-6 pt-4">
         <BotonCompartir ruta={`/compartir/estado/${e.slug}`} titulo={`${e.e} — Sinagua`} className="w-full"

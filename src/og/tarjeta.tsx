@@ -77,10 +77,28 @@ export function TarjetaFicha({ t }: { t: Tarjeta }) {
             )}
           </div>
         )}
+        {t.segmentos && (
+          <div style={{ display: "flex", flexDirection: "column", marginTop: 22 }}>
+            <div style={{ display: "flex", width: 1056, height: 22, borderRadius: 11, overflow: "hidden" }}>
+              {t.segmentos.filter((g) => g.pct > 0).map((g, i, todos) => (
+                <div key={i} style={{ display: "flex", width: `${g.pct}%`, height: 22, background: g.color,
+                  borderRight: i < todos.length - 1 ? `${todos.length > 12 ? 1 : 3}px solid ${PAPEL}` : "none" }} />
+              ))}
+            </div>
+            <div style={{ display: "flex", marginTop: 14, fontSize: 22, color: TINTA_2 }}>
+              {t.segmentos.filter((g) => g.pct >= 4 && g.label).map((g) => (
+                <div key={g.label} style={{ display: "flex", alignItems: "center", marginRight: 28 }}>
+                  <div style={{ display: "flex", width: 16, height: 16, borderRadius: 4, background: g.color, marginRight: 8 }} />
+                  {g.label} {Math.round(g.pct)}%
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
         {t.frase && <div style={{ display: "flex", marginTop: 20, fontSize: 30, color: TINTA_2 }}>{t.frase}</div>}
       </div>
 
-      <Pie derecha="¿Y bajo tus pies? · datos oficiales" />
+      <Pie derecha="sinagua.org · datos oficiales" />
     </div>
   );
 }

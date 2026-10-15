@@ -11,7 +11,7 @@ import Buscador, { type Opcion } from "./Buscador";
 import Conmutador from "./Conmutador";
 import PanelMapa, { visibleMovil, type Nivel } from "./PanelMapa";
 import type { VistaSequia } from "./SequiaMap";
-import { Ayuda, ayudaAbierta, Cabeza, Cifra, Esqueleto, Fila, Pista, Seccion, VerMas } from "./ui";
+import { Ayuda, ayudaAbierta, BotonCompartir, Cabeza, Cifra, Esqueleto, Fila, Pista, Seccion, VerMas } from "./ui";
 
 const SequiaMap = dynamic(() => import("./SequiaMap"), {
   ssr: false,
@@ -315,6 +315,10 @@ function ModuloEstado({ estado, datos, onPick }: { estado: Estado; datos: Datos;
       ) : (
         <p className="mx-6 mt-6 font-serif text-xl">Ningún municipio está en sequía en esta quincena.</p>
       )}
+      <div className="px-6 pt-5">
+        <BotonCompartir ruta={`/compartir/sequia-estado/${estado.slug}`} titulo={`Sequía en ${estado.e} — Sinagua`} className="w-full"
+          texto={`${fmt(r.pct, 0)}% de la gente de ${estado.e} vive en un municipio con sequía.`} />
+      </div>
     </div>
   );
 }
@@ -362,6 +366,10 @@ function ModuloMunicipio({ m, estado, s, desde, fecha }: { m: Municipio; estado:
       <div className="mx-6 mt-6 grid grid-cols-2 gap-5">
         <Cifra valor={`${s.t}%`} texto="del tiempo en sequía desde 2003" />
         <Cifra valor={fmt(s.p, 0)} texto="habitantes" />
+      </div>
+      <div className="px-6 pt-6">
+        <BotonCompartir ruta={`/compartir/sequia-municipio/${m.g}`} titulo={`Sequía en ${m.n} — Sinagua`} className="w-full"
+          texto={enSequia(s.c) ? `${m.n} lleva ${duracion(s.r)} seguidos en sequía.` : `${m.n} ha pasado ${s.t}% del tiempo en sequía desde 2003.`} />
       </div>
     </div>
   );
