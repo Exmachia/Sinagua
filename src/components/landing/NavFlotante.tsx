@@ -61,9 +61,18 @@ export default function NavFlotante() {
           ))}
         </ul>
 
-        <Link href="/mapa" className="inline-flex min-h-10 items-center gap-1.5 rounded-full bg-ink px-4 text-[14px] font-semibold text-white transition-opacity hover:opacity-85">
+        <Link href="/urgente" className="inline-flex min-h-10 items-center gap-2 rounded-full px-3.5 text-[14px] font-semibold whitespace-nowrap text-critico ring-1 ring-critico/30 transition-colors hover:bg-critico/[0.06]">
+          <span aria-hidden className="relative flex size-2">
+            <span className="absolute inline-flex size-full animate-ping rounded-full bg-critico opacity-60 motion-reduce:hidden" />
+            <span className="relative inline-flex size-2 rounded-full bg-critico" />
+          </span>
+          Urgente
+        </Link>
+
+        <Link href="/mapa" className="inline-flex min-h-10 items-center gap-1.5 rounded-full bg-ink px-4 text-[14px] font-semibold whitespace-nowrap text-white transition-opacity hover:opacity-85">
           <svg aria-hidden viewBox="0 0 24 24" className="size-4" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 4 3 6v14l6-2 6 2 6-2V4l-6 2-6-2Z" /><path d="M9 4v14M15 6v14" /></svg>
-          Abrir el mapa
+          <span className="max-sm:hidden">Abrir el mapa</span>
+          <span className="sm:hidden">Mapa</span>
         </Link>
 
         <button type="button" onClick={() => setMenu((x) => !x)} aria-expanded={menu} aria-controls="menu-movil" aria-label="Menú"
