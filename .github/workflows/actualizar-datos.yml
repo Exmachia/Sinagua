@@ -47,6 +47,19 @@ jobs:
       - name: Procesar sequía y agua por persona
         run: python3 -I scripts/build_agua.py
 
+      # Permisos de agua (REPDA) y calidad del agua: CONAGUA los actualiza pocas veces al año.
+      # Si la descarga falla, se conserva lo publicado y sigue lo demás.
+      - name: Descargar permisos y calidad del agua (datos abiertos de CONAGUA)
+        id: abiertos
+        continue-on-error: true
+        run: bash scripts/fetch_abiertos.sh
+
+      - name: Procesar quién usa el agua y su calidad
+        if: steps.abiertos.outcome == 'success'
+        run: |
+          python3 -I scripts/build_usos.py
+          python3 -I scripts/build_calidad.py
+
       - name: ¿Cambió algo?
         id: cambios
         run: |
