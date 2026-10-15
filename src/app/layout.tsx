@@ -1,3 +1,4 @@
+import { Analytics } from "@vercel/analytics/next";
 import type { Metadata, Viewport } from "next";
 import { SITIO } from "@/lib/sitio";
 import { Newsreader, Schibsted_Grotesk } from "next/font/google";
@@ -46,7 +47,10 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang="es-MX" data-scroll-behavior="smooth" className={`${serif.variable} ${sans.variable}`}>
-      <body className="min-h-dvh">{children}</body>
+      <body className="min-h-dvh">
+        {children}
+        <Analytics />
+      </body>
     </html>
   );
 }

@@ -16,6 +16,7 @@
     "data:sina": "node scripts/fetch_presas.mjs 1991-01-02 2025-04-23 && python3 -I scripts/compactar_sina.py"
   },
   "dependencies": {
+    "@vercel/analytics": "^2.0.1",
     "maplibre-gl": "^5.24.0",
     "next": "16.4.0",
     "react": "19.3.0",
