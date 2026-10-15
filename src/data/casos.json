@@ -1,5 +1,5 @@
 {
-  "_nota": "Casos destacados que se agregan a mano en /urgente. Solo hechos verificables, con su fuente. Para quitar uno, bórralo de la lista.",
+  "_nota": "Casos destacados que se agregan a mano en /urgente. Solo hechos verificables, con su fuente. Cada caso se deja de mostrar 31 días después de su fecha: para mantenerlo, actualiza la fecha con información nueva. Para quitar uno, bórralo de la lista.",
   "casos": [
     {
       "id": "guadalajara-agua-sucia",

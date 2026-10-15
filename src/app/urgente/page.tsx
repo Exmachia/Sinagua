@@ -3,7 +3,8 @@ import Link from "next/link";
 import BotonHistoria from "@/components/BotonHistoria";
 import Marca from "@/components/Marca";
 import { Ayuda } from "@/components/ui";
-import { alertas, type Alerta } from "@/lib/urgente";
+import { cacheLife } from "next/cache";
+import { alertas, VIGENCIA, type Alerta } from "@/lib/urgente";
 
 export const metadata: Metadata = {
   title: "Urgente — Sinagua",
@@ -11,8 +12,15 @@ export const metadata: Metadata = {
   alternates: { canonical: "/urgente" },
 };
 
-export default function Urgente() {
-  const lista = alertas();
+// Se recalcula a diario: aunque no lleguen datos nuevos, lo que ya no es reciente deja de mostrarse.
+async function vigentes() {
+  "use cache";
+  cacheLife("days");
+  return alertas(new Date());
+}
+
+export default async function Urgente() {
+  const lista = await vigentes();
   const reportes = lista.filter((a) => a.tipo === "reporte");
   const datos = lista.filter((a) => a.tipo !== "reporte");
   return (
@@ -128,9 +136,9 @@ function AyudaUrgente() {
       <ul className="list-disc space-y-1 pl-5">
         <li>Presas que dan agua a ciudades, por debajo del 20% y de lo normal para la época.</li>
         <li>Estados donde más de la mitad de la gente vive en sequía.</li>
-        <li>Presas que dan agua a ciudades con el agua contaminada.</li>
         <li>Ciudades a las que les quedan menos de 6 meses de agua en sus presas.</li>
       </ul>
+      <p>Solo se muestran datos de los últimos {VIGENCIA} días. Si una fuente deja de actualizarse, su alerta desaparece.</p>
       <p>
         Los recuadros oscuros son casos que reportan vecinos y medios. No son datos oficiales: van con su fuente, y separados de
         lo que sí miden CONAGUA y el Servicio Meteorológico.
