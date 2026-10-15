@@ -1,13 +1,13 @@
 /**
  * /urgente: lo más crítico del agua esta semana. Las alertas salen solas de los datos (mismas reglas para todos los
  * lugares) y se recalculan con cada actualización; los casos destacados se agregan a mano en src/data/casos.json.
+ * Regla de frescura: ninguna alerta con datos de más de VIGENCIA días; los casos a mano caducan igual si no se renuevan.
  * Solo se usa en el servidor (página, imágenes para historias).
  */
 import casosJson from "@/data/casos.json";
 import diasAgua from "@/data/dias_agua.json";
 import estadosJson from "../../public/data/estados.json";
 import presasJson from "../../public/data/presas.json";
-import calidadPresasJson from "../../public/data/calidad_presas.json";
 import sequiaJson from "../../public/data/sequia_mun.json";
 import municipiosJson from "../../public/data/municipios.json";
 import { fmt, type Estado, type Municipio } from "./acuiferos";
@@ -30,12 +30,15 @@ export type Alerta = {
   datosOficiales?: { texto: string; fuente: string }[];
   fuentes?: { nombre: string; url: string }[];
   accion?: string;
+  fecha: string; // de cuándo son los datos (AAAA-MM-DD)
   peso: number; // para ordenar: más alto, más grave
 };
 
+/** Días que una alerta puede mostrarse después de la fecha de sus datos. */
+export const VIGENCIA = 31;
+
 const estados = estadosJson as unknown as Estado[];
 const presas = presasJson as unknown as Presa[];
-const calidadPresas = calidadPresasJson as unknown as Record<string, { s: "r" | "a" | "v"; q: string[]; y: number }>;
 const sequia = sequiaJson as unknown as DatosSequia;
 const municipios = new Map((municipiosJson as unknown as Municipio[]).map((m) => [m.g, m]));
 const porCve = new Map(estados.map((e) => [e.cve, e]));
@@ -58,6 +61,7 @@ function presasVacias(): Alerta[] {
       ],
       fuente: `CONAGUA, monitoreo de presas, al ${fechaCorta(p.fecha)}`,
       destino: `/presas#p=${p.c}`,
+      fecha: p.fecha,
       peso: 100 - p.pct + (p.normal !== null ? (p.normal - p.pct) / 2 : 0),
     }));
 }
@@ -85,32 +89,11 @@ function estadosEnSequia(): Alerta[] {
       ],
       fuente: `Monitor de Sequía de México (SMN), al ${fechaCorta(sequia.f)}`,
       destino: `/sequia#e=${e.slug}`,
+      fecha: sequia.f,
       peso: pct,
     });
   }
   return out;
-}
-
-/** Presas que abastecen ciudades con el agua contaminada (una sola alerta nacional). */
-function presasContaminadas(): Alerta[] {
-  const rojas = presas.filter((p) => abasteceCiudades(p) && calidadPresas[p.c]?.s === "r");
-  if (rojas.length < 3) return [];
-  const ejemplos = rojas.slice(0, 3).map((p) => p.n).join(", ");
-  return [{
-    id: "presas-contaminadas",
-    tipo: "contaminacion",
-    etiqueta: "Agua contaminada",
-    lugar: "México",
-    estado: "Todo el país",
-    titulo: `${rojas.length} presas que dan agua a ciudades están contaminadas`,
-    datos: [
-      { valor: "Aguas negras", texto: "lo que más se encontró" },
-      { valor: ejemplos, texto: "algunas de ellas" },
-    ],
-    fuente: "CONAGUA, Red Nacional de Medición de Calidad del Agua (2021–2023)",
-    destino: "/#calidad",
-    peso: 60 + rojas.length,
-  }];
 }
 
 /** Sistemas de presas de grandes ciudades con menos de 6 meses de agua. */
@@ -130,6 +113,7 @@ function diasCriticos(): Alerta[] {
       ],
       fuente: "CONAGUA, Sistema de Información Hidrológica",
       destino: "/#dias",
+      fecha: s.actual.f,
       peso: 200 - s.actual.dias / 2,
     }));
 }
@@ -150,16 +134,20 @@ function reportes(): Alerta[] {
     datosOficiales: c.datos,
     fuentes: c.fuentes,
     accion: c.accion,
+    fecha: c.fecha,
     peso: 1000,
   }));
 }
 
-/** Todas las alertas, de la más grave a la menos. Las automáticas se limitan para no saturar. */
-export function alertas(): Alerta[] {
-  const auto = [...diasCriticos(), ...presasVacias(), ...estadosEnSequia(), ...presasContaminadas()]
+/** Todas las alertas vigentes a la fecha `hoy`, de la más grave a la menos. Las automáticas se limitan para no saturar. */
+export function alertas(hoy: Date): Alerta[] {
+  const limite = new Date(hoy.getTime() - VIGENCIA * 864e5).toISOString().slice(0, 10);
+  const vigente = (a: Alerta) => a.fecha >= limite;
+  const auto = [...diasCriticos(), ...presasVacias(), ...estadosEnSequia()]
+    .filter(vigente)
     .sort((a, b) => b.peso - a.peso)
     .slice(0, 8);
-  return [...reportes(), ...auto];
+  return [...reportes().filter(vigente), ...auto];
 }
 
-export const alerta = (id: string) => alertas().find((a) => a.id === id) ?? null;
+export const alerta = (id: string, hoy: Date) => alertas(hoy).find((a) => a.id === id) ?? null;
