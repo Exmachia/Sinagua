@@ -64,6 +64,33 @@ def col(ref: str) -> int:
     return n - 1
 
 
+CATEGORIA = {"D0": 1, "D1": 2, "D2": 3, "D3": 4, "D4": 5}
+RECIENTES = 48  # quincenas que se guardan por municipio (2 años) para su franja
+
+
+def escribir_municipios(por_mun: dict[str, list[int]], fechas: list[str], pob_mun: dict[str, int]):
+    """public/data/sequia_mun.json: por municipio, categoría actual, quincenas seguidas en sequía (D1–D4),
+    % del tiempo en sequía desde 2003, población y las últimas 48 quincenas como texto ("0012233…")."""
+    m = {}
+    for clave, cats in por_mun.items():
+        racha = 0
+        for c in reversed(cats):
+            if c < 2:
+                break
+            racha += 1
+        m[clave] = {
+            "c": cats[-1],
+            "r": racha,
+            "t": round(sum(1 for c in cats if c >= 2) / len(cats) * 100),
+            "p": pob_mun.get(clave, 0),
+            "h": "".join(str(c) for c in cats[-RECIENTES:]),
+        }
+    destino = ROOT / "public" / "data" / "sequia_mun.json"
+    if destino.exists() and json.loads(destino.read_text(encoding="utf-8"))["f"] > fechas[-1]:
+        raise SystemExit("ABORTADO: el monitor de sequía descargado es anterior al publicado. No se escribió nada.")
+    destino.write_text(json.dumps({"f": fechas[-1], "desde": fechas[-RECIENTES], "m": m}, separators=(",", ":")), encoding="utf-8")
+
+
 def sequia(pob_mun: dict[str, int]):
     z = zipfile.ZipFile(RAW / "sequia" / "MunicipiosSequia.xlsx")
     compartidas = ["".join(t.itertext()) for t in ET.fromstring(z.read("xl/sharedStrings.xml")).findall("m:si", NS)]
@@ -81,6 +108,8 @@ def sequia(pob_mun: dict[str, int]):
     fechas = {i: (date(1899, 12, 30) + timedelta(days=int(float(v)))).isoformat()
               for i, v in cab.items() if re.fullmatch(r"\d+(\.0)?", str(v))}
     total = sum(pob_mun.values())
+    orden = [i for i, _ in sorted(fechas.items(), key=lambda kv: kv[1])]
+    por_mun = {}  # municipio → categorías en orden: 0 sin sequía, 1 anormalmente seco (D0), 2–5 = D1–D4
     en_sequia = defaultdict(int)   # D1–D4
     severa = defaultdict(int)      # D2–D4
     munis = defaultdict(int)
@@ -89,6 +118,8 @@ def sequia(pob_mun: dict[str, int]):
         v = valores(fila)
         clave = str(v.get(0, "")).zfill(5)
         p = pob_mun.get(clave)
+        cats = [CATEGORIA.get(str(v.get(i, "")).strip(), 0) for i in orden]
+        por_mun[clave] = cats
         if p is None:
             sin_pob += 1
             continue
@@ -101,6 +132,7 @@ def sequia(pob_mun: dict[str, int]):
                     severa[f] += p
     serie = [{"f": f, "pct": round(en_sequia[f] / total * 100, 1), "severa": round(severa[f] / total * 100, 1),
               "municipios": munis[f]} for f in sorted(fechas.values())]
+    escribir_municipios(por_mun, sorted(fechas.values()), pob_mun)
     print(f"sequía: {len(serie)} quincenas {serie[0]['f']} → {serie[-1]['f']} · municipios sin población: {sin_pob}")
     return serie, total
 

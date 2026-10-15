@@ -268,6 +268,10 @@ function Sequia() {
           <p className="mt-5 max-w-[62ch] text-[1.1rem] leading-relaxed text-ink-2">
             {epoca(sq.actual.f)}, <strong className="font-semibold text-ink">{millones(sq.personas)} millones</strong> viven en sequía.
           </p>
+          <Link href="/sequia" className="mt-8 inline-flex min-h-12 items-center gap-2 rounded-full bg-ink px-6 font-semibold text-white transition-opacity hover:opacity-85">
+            Ver la sequía en tu municipio
+            <svg aria-hidden viewBox="0 0 24 24" className="size-4" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
+          </Link>
         </Aparecer>
         <Aparecer className="mt-12">
           <figure className="rounded-2xl bg-surface p-6 ring-1 ring-black/5">
