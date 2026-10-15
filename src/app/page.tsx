@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import HeroSearch from "@/components/HeroSearch";
 import Marca from "@/components/Marca";
@@ -35,6 +36,8 @@ const porPersona1 = app.nacional[app.nacional.length - 1];
 const caida = Math.round((1 - porPersona1.m3 / porPersona0.m3) * 100);
 const escasez10 = Math.round(app.pctEscasez / 10);
 const sq = agua.sequia;
+
+export const metadata: Metadata = { alternates: { canonical: "/" } };
 
 export default function Home() {
   return (

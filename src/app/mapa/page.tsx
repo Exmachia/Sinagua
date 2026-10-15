@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Explorer from "@/components/Explorer";
 
 export const metadata: Metadata = {
+  alternates: { canonical: "/mapa" },
   title: "Acuíferos — Sinagua",
   description: "Explora los 653 acuíferos de México por estado y municipio: qué tienes bajo tus pies y cómo está.",
 };

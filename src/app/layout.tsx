@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import { SITIO } from "@/lib/sitio";
 import { Newsreader, Schibsted_Grotesk } from "next/font/google";
 import "maplibre-gl/dist/maplibre-gl.css";
 import "./globals.css";
@@ -19,11 +20,9 @@ const sans = Schibsted_Grotesk({
   display: "swap",
 });
 
-// URL absoluta del sitio (las redes sociales necesitan rutas completas para las imágenes).
-const SITIO = process.env.NEXT_PUBLIC_SITE_URL
-  ?? (process.env.VERCEL_PROJECT_PRODUCTION_URL ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}` : "http://localhost:3100");
 
 export const metadata: Metadata = {
+  // URL absoluta del sitio (las redes sociales necesitan rutas completas para las imágenes).
   metadataBase: new URL(SITIO),
   twitter: { card: "summary_large_image" },
   title: "Sinagua — México se está quedando sin agua",

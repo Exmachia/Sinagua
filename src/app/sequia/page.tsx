@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import SequiaExplorer from "@/components/SequiaExplorer";
 
 export const metadata: Metadata = {
+  alternates: { canonical: "/sequia" },
   title: "Sequía — Sinagua",
   description: "Qué municipios de México están en sequía hoy y desde cuándo, según el Monitor de Sequía de México.",
 };
