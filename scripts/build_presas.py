@@ -19,6 +19,8 @@ Notas de método:
 
 from __future__ import annotations
 
+from math import fsum  # sumas de decimales exactas: mismo resultado en cualquier versión de Python
+
 import csv
 import gzip
 import json
@@ -59,8 +61,8 @@ def semana(f: str) -> int:
 def tendencia(xs: list[float], ys: list[float]) -> float:
     """Pendiente por mínimos cuadrados (unidades de y por unidad de x)."""
     mx, my = statistics.fmean(xs), statistics.fmean(ys)
-    den = sum((x - mx) ** 2 for x in xs)
-    return sum((x - mx) * (y - my) for x, y in zip(xs, ys)) / den if den else 0.0
+    den = fsum((x - mx) ** 2 for x in xs)
+    return fsum((x - mx) * (y - my) for x, y in zip(xs, ys)) / den if den else 0.0
 
 
 def t_pendiente(xs: list[float], ys: list[float]) -> float:
@@ -68,8 +70,8 @@ def t_pendiente(xs: list[float], ys: list[float]) -> float:
     b = tendencia(xs, ys)
     mx, my = statistics.fmean(xs), statistics.fmean(ys)
     res = [y - (my + b * (x - mx)) for x, y in zip(xs, ys)]
-    sxx = sum((x - mx) ** 2 for x in xs)
-    se = (sum(e * e for e in res) / (len(xs) - 2) / sxx) ** 0.5 if len(xs) > 2 and sxx else 0
+    sxx = fsum((x - mx) ** 2 for x in xs)
+    se = (fsum(e * e for e in res) / (len(xs) - 2) / sxx) ** 0.5 if len(xs) > 2 and sxx else 0
     return b / se if se else 0.0
 
 
@@ -235,7 +237,7 @@ def main():
     panel = [c for c in serie if c not in inconsistentes and serie[c] and max(serie[c]) >= reciente
              and sum(1 for f in desde_panel if f in serie[c]) >= 0.9 * len(desde_panel)]
     cap = {c: serie[c][max(serie[c])][1] for c in panel}
-    print(f"panel {PANEL_DESDE}+: {len(panel)} presas, {sum(cap.values()):,.0f} hm³ de capacidad")
+    print(f"panel {PANEL_DESDE}+: {len(panel)} presas, {fsum(cap.values()):,.0f} hm³ de capacidad")
 
     def agregado(claves: list[str]):
         """% de llenado semanal del grupo (Σ almacenamiento / Σ capacidad). Huecos: último valor conocido."""
@@ -246,7 +248,7 @@ def main():
                 if f in serie[c]:
                     ultimo[c] = serie[c][f]
             if len(ultimo) == len(claves):
-                out.append((f, sum(v for v, _ in ultimo.values()) / sum(n for _, n in ultimo.values()) * 100))
+                out.append((f, fsum(v for v, _ in ultimo.values()) / fsum(n for _, n in ultimo.values()) * 100))
         return out
 
     grupos = {"nacional": panel}
@@ -254,7 +256,7 @@ def main():
         grupos[u] = [c for c in panel if u in re.split(r"[/\s]+", limpio(info[c]["uso"]))]
 
     resumen = {"ultima": ultima, "desde": fechas[0], "panelDesde": PANEL_DESDE, "panel": len(panel),
-               "capacidadPanel": round(sum(cap.values())), "usos": USOS, "grupos": {}}
+               "capacidadPanel": round(fsum(cap.values())), "usos": USOS, "grupos": {}}
     for g, claves in grupos.items():
         if len(claves) < 3:
             continue
@@ -270,7 +272,7 @@ def main():
             normal.setdefault(semana(f), []).append(v)
         resumen["grupos"][g] = {
             "presas": len(claves),
-            "capacidad": round(sum(cap[c] for c in claves)),
+            "capacidad": round(fsum(cap[c] for c in claves)),
             "semanal": [[f, round(v, 1)] for f, v in sem],
             "anual": [{"y": a, "min": mn, "media": md} for a, mn, md in zip(anios, minimos, medias)],
             "normalSemana": {w: round(statistics.median(vs), 1) for w, vs in sorted(normal.items())},
@@ -301,14 +303,14 @@ def main():
             json.dumps([[f, round(v, 1)] for f, v in sem], separators=(",", ":")), encoding="utf-8")
         resumen["estados"].append({
             "cve": e["cve"], "e": e["e"], "presas": len(ps),
-            "pct": round(sum(p["act"] for p in ps) / sum(p["cap"] for p in ps) * 100, 1),
-            "cap": round(sum(p["cap"] for p in ps)),
+            "pct": round(fsum(p["act"] for p in ps) / fsum(p["cap"] for p in ps) * 100, 1),
+            "cap": round(fsum(p["cap"] for p in ps)),
             "bajo20": sum(1 for p in ps if p["pct"] < 20),
             "serie": len(en_panel),
         })
     resumen["actual"] = {
         "presas": len(actuales),
-        "pct": round(sum(p["act"] for p in actuales) / sum(p["cap"] for p in actuales) * 100, 1),
+        "pct": round(fsum(p["act"] for p in actuales) / fsum(p["cap"] for p in actuales) * 100, 1),
         "bajo20": sum(1 for p in actuales if p["pct"] < 20),
         "bajo50": sum(1 for p in actuales if p["pct"] < 50),
         "debajoNormal": sum(1 for p in actuales if p["normal"] is not None and p["pct"] < p["normal"] - 10),
