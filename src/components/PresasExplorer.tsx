@@ -11,7 +11,7 @@ import Conmutador from "./Conmutador";
 import PanelMapa, { visibleMovil, type Nivel } from "./PanelMapa";
 import type { VistaPresas } from "./PresasMap";
 import SerieChart from "./SerieChart";
-import { Ayuda, ayudaAbierta, Burbuja, Cabeza, Cifra, Esqueleto, Fila, Pista, Seccion, VerMas } from "./ui";
+import { Ayuda, ayudaAbierta, BotonCompartir, Burbuja, Cabeza, Cifra, Esqueleto, Fila, Pista, Seccion, VerMas } from "./ui";
 
 const PresasMap = dynamic(() => import("./PresasMap"), {
   ssr: false,
@@ -428,6 +428,10 @@ function ModuloEstado({ estado, r, presas, onPick }: { estado: Estado; r: Estado
           )}
         </Seccion>
       )}
+      <div className="px-6 pt-5">
+        <BotonCompartir ruta={`/compartir/presas-estado/${estado.slug}`} titulo={`Presas de ${estado.e} — Sinagua`} className="w-full"
+          texto={`Las presas de ${estado.e} están al ${fmt(r.pct, 0)}%.`} />
+      </div>
     </div>
   );
 }
@@ -490,6 +494,10 @@ function ModuloPresa({ p }: { p: Presa }) {
       {p.aviso && (
         <p className="mx-6 mt-5 rounded-md bg-raised px-3 py-2 text-[13px] text-ink-2">Datos de origen con errores; ver “?”.</p>
       )}
+      <div className="px-6 pt-5">
+        <BotonCompartir ruta={`/compartir/presa/${p.c}`} titulo={`Presa ${p.n} — Sinagua`} className="w-full"
+          texto={`La presa ${p.n} (${p.e}) está al ${fmt(p.pct, 0)}% al ${fechaCorta(p.fecha)}.`} />
+      </div>
     </div>
   );
 }

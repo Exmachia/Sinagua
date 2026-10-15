@@ -23,7 +23,7 @@ import HistoryChart from "./HistoryChart";
 import Conmutador from "./Conmutador";
 import PanelMapa, { visibleMovil, type Nivel } from "./PanelMapa";
 import SearchBox from "./SearchBox";
-import { Ayuda, ayudaAbierta, Burbuja, Cabeza, Cifra, Esqueleto, Fila, Pestanas, Pista, Seccion, VerMas } from "./ui";
+import { Ayuda, ayudaAbierta, BotonCompartir, Burbuja, Cabeza, Cifra, Esqueleto, Fila, Pestanas, Pista, Seccion, VerMas } from "./ui";
 
 const AquiferMap = dynamic(() => import("./AquiferMap"), {
   ssr: false,
@@ -365,6 +365,10 @@ function ModuloEstado({ e, acu, municipios, onPick }: {
         </ul>
         {lista.length > 6 && <VerMas abierto={todos} total={lista.length} onClick={() => setTodos((x) => !x)} />}
       </div>
+      <div className="px-6 pt-4">
+        <BotonCompartir ruta={`/compartir/estado/${e.slug}`} titulo={`${e.e} — Sinagua`} className="w-full"
+          texto={`El ${fmt(e.pct, 0)}% de ${e.e} está sobre acuíferos sobreexplotados.`} />
+      </div>
     </div>
   );
 }
@@ -396,32 +400,19 @@ function ModuloMunicipio({ m, estado, acu, onPick }: { m: Municipio; estado: Est
           ))}
         </ul>
       </Seccion>
+      <div className="px-6 pt-4">
+        <BotonCompartir ruta={`/compartir/municipio/${m.g}`} titulo={`${m.n} — Sinagua`} className="w-full"
+          texto={`El ${fmt(m.pct, 0)}% de ${m.n} (${estado.e}) está sobre acuíferos sobreexplotados. ¿Y tu municipio?`} />
+      </div>
     </div>
   );
 }
 
 function ModuloAcuifero({ a, municipio }: { a: Acuifero; municipio: Municipio | null }) {
-  const [copiado, setCopiado] = useState(false);
   const renovable = Math.max(0, a.r - a.dnc);
   const escala = Math.max(renovable, a.veas, 0.001);
   const st = ESTATUS[a.s];
   const pctMun = municipio?.a.find(([c]) => c === a.c)?.[1];
-
-  async function compartir() {
-    const url = window.location.href;
-    const text = `Acuífero ${a.n}: ${st.label.toLowerCase()}. ${fraseLitros(a)}`;
-    if (navigator.share) {
-      try {
-        await navigator.share({ title: `Acuífero ${a.n}`, text, url });
-        return;
-      } catch {
-        /* cancelado: se copia el enlace */
-      }
-    }
-    await navigator.clipboard.writeText(`${text} ${url}`);
-    setCopiado(true);
-    setTimeout(() => setCopiado(false), 2500);
-  }
 
   return (
     <div className="pb-5">
@@ -465,18 +456,14 @@ function ModuloAcuifero({ a, municipio }: { a: Acuifero; municipio: Municipio | 
       </Seccion>
 
       <div className="mt-5 grid grid-cols-2 gap-2 px-6">
-        <button type="button" onClick={compartir}
-          className="min-h-11 cursor-pointer rounded-md bg-ink px-3 text-[14px] font-semibold text-white transition-opacity hover:opacity-85">
-          {copiado ? "Enlace copiado" : "Compartir"}
-        </button>
+        <BotonCompartir ruta={`/compartir/acuifero/${a.c}`} titulo={`Acuífero ${a.n} — Sinagua`}
+          texto={`Acuífero ${a.n}: ${st.label.toLowerCase()}. ${fraseLitros(a)}`} />
         <a href={a.pdf} target="_blank" rel="noopener noreferrer"
           className="inline-flex min-h-11 items-center justify-center gap-1.5 rounded-md border border-line-strong px-3 text-[14px] font-semibold hover:bg-raised">
           Estudio oficial
           <svg aria-hidden viewBox="0 0 24 24" className="size-3.5" fill="none" stroke="currentColor" strokeWidth="2"><path d="M7 17 17 7M8 7h9v9" /></svg>
         </a>
       </div>
-      <span className="sr-only" role="status">{copiado ? "Enlace copiado al portapapeles" : ""}</span>
-
       <details className="mx-6 mt-5 text-[13px] text-ink-2">
         <summary className="min-h-10 cursor-pointer py-2 font-semibold text-ink">Datos técnicos de CONAGUA</summary>
         <table className="num w-full">

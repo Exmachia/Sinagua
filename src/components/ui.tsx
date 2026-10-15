@@ -1,6 +1,6 @@
 "use client";
 
-import { useId, useRef } from "react";
+import { useId, useRef, useState } from "react";
 
 /* Piezas compartidas de los módulos flotantes de los mapas. */
 
@@ -142,5 +142,38 @@ export function Esqueleto() {
       </div>
       {Array.from({ length: 5 }, (_, i) => <div key={i} className="h-10 animate-pulse rounded bg-raised/70" />)}
     </div>
+  );
+}
+
+/**
+ * Comparte un enlace /compartir/… (con su tarjeta para redes). En celular abre el menú nativo; si no hay, copia el enlace.
+ */
+export function BotonCompartir({ ruta, titulo, texto, className = "" }: { ruta: string; titulo: string; texto: string; className?: string }) {
+  const [copiado, setCopiado] = useState(false);
+  async function compartir() {
+    const url = `${window.location.origin}${ruta}`;
+    if (navigator.share) {
+      try {
+        await navigator.share({ title: titulo, text: texto, url });
+        return;
+      } catch (e) {
+        if ((e as DOMException)?.name === "AbortError") return; // el usuario cerró el menú
+      }
+    }
+    await navigator.clipboard.writeText(url);
+    setCopiado(true);
+    setTimeout(() => setCopiado(false), 2500);
+  }
+  return (
+    <>
+      <button type="button" onClick={compartir}
+        className={`inline-flex min-h-11 cursor-pointer items-center justify-center gap-2 rounded-md bg-ink px-4 text-[14px] font-semibold text-white transition-opacity hover:opacity-85 ${className}`}>
+        <svg aria-hidden viewBox="0 0 24 24" className="size-4" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M4 12v7a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-7M16 6l-4-4-4 4M12 2v13" />
+        </svg>
+        {copiado ? "Enlace copiado" : "Compartir"}
+      </button>
+      <span className="sr-only" role="status">{copiado ? "Enlace copiado al portapapeles" : ""}</span>
+    </>
   );
 }
