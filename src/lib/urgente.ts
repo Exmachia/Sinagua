@@ -27,6 +27,7 @@ export type Alerta = {
   destino: string; // dónde ver más en el sitio
   // Solo en reportes:
   reporte?: string;
+  historia?: { texto: string; datos: string[] }; // versión corta para la imagen que se comparte
   datosOficiales?: { texto: string; fuente: string }[];
   fuentes?: { nombre: string; url: string }[];
   accion?: string;
@@ -131,6 +132,7 @@ function reportes(): Alerta[] {
     fuente: c.fuentes.map((f) => f.nombre).join(" · "),
     destino: `/mapa#e=${c.estado}&m=${c.municipio}`,
     reporte: c.reporte,
+    historia: c.historia,
     datosOficiales: c.datos,
     fuentes: c.fuentes,
     accion: c.accion,

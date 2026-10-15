@@ -36,12 +36,12 @@ export function Historia({ a }: { a: Alerta }) {
 
         {a.reporte ? (
           <div style={{ display: "flex", flexDirection: "column", marginTop: 56 }}>
-            <div style={{ display: "flex", fontSize: 34, lineHeight: 1.35, color: TEXTO }}>{a.reporte}</div>
-            {a.datosOficiales && a.datosOficiales.length > 0 && (
+            <div style={{ display: "flex", fontSize: 40, lineHeight: 1.3, color: TEXTO }}>{a.historia?.texto ?? a.reporte}</div>
+            {(a.historia?.datos ?? a.datosOficiales?.map((d) => d.texto) ?? []).length > 0 && (
               <div style={{ display: "flex", flexDirection: "column", marginTop: 46, borderTop: `2px solid ${TENUE}`, paddingTop: 30 }}>
                 <div style={{ display: "flex", fontSize: 28, fontWeight: 600, color: TENUE, letterSpacing: 1 }}>DATOS OFICIALES</div>
-                {a.datosOficiales.map((d) => (
-                  <div key={d.texto} style={{ display: "flex", marginTop: 14, fontSize: 30, lineHeight: 1.3 }}>{d.texto}</div>
+                {(a.historia?.datos ?? a.datosOficiales?.map((d) => d.texto) ?? []).map((t) => (
+                  <div key={t} style={{ display: "flex", marginTop: 14, fontSize: 36, lineHeight: 1.3 }}>{t}</div>
                 ))}
               </div>
             )}
