@@ -9,6 +9,7 @@ const SECCIONES = [
   { id: "sequia", label: "Sequía" },
   { id: "proyeccion", label: "Si seguimos así" },
   { id: "presas", label: "Presas" },
+  { id: "dias", label: "Días de agua" },
   { id: "metodologia", label: "Método" },
 ] as const;
 

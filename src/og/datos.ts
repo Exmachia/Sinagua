@@ -7,15 +7,16 @@ import estadosJson from "../../public/data/estados.json";
 import municipiosJson from "../../public/data/municipios.json";
 import presasJson from "../../public/data/presas.json";
 import presasResumen from "@/data/presas_resumen.json";
+import diasAgua from "@/data/dias_agua.json";
 import { albercas, ESTATUS_HEX, ESTATUS, fmt, type Acuifero, type Estado, type Municipio } from "@/lib/acuiferos";
-import { fechaCorta, nivel, SIN_DATO, type Presa } from "@/lib/presas";
+import { enPalabras, fechaCorta, mesLargo, nivel, SIN_DATO, type Presa } from "@/lib/presas";
 
 const acuiferos = acuiferosJson as unknown as Acuifero[];
 const estados = estadosJson as unknown as Estado[];
 const municipios = municipiosJson as unknown as Municipio[];
 const presas = presasJson as unknown as Presa[];
 
-export const TIPOS = ["acuifero", "municipio", "estado", "presa", "presas-estado"] as const;
+export const TIPOS = ["acuifero", "municipio", "estado", "presa", "presas-estado", "dias"] as const;
 export type Tipo = (typeof TIPOS)[number];
 
 export type Tarjeta = {
@@ -27,6 +28,7 @@ export type Tarjeta = {
   frase?: string; // una línea en lenguaje llano
   barra?: { pct: number; color: string; marca?: number }; // barra de llenado (presas)
   destino: string; // a dónde lleva el enlace dentro del sitio
+  boton?: string; // texto del enlace en /compartir (por defecto "Ver en el mapa")
   descripcion: string; // meta description
 };
 
@@ -109,6 +111,23 @@ export function tarjeta(tipo: string, clave: string): Tarjeta | null {
       descripcion: `Las presas de ${e.e} están al ${fmt(r.pct, 0)}% (${fechaCorta(presasResumen.ultima)}).`,
     };
   }
+  if (tipo === "dias") {
+    const s = diasAgua.sistemas.find((x) => x.id === clave);
+    if (!s) return null;
+    const a = s.actual;
+    const peor = `${mesLargo(s.peor.f)} de ${s.peor.f.slice(0, 4)}`;
+    return {
+      sobre: `Días de agua · ${s.ciudad}`,
+      titulo: s.nombre,
+      cifra: fmt(a.dias, 0),
+      cifraTexto: `días de agua si dejara de llover hoy (unos ${enPalabras(a.dias)})`,
+      barra: { pct: Math.min(a.pct, 100), color: nivel(a.pct).color },
+      frase: `En ${peor} quedaban solo ${s.peor.dias} días.`,
+      destino: "/#dias",
+      boton: "Ver los días de agua",
+      descripcion: `Al ${fechaCorta(a.f)}, el ${s.nombre} está al ${fmt(a.pct, 0)}%: si dejara de llover, alcanzaría para unos ${a.dias} días. En ${peor} quedaban ${s.peor.dias}.`,
+    };
+  }
   return null;
 }
 
@@ -119,4 +138,6 @@ export const EJEMPLOS: { tipo: Tipo; clave: string }[] = [
   { tipo: "estado", clave: "guanajuato" },
   { tipo: "presa", clave: "LDCJL" },
   { tipo: "presas-estado", clave: "sinaloa" },
+  { tipo: "dias", clave: "cutzamala" },
+  { tipo: "dias", clave: "monterrey" },
 ];
