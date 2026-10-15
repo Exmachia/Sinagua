@@ -25,6 +25,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title: titulo,
     description: t.descripcion,
+    // Página puente para redes sociales: no debe aparecer en buscadores (la ficha vive en el mapa).
+    robots: { index: false, follow: true },
     openGraph: { title: titulo, description: t.descripcion, type: "article", siteName: "Sinagua", locale: "es_MX" },
     twitter: { card: "summary_large_image", title: titulo, description: t.descripcion },
   };
