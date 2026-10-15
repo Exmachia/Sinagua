@@ -1,9 +1,10 @@
 "use client";
 
-import maplibregl, { type ExpressionSpecification, type LngLatBoundsLike } from "maplibre-gl";
+import * as maplibregl from "maplibre-gl";
+import { type ExpressionSpecification, type LngLatBoundsLike } from "maplibre-gl";
 import { useEffect, useEffectEvent, useRef, useState } from "react";
 import type { Bbox } from "@/lib/acuiferos";
-import { agregarEtiquetasEstados, BASE, filtrarEtiquetasEstados, FONDO, prepararBase, TINTA } from "@/lib/mapa";
+import { agregarEtiquetasEstados, configurarMapLibre, BASE, filtrarEtiquetasEstados, FONDO, prepararBase, TINTA } from "@/lib/mapa";
 import { CATEGORIAS, duracion, enSequia, type DatosSequia } from "@/lib/sequia";
 import type { Margen } from "./AquiferMap";
 
@@ -47,6 +48,7 @@ export default function SequiaMap({ vista, focus, margen, datos, nombres, onNavi
   useEffect(() => {
     if (!container.current) return;
     const tactil = window.matchMedia("(pointer: coarse)").matches;
+    configurarMapLibre(maplibregl);
     const map = new maplibregl.Map({
       container: container.current,
       style: BASE,

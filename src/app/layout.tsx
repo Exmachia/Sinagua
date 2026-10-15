@@ -8,9 +8,8 @@ import "./globals.css";
 // Titulares: serif de periódico con tamaño óptico (se afina sola en tamaños grandes).
 const serif = Newsreader({
   variable: "--font-newsreader",
-  subsets: ["latin"],
   axes: ["opsz"],
-  style: ["normal", "italic"],
+  subsets: ["latin"],
   display: "swap",
 });
 

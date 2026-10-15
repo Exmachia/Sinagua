@@ -1,6 +1,7 @@
 "use client";
 
-import maplibregl, {
+import * as maplibregl from "maplibre-gl";
+import {
   type ExpressionSpecification,
   type GeoJSONSource,
   type LngLatBoundsLike,
@@ -18,7 +19,7 @@ import {
   type Municipio,
 } from "@/lib/acuiferos";
 import { SEMAFORO, type Semaforo } from "@/lib/usos";
-import { agregarEtiquetasEstados, BASE, filtrarEtiquetasEstados, FONDO, prepararBase, TINTA } from "@/lib/mapa";
+import { agregarEtiquetasEstados, configurarMapLibre, BASE, filtrarEtiquetasEstados, FONDO, prepararBase, TINTA } from "@/lib/mapa";
 
 export type Vista = { e: string | null; m: string | null; a: string | null };
 
@@ -118,6 +119,7 @@ export default function AquiferMap({ vista, focus, margen, estados, municipios, 
   useEffect(() => {
     if (!container.current) return;
     const tactil = window.matchMedia("(pointer: coarse)").matches;
+    configurarMapLibre(maplibregl);
     const map = new maplibregl.Map({
       container: container.current,
       style: BASE,
@@ -302,7 +304,9 @@ export default function AquiferMap({ vista, focus, margen, estados, municipios, 
     let vivo = true;
     fetch(`/data/mun/${vista.e}.json`)
       .then((r) => r.json())
-      .then((d) => vivo && src.setData(d))
+      .then((d) => {
+        if (vivo) src.setData(d);
+      })
       .catch(() => {});
     return () => {
       vivo = false;

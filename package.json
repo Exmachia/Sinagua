@@ -3,7 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "predev": "node scripts/copiar_maplibre.mjs",
     "dev": "next dev",
+    "prebuild": "node scripts/copiar_maplibre.mjs",
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
@@ -17,7 +19,7 @@
   },
   "dependencies": {
     "@vercel/analytics": "^2.0.1",
-    "maplibre-gl": "^5.24.0",
+    "maplibre-gl": "^6.14.0",
     "next": "16.4.0",
     "react": "19.3.0",
     "react-dom": "19.3.0"

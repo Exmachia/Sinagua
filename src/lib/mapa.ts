@@ -1,4 +1,4 @@
-import type maplibregl from "maplibre-gl";
+import type * as maplibregl from "maplibre-gl";
 
 /** Base clara y gratuita (OpenFreeMap / OpenStreetMap). */
 export const BASE = "https://tiles.openfreemap.org/styles/positron";
@@ -81,4 +81,9 @@ export function filtrarEtiquetasEstados(map: maplibregl.Map, estadoAbierto: stri
   map.setFilter("estados-etiqueta", ["!=", ["get", "CVE_ENT"], estadoAbierto ?? ""]);
   map.setPaintProperty("estados-etiqueta", "icon-opacity", estadoAbierto ? 0.85 : 1);
   map.setPaintProperty("estados-etiqueta", "text-opacity", estadoAbierto ? 0.7 : 1);
+}
+
+/** MapLibre 6: dónde está su worker (lo copia scripts/copiar_maplibre.mjs). Se llama antes de crear un mapa. */
+export function configurarMapLibre(lib: typeof maplibregl) {
+  lib.setWorkerUrl(`/maplibre/maplibre-gl-worker-${lib.getVersion()}.mjs`);
 }

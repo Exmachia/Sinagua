@@ -44,7 +44,7 @@ function resumir(lista: [string, SequiaMun][]) {
   const porCat = [0, 0, 0, 0, 0, 0];
   for (const [, s] of lista) {
     pob += s.p;
-    porCat[s.c]++;
+    porCat[s.c] += s.p; // por personas, igual que la cifra principal
     if (enSequia(s.c)) {
       pobSeq += s.p;
       mun++;
@@ -241,12 +241,12 @@ function AyudaSequia() {
   );
 }
 
-/** Barra apilada: cuántos municipios hay en cada categoría. */
+/** Barra apilada: cuánta gente vive en cada categoría. */
 function BarraCategorias({ porCat }: { porCat: number[] }) {
   const total = porCat.reduce((a, b) => a + b, 0);
   return (
     <div className="flex h-3 w-full gap-[2px] overflow-hidden rounded-full" role="img"
-      aria-label={CATEGORIAS.map((c, i) => `${c.label}: ${porCat[i]}`).join(", ")}>
+      aria-label={CATEGORIAS.map((c, i) => `${c.label}: ${Math.round((porCat[i] / total) * 100)}% de la gente`).join(", ")}>
       {CATEGORIAS.map((c, i) => porCat[i] > 0 && (
         <div key={c.label} style={{ width: `${(porCat[i] / total) * 100}%`, background: c.color, minWidth: 3 }} />
       ))}
