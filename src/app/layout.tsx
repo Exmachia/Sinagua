@@ -19,7 +19,13 @@ const sans = Schibsted_Grotesk({
   display: "swap",
 });
 
+// URL absoluta del sitio (las redes sociales necesitan rutas completas para las imágenes).
+const SITIO = process.env.NEXT_PUBLIC_SITE_URL
+  ?? (process.env.VERCEL_PROJECT_PRODUCTION_URL ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}` : "http://localhost:3100");
+
 export const metadata: Metadata = {
+  metadataBase: new URL(SITIO),
+  twitter: { card: "summary_large_image" },
   title: "Sinagua — México se está quedando sin agua",
   description:
     "4 de cada 10 mexicanos viven donde el agua escasea, y a cada persona le toca 28% menos agua que en 1998. Busca tu municipio y mira cómo está el agua donde vives.",
