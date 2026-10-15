@@ -9,7 +9,7 @@ import presasJson from "../../public/data/presas.json";
 import presasResumen from "@/data/presas_resumen.json";
 import diasAgua from "@/data/dias_agua.json";
 import { albercas, ESTATUS_HEX, ESTATUS, fmt, type Acuifero, type Estado, type Municipio } from "@/lib/acuiferos";
-import { enPalabras, fechaCorta, mesLargo, nivel, SIN_DATO, type Presa } from "@/lib/presas";
+import { fechaCorta, mesLargo, nivel, SIN_DATO, type Presa } from "@/lib/presas";
 
 const acuiferos = acuiferosJson as unknown as Acuifero[];
 const estados = estadosJson as unknown as Estado[];
@@ -115,17 +115,19 @@ export function tarjeta(tipo: string, clave: string): Tarjeta | null {
     const s = diasAgua.sistemas.find((x) => x.id === clave);
     if (!s) return null;
     const a = s.actual;
-    const peor = `${mesLargo(s.peor.f)} de ${s.peor.f.slice(0, 4)}`;
+    const p = s.peor;
+    const cuando = (f: string) => `${mesLargo(f)} de\u00a0${f.slice(0, 4)}`;
+    const meses = Math.round((Date.parse(p.f) - Date.parse(p.antes.f)) / (30.44 * 864e5));
     return {
       sobre: `Días de agua · ${s.ciudad}`,
       titulo: s.nombre,
-      cifra: fmt(a.dias, 0),
-      cifraTexto: `días de agua si dejara de llover hoy (unos ${enPalabras(a.dias)})`,
-      barra: { pct: Math.min(a.pct, 100), color: nivel(a.pct).color },
-      frase: `En ${peor} quedaban solo ${s.peor.dias} días.`,
+      cifra: fmt(p.dias, 0),
+      cifraTexto: `días de agua le quedaban en ${cuando(p.f)}`,
+      barra: { pct: Math.min(p.pct, 100), color: nivel(p.pct).color },
+      frase: `${meses} meses antes tenía ${fmt(p.antes.dias, 0)}. Una temporada seca basta.`,
       destino: "/#dias",
       boton: "Ver los días de agua",
-      descripcion: `Al ${fechaCorta(a.f)}, el ${s.nombre} está al ${fmt(a.pct, 0)}%: si dejara de llover, alcanzaría para unos ${a.dias} días. En ${peor} quedaban ${s.peor.dias}.`,
+      descripcion: `En ${cuando(p.f)}, al ${s.nombre} le quedaban ${p.dias} días de agua; ${meses} meses antes tenía ${p.antes.dias}. Hoy: ${a.dias} días (${fmt(a.pct, 0)}% al ${fechaCorta(a.f)}).`,
     };
   }
   return null;

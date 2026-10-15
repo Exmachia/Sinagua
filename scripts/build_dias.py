@@ -104,17 +104,21 @@ def main():
         # Peor momento del sistema y la presa que más bajó
         recientes = serie
         peor = min(recientes, key=lambda x: x["dias"])
+        # Cuántos días tenía en los 12 meses previos al peor momento: qué tan rápido se vacía en una temporada seca
+        hace_un_anio = f"{int(peor['f'][:4]) - 1}{peor['f'][4:]}"
+        antes = max((x for x in serie if hace_un_anio <= x["f"] < peor["f"]), key=lambda x: x["dias"])
         presa_baja = min(((x["f"], p) for x in recientes for p in x["presas"]), key=lambda t: t[1]["pct"])
         salida["sistemas"].append({
             "id": s["id"], "nombre": s["nombre"], "ciudad": s["ciudad"],
             "capacidad": round(fsum(cap.values()), 1),
             "actual": actual,
-            "peor": {"f": peor["f"], "dias": peor["dias"], "pct": peor["pct"]},
+            "peor": {"f": peor["f"], "dias": peor["dias"], "pct": peor["pct"],
+                     "antes": {"f": antes["f"], "dias": antes["dias"], "pct": antes["pct"]}},
             "presaMasBaja": {"f": presa_baja[0], "n": presa_baja[1]["n"], "pct": presa_baja[1]["pct"]},
             "serie": [[x["f"], x["dias"], x["pct"]] for x in serie],
         })
         print(f"{s['nombre']}: al {actual['f']} {actual['pct']}% · sale {actual['m3s']} m³/s · {actual['dias']} días · "
-              f"peor {peor['f']} ({peor['dias']} días) · presa más baja {presa_baja[1]['n']} {presa_baja[1]['pct']}% ({presa_baja[0]})")
+              f"peor {peor['f']} ({peor['dias']} días; {antes['dias']} el {antes['f']}) · presa más baja {presa_baja[1]['n']} {presa_baja[1]['pct']}% ({presa_baja[0]})")
         for p in actual["presas"]:
             print(f"    {p['n']:16} {p['pct']:5.1f}%  {p['m3s']:5.2f} m³/s  {p['dias']} días")
 

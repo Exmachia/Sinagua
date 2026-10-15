@@ -436,7 +436,11 @@ function Presas() {
 type Sistema = (typeof diasAgua.sistemas)[number];
 const mesAnio = (f: string) => `${mesLargo(f)} de ${f.slice(0, 4)}`;
 
+const mesesEntre = (a: string, b: string) => Math.round((Date.parse(b) - Date.parse(a)) / (30.44 * 864e5));
+const cutz = diasAgua.sistemas.find((s) => s.id === "cutzamala")!;
+
 function DiasDeAgua() {
+  const pc = cutz.peor;
   return (
     <section id="dias" className="scroll-mt-20 border-t border-line">
       <div className="mx-auto max-w-6xl px-4 py-24 sm:px-8 lg:py-32">
@@ -445,14 +449,15 @@ function DiasDeAgua() {
             <div>
               <p className="text-[14px] font-semibold text-critico">Días de agua</p>
               <h2 className="mt-3 font-serif text-[clamp(2rem,4vw,3rem)] leading-[1.06] font-semibold tracking-[-0.015em] text-balance">
-                ¿Cuánto duraría el agua si dejara de llover hoy?
+                Una sola temporada seca basta para vaciar las presas
               </h2>
             </div>
             <div className="pt-8"><AyudaDias /></div>
           </div>
           <p className="mt-5 max-w-[62ch] text-[1.1rem] leading-relaxed text-ink-2">
-            Las presas que abastecen a las dos zonas metropolitanas más grandes del país, al ritmo al que hoy se saca el agua. Ya ha
-            estado cerca: hay años en que quedaban apenas unos meses.
+            En {mesAnio(pc.antes.f)}, al Sistema Cutzamala le quedaban {fmt(pc.antes.dias, 0)} días de agua. Solo {mesesEntre(pc.antes.f, pc.f)} meses
+            después le quedaban <strong className="font-semibold text-ink">{pc.dias}</strong>: unos {enPalabras(pc.dias)} para la Ciudad de
+            México si no llovía. Así de rápido se vacían.
           </p>
         </Aparecer>
         <div className="mt-14 grid gap-6 lg:grid-cols-2">
@@ -469,6 +474,7 @@ function DiasDeAgua() {
 
 function TarjetaSistema({ s }: { s: Sistema }) {
   const a = s.actual;
+  const p = s.peor;
   const baja = s.presaMasBaja;
   return (
     <article className="flex h-full flex-col rounded-2xl bg-surface p-6 shadow-[0_1px_0_rgba(0,0,0,0.04)] ring-1 ring-black/5 sm:p-7">
@@ -477,35 +483,37 @@ function TarjetaSistema({ s }: { s: Sistema }) {
           <h3 className="font-serif text-[1.6rem] leading-tight font-semibold">{s.nombre}</h3>
           <p className="text-[14px] text-ink-3">{s.ciudad}</p>
         </div>
-        <BotonCompartir ruta={`/compartir/dias/${s.id}`} titulo={`${s.nombre}: ${a.dias} días de agua`}
-          texto={`Si dejara de llover hoy, al ${s.nombre} le quedarían unos ${a.dias} días de agua.`} />
+        <BotonCompartir ruta={`/compartir/dias/${s.id}`} titulo={`${s.nombre}: le quedaron ${p.dias} días de agua`}
+          texto={`En ${mesAnio(p.f)}, al ${s.nombre} le quedaban ${p.dias} días de agua. ${mesesEntre(p.antes.f, p.f)} meses antes tenía ${p.antes.dias}.`} />
       </header>
 
-      <p className="mt-6 flex flex-wrap items-baseline gap-x-3">
-        <span className="num font-serif text-[clamp(3.2rem,7vw,4.5rem)] leading-none font-semibold tracking-[-0.02em]">{fmt(a.dias, 0)}</span>
-        <span className="text-[1.1rem] text-ink-2">días · unos {enPalabras(a.dias)}</span>
+      <p className="mt-6 text-[14px] font-semibold text-critico">Lo más cerca que ha estado · {mesAnio(p.f)}</p>
+      <p className="mt-1 flex flex-wrap items-baseline gap-x-3">
+        <span className="num font-serif text-[clamp(3.2rem,7vw,4.5rem)] leading-none font-semibold tracking-[-0.02em]">{fmt(p.dias, 0)}</span>
+        <span className="text-[1.1rem] text-ink-2">días de agua</span>
       </p>
-      <p className="mt-2 text-[14px] text-ink-3">
-        Al {fechaCorta(a.f)}: llenas al <span className="num font-semibold text-ink">{fmt(a.pct, 0)}%</span>, salen{" "}
-        <span className="num font-semibold text-ink">{fmt(a.m3s, 1)}</span> m³ por segundo.
+      <p className="mt-2 text-[15px] leading-relaxed text-ink-2">
+        {mesesEntre(p.antes.f, p.f)} meses antes tenía {fmt(p.antes.dias, 0)} días. Las presas cayeron del{" "}
+        <span className="num font-semibold text-ink">{fmt(p.antes.pct, 0)}%</span> al{" "}
+        <span className="num font-semibold text-ink">{fmt(p.pct, 0)}%</span>.
       </p>
 
       <div className="mt-6">
         <DiasChart serie={s.serie as [string, number, number][]} peor={s.peor} nombre={s.nombre} />
       </div>
       <div className="mt-3 flex flex-wrap gap-x-5 gap-y-1 text-[13px] text-ink-2">
-        <span className="inline-flex items-center gap-2"><Burbuja color="var(--s-critico)" />
-          Peor momento: <strong className="num font-semibold text-ink">{s.peor.dias} días</strong> ({mesAnio(s.peor.f)})</span>
-        <span className="inline-flex items-center gap-2"><Burbuja color="var(--ink)" /> Hoy</span>
+        <span className="inline-flex items-center gap-2"><Burbuja color="var(--s-critico)" /> Lo más bajo</span>
+        <span className="inline-flex items-center gap-2"><Burbuja color="var(--ink)" />
+          Hoy: <strong className="num font-semibold text-ink">{fmt(a.dias, 0)} días</strong> ({fmt(a.pct, 0)}% al {fechaCorta(a.f)})</span>
       </div>
 
       <ul className="mt-6 divide-y divide-line border-t border-line text-[15px]">
-        {a.presas.map((p) => (
-          <li key={p.c} className="flex items-center justify-between py-2.5">
-            <span>Presa {p.n}</span>
+        {a.presas.map((x) => (
+          <li key={x.c} className="flex items-center justify-between py-2.5">
+            <span>Presa {x.n}</span>
             <span className="inline-flex items-center gap-2">
-              <Burbuja color={nivel(p.pct).color} />
-              <span className="num font-semibold">{fmt(p.pct, 0)}%</span>
+              <Burbuja color={nivel(x.pct).color} />
+              <span className="num font-semibold">{fmt(x.pct, 0)}%</span>
             </span>
           </li>
         ))}
