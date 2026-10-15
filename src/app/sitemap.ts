@@ -12,6 +12,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${SITIO}/`, lastModified: reciente, changeFrequency: "weekly", priority: 1 },
     { url: `${SITIO}/mapa`, lastModified: new Date("2023-11-09"), changeFrequency: "monthly", priority: 0.8 },
     { url: `${SITIO}/presas`, lastModified: presasF, changeFrequency: "weekly", priority: 0.8 },
+    { url: `${SITIO}/urgente`, lastModified: reciente, changeFrequency: "weekly", priority: 0.9 },
     { url: `${SITIO}/sequia`, lastModified: sequia, changeFrequency: "weekly", priority: 0.8 },
   ];
 }
