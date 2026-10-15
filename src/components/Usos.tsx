@@ -89,11 +89,10 @@ export function BloqueUsos({ u, lugar }: { u: UsoLugar | null | undefined; lugar
       </p>
       <div className="mt-4"><BarraUsos u={u} /></div>
       <LeyendaUsos u={u} />
-      <p className="mt-3 text-[12px] text-ink-3">{fmt(u.n, 0)} permisos · {fmt(u.v, u.v < 10 ? 1 : 0)} millones de m³ al año</p>
 
       <button type="button" onClick={() => setVer((x) => !x)} aria-expanded={ver}
         className="mt-3 mb-2 flex min-h-10 w-full cursor-pointer items-center justify-between rounded-md px-2 text-[14px] font-semibold text-ink-2 transition-colors hover:bg-raised hover:text-ink">
-        ¿Quién tiene los permisos más grandes?
+        ¿Quién tiene más?
         <svg aria-hidden viewBox="0 0 24 24" className={`size-4 transition-transform ${ver ? "rotate-180" : ""}`} fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round"><path d="m6 9 6 6 6-6" /></svg>
       </button>
       {ver && (
@@ -143,7 +142,8 @@ export function AyudaCalidad() {
         <li><strong>Verde:</strong> cumple con todos los indicadores medidos.</li>
       </ul>
       <p>
-        Usamos el dato más reciente de cada sitio (2023, o 2021 si no se midió en 2023). Es el agua <strong>en su fuente</strong>,
+        Usamos el dato más reciente de cada sitio (2023, o 2021 si no se midió en 2023). Si una presa tiene varios puntos de
+        medición, mostramos el peor. Es el agua <strong>en su fuente</strong>,
         no la que sale de tu llave: esa la analiza el organismo de agua de cada ciudad y no hay una base pública nacional con
         esos resultados.
       </p>
@@ -160,8 +160,8 @@ function FilaCalidad({ titulo, r, rojo }: { titulo: string; r: ResumenCalidad; r
       </p>
       <div className="mt-2"><BarraSemaforo r={r} /></div>
       {r.q.length > 0 && (
-        <p className="mt-2 text-[13px] text-ink-2">
-          Se encontró: {r.q.slice(0, 3).map(([q]) => QUE_ES[q] ?? q).join(", ")}.
+        <p className="mt-2 text-[13px] text-ink-2 first-letter:uppercase">
+          {r.q.slice(0, 3).map(([q]) => QUE_ES[q] ?? q).join(", ")}
         </p>
       )}
     </div>
@@ -208,7 +208,6 @@ export function BloqueCalidad({ sup, pozo, sitios }: { sup?: ResumenCalidad; poz
           )}
         </>
       )}
-      <p className="pb-2 text-[12px] text-ink-3">Es el agua en su fuente, no la que sale de tu llave.</p>
     </Seccion>
   );
 }
