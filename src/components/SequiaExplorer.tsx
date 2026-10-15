@@ -187,13 +187,12 @@ export default function SequiaExplorer() {
             ) : (
               <span className="px-2.5 text-[14px] font-semibold">Panorama nacional</span>
             )}
-            <span className="min-w-0 flex-1 truncate text-right text-[12px] text-ink-3">{d && `Al ${fechaCorta(d.sequia.f)}`}</span>
           </>
         }>
         {!d ? (
           <Esqueleto />
         ) : municipio ? (
-          <ModuloMunicipio key={municipio.g} m={municipio} estado={estado} s={d.sequia.m[municipio.g]} desde={d.sequia.desde} />
+          <ModuloMunicipio key={municipio.g} m={municipio} estado={estado} s={d.sequia.m[municipio.g]} desde={d.sequia.desde} fecha={d.sequia.f} />
         ) : estado ? (
           <ModuloEstado key={estado.cve} estado={estado} datos={d} onPick={(m) => navegar({ e: estado.cve, m })} />
         ) : (
@@ -268,7 +267,7 @@ function ModuloNacional({ datos, onPick }: { datos: Datos; onPick: (cve: string)
     .sort((a, b) => b.r.pct - a.r.pct || b.r.mun - a.r.mun);
   return (
     <div className="pb-4">
-      <Cabeza titulo="México" ayuda={<AyudaSequia />} />
+      <Cabeza dato={`Datos al ${fechaCorta(datos.sequia.f)}`} titulo="México" ayuda={<AyudaSequia />} />
       <div className="mt-6 grid grid-cols-2 gap-5 px-6">
         <Cifra valor={`${fmt(r.pobSeq / 1e6, 1)} M`} texto="de personas viven en un municipio con sequía" tono={CATEGORIAS[3].color} />
         <Cifra valor={fmt(r.mun, 0)} texto={`de ${fmt(r.total, 0)} municipios, en sequía`} />
@@ -297,7 +296,7 @@ function ModuloEstado({ estado, datos, onPick }: { estado: Estado; datos: Datos;
   const conSequia = lista.filter(([, s]) => s.c >= 1).sort((a, b) => b[1].c - a[1].c || b[1].r - a[1].r);
   return (
     <div className="pb-4">
-      <Cabeza sobre="Estado" titulo={estado.e} ayuda={<AyudaSequia />} />
+      <Cabeza dato={`Datos al ${fechaCorta(datos.sequia.f)}`} sobre="Estado" titulo={estado.e} ayuda={<AyudaSequia />} />
       <div className="mt-6 grid grid-cols-2 gap-5 px-6">
         <Cifra valor={`${fmt(r.pct, 0)}%`} texto="de su gente vive en un municipio con sequía" tono={r.pct > 0 ? CATEGORIAS[3].color : undefined} />
         <Cifra valor={`${r.mun} de ${r.total}`} texto="municipios en sequía" />
@@ -320,7 +319,7 @@ function ModuloEstado({ estado, datos, onPick }: { estado: Estado; datos: Datos;
   );
 }
 
-function ModuloMunicipio({ m, estado, s, desde }: { m: Municipio; estado: Estado | null; s: SequiaMun | undefined; desde: string }) {
+function ModuloMunicipio({ m, estado, s, desde, fecha }: { m: Municipio; estado: Estado | null; s: SequiaMun | undefined; desde: string; fecha: string }) {
   if (!s) {
     return (
       <div className="pb-4">
@@ -336,7 +335,7 @@ function ModuloMunicipio({ m, estado, s, desde }: { m: Municipio; estado: Estado
   const peor = Math.max(...celdas);
   return (
     <div className="pb-5">
-      <Cabeza sobre={estado ? `Municipio de ${estado.e}` : "Municipio"} titulo={m.n} ayuda={<AyudaSequia />}>
+      <Cabeza dato={`Datos al ${fechaCorta(fecha)}`} sobre={estado ? `Municipio de ${estado.e}` : "Municipio"} titulo={m.n} ayuda={<AyudaSequia />}>
         <p className="mt-3 inline-flex items-center gap-2 rounded-full bg-raised py-1 pr-3 pl-1.5 text-[14px] font-semibold">
           <Cuadro c={s.c} />
           {cat.label}
