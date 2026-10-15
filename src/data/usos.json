@@ -1,0 +1,66 @@
+{
+ "fecha": "2025-07-24",
+ "total": 87538.1,
+ "grupos": {
+  "campo": 61528.5,
+  "ciudades": 13389.3,
+  "industria": 3743.2,
+  "electricidad": 3688.2,
+  "varios": 5188.8
+ },
+ "hidro": 177158.3,
+ "titulos": 531883,
+ "m3PersonaCiudad": 106.3,
+ "empresas": [
+  {
+   "n": "Ispat Mexicana, S.A. de C.V.",
+   "hm3": 127.2,
+   "g": "industria"
+  },
+  {
+   "n": "Cervecería Cuauhtémoc Moctezuma, S.A. de C.V.",
+   "hm3": 121.4,
+   "g": "varios"
+  },
+  {
+   "n": "Agroindustrias del Balsas, S. A. de C. V.",
+   "hm3": 86.0,
+   "g": "industria"
+  },
+  {
+   "n": "Central el Potrero, S.A. de C.V.",
+   "hm3": 64.4,
+   "g": "varios"
+  },
+  {
+   "n": "Cpi Internacional, S.A. de C.V.",
+   "hm3": 63.1,
+   "g": "industria"
+  },
+  {
+   "n": "Industrial Azucarera San Cristobal, S.A. de C.V.",
+   "hm3": 63.0,
+   "g": "varios"
+  },
+  {
+   "n": "Agroforestal Uumbal Chiapas Sapi de Cv",
+   "hm3": 54.4,
+   "g": "campo"
+  },
+  {
+   "n": "Arcelormittal las Truchas, S. A. de C. V.",
+   "hm3": 53.2,
+   "g": "industria"
+  },
+  {
+   "n": "\"geotermica para el Desarrollo\", S.A.P.I. de C.V.",
+   "hm3": 43.8,
+   "g": "industria"
+  },
+  {
+   "n": "Buenavista del Cobre S.A. de C.V.",
+   "hm3": 43.7,
+   "g": "varios"
+  }
+ ]
+}

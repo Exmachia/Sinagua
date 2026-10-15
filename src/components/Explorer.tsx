@@ -19,6 +19,9 @@ import {
 } from "@/lib/acuiferos";
 import type { Margen, Vista } from "./AquiferMap";
 import resumen from "@/data/resumen.json";
+import calidad from "@/data/calidad.json";
+import type { ResumenCalidad, SitioCalidad, UsoLugar, UsosEstado } from "@/lib/usos";
+import { BloqueCalidad, BloqueUsos, useJson } from "./Usos";
 import HistoryChart from "./HistoryChart";
 import Conmutador from "./Conmutador";
 import PanelMapa, { visibleMovil, type Nivel } from "./PanelMapa";
@@ -300,6 +303,29 @@ function AyudaAcuiferos() {
   );
 }
 
+/* ---------- quién usa el agua y calidad (se cargan al abrir la ficha) ---------- */
+
+const sinAcentos = (s: string) => s.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toUpperCase().trim();
+type CalidadGeo = { features: { properties: SitioCalidad }[] };
+const calidadEstado = (cve: string) => (calidad.estados as unknown as Record<string, { superficie?: ResumenCalidad; pozo?: ResumenCalidad }>)[cve] ?? {};
+
+function resumir(sitios: SitioCalidad[]) {
+  const de = (t: SitioCalidad["t"]): ResumenCalidad | undefined => {
+    const l = sitios.filter((s) => s.t === t);
+    if (!l.length) return undefined;
+    const q = new Map<string, number>();
+    for (const s of l) for (const x of s.q ? s.q.split(", ") : []) q.set(x, (q.get(x) ?? 0) + 1);
+    return { n: l.length, r: l.filter((s) => s.s === "r").length, a: l.filter((s) => s.s === "a").length, v: l.filter((s) => s.s === "v").length,
+      q: [...q].sort((a, b) => b[1] - a[1]) };
+  };
+  return { sup: de("superficie"), pozo: de("pozo") };
+}
+
+function useSitios(filtro: ((s: SitioCalidad) => boolean) | null) {
+  const geo = useJson<CalidadGeo>(filtro ? "/data/calidad.geojson" : null);
+  return useMemo(() => (geo && filtro ? geo.features.map((f) => f.properties).filter(filtro) : null), [geo, filtro]);
+}
+
 /* ---------- módulos por nivel ---------- */
 
 function ModuloNacional({ estados, onPick }: { estados: Estado[]; onPick: (cve: string) => void }) {
@@ -336,6 +362,8 @@ function ModuloEstado({ e, acu, municipios, onPick }: {
   const muns = [...municipios].sort((x, y) => y.pct - x.pct || x.n.localeCompare(y.n));
   const lista = tab === "mun" ? muns : items;
   const visibles = todos ? lista : lista.slice(0, 6);
+  const usos = useJson<UsosEstado>(`/data/usos/${e.cve}.json`);
+  const cal = calidadEstado(e.cve);
 
   return (
     <div className="pb-4">
@@ -365,6 +393,8 @@ function ModuloEstado({ e, acu, municipios, onPick }: {
         </ul>
         {lista.length > 6 && <VerMas abierto={todos} total={lista.length} onClick={() => setTodos((x) => !x)} />}
       </div>
+      <BloqueUsos u={usos ? usos.e : undefined} lugar={e.e} />
+      <BloqueCalidad sup={cal.superficie} pozo={cal.pozo} />
       <div className="px-6 pt-4">
         <BotonCompartir ruta={`/compartir/estado/${e.slug}`} titulo={`${e.e} — Sinagua`} className="w-full"
           texto={`El ${fmt(e.pct, 0)}% de ${e.e} está sobre acuíferos sobreexplotados.`} />
@@ -376,6 +406,11 @@ function ModuloEstado({ e, acu, municipios, onPick }: {
 function ModuloMunicipio({ m, estado, acu, onPick }: { m: Municipio; estado: Estado; acu: Map<string, Acuifero>; onPick: (c: string) => void }) {
   const debajo = m.a.map(([c, pct]) => ({ a: acu.get(c)!, pct })).filter((x) => x.a);
   const principal = debajo[0];
+  const usos = useJson<UsosEstado>(`/data/usos/${estado.cve}.json`);
+  const nombre = sinAcentos(m.n);
+  const filtro = useMemo(() => (s: SitioCalidad) => s.cve === m.ent && sinAcentos(s.mun) === nombre, [m.ent, nombre]);
+  const sitios = useSitios(filtro);
+  const cal = sitios ? resumir(sitios) : null;
   return (
     <div className="pb-4">
       <Cabeza sobre={`Municipio de ${estado.e}`} titulo={m.n} ayuda={<AyudaAcuiferos />} />
@@ -400,6 +435,8 @@ function ModuloMunicipio({ m, estado, acu, onPick }: { m: Municipio; estado: Est
           ))}
         </ul>
       </Seccion>
+      <BloqueUsos u={usos ? (usos.m[m.g] ?? null) : undefined} lugar={m.n} />
+      {cal && <BloqueCalidad sup={cal.sup} pozo={cal.pozo} sitios={sitios ?? undefined} />}
       <div className="px-6 pt-4">
         <BotonCompartir ruta={`/compartir/municipio/${m.g}`} titulo={`${m.n} — Sinagua`} className="w-full"
           texto={`El ${fmt(m.pct, 0)}% de ${m.n} (${estado.e}) está sobre acuíferos sobreexplotados. ¿Y tu municipio?`} />
@@ -413,6 +450,11 @@ function ModuloAcuifero({ a, municipio }: { a: Acuifero; municipio: Municipio | 
   const escala = Math.max(renovable, a.veas, 0.001);
   const st = ESTATUS[a.s];
   const pctMun = municipio?.a.find(([c]) => c === a.c)?.[1];
+  const usos = useJson<Record<string, UsoLugar>>("/data/usos_acuiferos.json");
+  const nombre = sinAcentos(a.n);
+  const filtro = useMemo(() => (s: SitioCalidad) => s.t === "pozo" && sinAcentos(s.cuerpo) === nombre, [nombre]);
+  const sitios = useSitios(filtro);
+  const cal = sitios && sitios.length ? resumir(sitios) : null;
 
   return (
     <div className="pb-5">
@@ -454,6 +496,8 @@ function ModuloAcuifero({ a, municipio }: { a: Acuifero; municipio: Municipio | 
         <HistoryChart h={a.h} />
         <p className="mt-1 text-[12px] text-ink-3">Cada punto es una revisión oficial de CONAGUA.</p>
       </Seccion>
+      <BloqueUsos u={usos ? (usos[a.c] ?? null) : undefined} lugar={`el acuífero ${a.n}`} />
+      {cal && <BloqueCalidad pozo={cal.pozo} sitios={sitios ?? undefined} />}
 
       <div className="mt-5 grid grid-cols-2 gap-2 px-6">
         <BotonCompartir ruta={`/compartir/acuifero/${a.c}`} titulo={`Acuífero ${a.n} — Sinagua`}
