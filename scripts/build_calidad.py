@@ -103,7 +103,7 @@ def main():
             sitios[clave] = {
                 "c": clave, "n": r.get("SITIO", "").title(), "cve": cve, "mun": r.get("MUNICIPIO", "").title(),
                 "cuerpo": (r.get("CUERPO DE AGUA") or r.get("ACUIFERO") or "").title(),
-                "t": tipo, "y": anio_, "s": sem, "q": contaminantes(r.get("CONTAMINANTES", "")),
+                "t": tipo, "y": anio_, "presa": "PRESA" in sin_acentos(r.get("SUBTIPO", "")), "s": sem, "q": contaminantes(r.get("CONTAMINANTES", "")),
                 "x": round(lon, 5), "yy": round(lat, 5),
             }
 
@@ -117,11 +117,34 @@ def main():
 
     por_tipo = defaultdict(list)
     por_estado = defaultdict(lambda: defaultdict(list))
+    # Presas principales: los sitios de monitoreo dentro de cada presa (a menos de 6 km de su cortina/centro)
+    from math import cos, radians, hypot
+    presas = json.loads((ROOT / "public" / "data" / "presas.json").read_text(encoding="utf-8"))
+    en_presa = defaultdict(list)
+    for s in sitios.values():
+        if not s["presa"]:
+            continue
+        cerca = min(((hypot((p["lon"] - s["x"]) * 111 * cos(radians(s["yy"])), (p["lat"] - s["yy"]) * 111), p["c"]) for p in presas
+                     if p.get("lat") and p.get("lon")), default=None)
+        if cerca and cerca[0] < 6:
+            en_presa[cerca[1]].append(s)
+    calidad_presas = {}
+    for c, l in en_presa.items():
+        peor = min(l, key=lambda s: "rav".index(s["s"]))
+        q = []
+        for x in l:
+            q += [y for y in x["q"] if y not in q]
+        calidad_presas[c] = {"s": peor["s"], "q": q, "y": max(x["y"] for x in l), "n": len(l)}
+    (ROOT / "public" / "data" / "calidad_presas.json").write_text(json.dumps(calidad_presas, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
+    cp = Counter(v["s"] for v in calidad_presas.values())
+    print(f"presas principales con medición: {len(calidad_presas)} · rojo {cp['r']} · amarillo {cp['a']} · verde {cp['v']}")
+
     for s in sitios.values():
         por_tipo[s["t"]].append(s)
         por_estado[s["cve"]][s["t"]].append(s)
 
     salida = {
+        "presas": {"n": len(calidad_presas), "r": cp["r"], "a": cp["a"], "v": cp["v"]},
         "anios": sorted({s["y"] for s in sitios.values()}),
         "superficie": resumen(por_tipo["superficie"]),
         "pozo": resumen(por_tipo["pozo"]),

@@ -10,6 +10,8 @@ import Buscador, { type Opcion } from "./Buscador";
 import Conmutador from "./Conmutador";
 import PanelMapa, { visibleMovil, type Nivel } from "./PanelMapa";
 import type { VistaPresas } from "./PresasMap";
+import { AyudaCalidad, useJson } from "./Usos";
+import { SEMAFORO, type Semaforo } from "@/lib/usos";
 import SerieChart from "./SerieChart";
 import { Ayuda, ayudaAbierta, BotonCompartir, Burbuja, Cabeza, Cifra, Esqueleto, Fila, Pista, Seccion, VerMas } from "./ui";
 
@@ -449,6 +451,8 @@ function ModuloPresa({ p }: { p: Presa }) {
     };
   }, [p.c]);
 
+  const calidad = useJson<Record<string, { s: Semaforo; q: string[]; y: number }>>("/data/calidad_presas.json");
+  const cal = calidad?.[p.c];
   const n = nivel(p.pct);
   const minimo = serie?.reduce((m, d) => (d[1] < m[1] ? d : m));
   const diferencia = p.normal !== null ? p.pct - p.normal : null;
@@ -476,6 +480,24 @@ function ModuloPresa({ p }: { p: Presa }) {
           </p>
         )}
       </div>
+
+      {calidad && (
+        <div className="mx-6 mt-6 flex items-center gap-3 rounded-lg bg-raised px-4 py-3 text-[14px]">
+          {cal ? (
+            <>
+              <Burbuja color={SEMAFORO[cal.s].color} grande />
+              <span className="min-w-0 flex-1">
+                Agua <strong className="font-semibold">{SEMAFORO[cal.s].label.toLowerCase()}</strong>
+                {cal.q.length > 0 && <span className="text-ink-2">: {cal.q.join(", ")}</span>}
+                <span className="text-ink-3"> · {cal.y}</span>
+              </span>
+              <AyudaCalidad />
+            </>
+          ) : (
+            <span className="text-ink-2">CONAGUA no mide la calidad de su agua.</span>
+          )}
+        </div>
+      )}
 
       <Seccion titulo={`Su historia desde ${p.desde}`}>
         {serie ? (

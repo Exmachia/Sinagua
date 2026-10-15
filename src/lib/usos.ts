@@ -33,7 +33,7 @@ export type ResumenCalidad = { n: number; r: number; a: number; v: number; q: [s
 /** Lo que se encontró, explicado. */
 export const QUE_ES: Record<string, string> = {
   heces: "bacterias de heces",
-  "aguas negras": "aguas negras (materia orgánica y químicos)",
+  "aguas negras": "aguas negras",
   lodo: "lodo y sólidos",
   "tóxicos": "sustancias tóxicas",
   "arsénico": "arsénico",

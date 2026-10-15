@@ -12,7 +12,7 @@ import DiasChart from "@/components/landing/DiasChart";
 import { AyudaCalidad, AyudaUsos, BarraSemaforo } from "@/components/Usos";
 import { Ayuda, Burbuja, BotonCompartir } from "@/components/ui";
 import { albercas, fmt } from "@/lib/acuiferos";
-import { enPalabras, fechaCorta, mesLargo, nivel } from "@/lib/presas";
+import { fechaCorta, mesLargo } from "@/lib/presas";
 import agua from "@/data/agua.json";
 import diasAgua from "@/data/dias_agua.json";
 import calidad from "@/data/calidad.json";
@@ -70,13 +70,10 @@ function Portada() {
             México se está quedando sin agua
           </h1>
           <p className="mt-6 max-w-[56ch] text-[1.2rem] leading-relaxed text-ink-2">
-            <strong className="font-semibold text-ink">{escasez10} de cada 10 mexicanos</strong> viven donde el agua ya escasea. A cada
-            persona le toca <strong className="font-semibold text-ink">{caida}% menos agua</strong> que en {porPersona0.y}, y en los
-            años secos más de la mitad del país vive en sequía.
+            <strong className="font-semibold text-ink">{escasez10} de cada 10 mexicanos</strong> viven donde el agua ya escasea.
           </p>
           <div className="mt-9 max-w-xl">
             <HeroSearch />
-            <p className="mt-2 text-[13px] text-ink-3">Mira cómo está el agua donde vives.</p>
           </div>
         </div>
         <Aparecer retraso={150}>
@@ -113,24 +110,24 @@ function Realidad() {
   const cifras = [
     {
       valor: `−${caida}%`,
-      texto: "de agua por persona: a cada mexicano le toca cada vez menos.",
+      texto: `de agua por persona desde ${porPersona0.y}.`,
       nota: `${fmt(porPersona0.m3, 0)} m³ al año en ${porPersona0.y} → ${fmt(porPersona1.m3, 0)} en ${porPersona1.y}.`,
     },
     {
       valor: `${sq.aniosMitad.length}`,
       de: "años",
-      texto: `en los que más de la mitad del país vivió en sequía desde ${sq.serie[0].f.slice(0, 4)}.`,
+      texto: `con más de la mitad del país en sequía desde ${sq.serie[0].f.slice(0, 4)}.`,
       nota: `Los más recientes: ${sq.aniosMitad.filter((y) => y >= 2020).join(", ")}.`,
     },
     {
       valor: `${deCada10} de 10`,
-      texto: "mexicanos viven sobre un acuífero sobreexplotado: se saca más agua del subsuelo de la que entra.",
+      texto: "mexicanos viven sobre un acuífero del que se saca más agua de la que le entra.",
       nota: `${millones(actual.personas)} millones de personas. Cada año se sacan de más ${fmt(albercas(resumen.hm3Deficit) / 1e6, 1)} millones de albercas olímpicas.`,
     },
     {
       valor: `${presas.actual.debajoNormal}`,
       de: `de ${presas.actual.presas}`,
-      texto: "presas principales están muy por debajo de lo normal para esta época del año.",
+      texto: "presas principales, muy por debajo de lo normal.",
       nota: `Datos de CONAGUA al ${fechaCorta(presas.ultima)}.`,
     },
   ];
@@ -152,7 +149,6 @@ function Realidad() {
                   {c.de && <span className="ml-2 font-sans text-[1.1rem] font-medium text-[#b8b0a3]">{c.de}</span>}
                 </p>
                 <p className="mt-4 max-w-[34ch] text-[1.1rem] leading-snug">{c.texto}</p>
-                <p className="mt-2 text-[14px] text-[#b8b0a3]">{c.nota}</p>
               </div>
             </Aparecer>
           ))}
@@ -180,19 +176,14 @@ function PorEstado() {
             <div className="pt-2"><AyudaPorPersona /></div>
           </div>
           <p className="mt-5 text-[1.1rem] leading-relaxed text-ink-2">
-            El agua de México está donde vive poca gente: el sureste concentra la lluvia, y el centro y el norte, la población y la
-            industria. {escasos.length} estados están por debajo del umbral internacional de estrés hídrico.
-          </p>
-          <p className="mt-4 text-[1.1rem] leading-relaxed text-ink-2">
-            <strong className="font-semibold text-ink">{fmt(app.pctEscasez, 0)}% de los mexicanos</strong> viven en un estado con escasez
-            de agua y <strong className="font-semibold text-ink">{fmt(app.pctAbsoluta, 0)}%</strong> en escasez absoluta.
+            El agua está en el sureste; la gente, en el centro y el norte.
           </p>
         </Aparecer>
         <Aparecer retraso={120}>
           <figure className="rounded-2xl bg-surface p-6 ring-1 ring-black/5">
             <figcaption className="mb-5">
               <p className="font-semibold">Agua renovable por persona al año</p>
-              <p className="text-[13px] text-ink-3">m³ por habitante · {escasos.length} estados con menos de {fmt(tope, 0)} · CONAGUA, {porPersona1.y}</p>
+              <p className="text-[13px] text-ink-3">m³ por persona · los {escasos.length} estados con menos agua</p>
             </figcaption>
             <ol className="space-y-2">
               {escasos.map((e) => {
@@ -239,6 +230,9 @@ function AyudaPorPersona() {
         A nivel nacional, el agua por persona bajó de {fmt(porPersona0.m3, 0)} m³ en {porPersona0.y} a {fmt(porPersona1.m3, 0)} en{" "}
         {porPersona1.y}: la lluvia no aumenta y la población sí.
       </p>
+      <p>
+        {fmt(app.pctEscasez, 0)}% de los mexicanos viven en un estado con escasez de agua y {fmt(app.pctAbsoluta, 0)}% en escasez absoluta.
+      </p>
       <p className="text-[13px] text-ink-3">
         Fuente: CONAGUA, vía SEMARNAT, Compendio de Estadísticas Ambientales 2021 (dato estatal de {porPersona1.y}); población: Censo 2020.
       </p>
@@ -259,7 +253,6 @@ function epoca(iso: string) {
 }
 
 function Sequia() {
-  const recientes = sq.aniosMitad.filter((y) => y >= 2020);
   // Titular: el pico más reciente por encima de 80% (si no hay, el récord histórico).
   const pico = [...sq.serie].reverse().find((s) => s.pct >= 80) ?? sq.peor;
   const picoAnio = pico.f.slice(0, 4);
@@ -273,17 +266,14 @@ function Sequia() {
             En {mesLargo(mismoPico.f)} de {picoAnio}, casi {Math.round(mismoPico.pct / 10)} de cada 10 mexicanos vivían en sequía
           </h2>
           <p className="mt-5 max-w-[62ch] text-[1.1rem] leading-relaxed text-ink-2">
-            {mismoPico.f !== sq.peor.f && <>El récord fue {sq.peor.f.slice(0, 4)}, con {fmt(sq.peor.pct, 0)}%. </>}
-            Desde {sq.serie[0].f.slice(0, 4)}, en {sq.aniosMitad.length} años más de la mitad del país vivió en sequía en algún momento;{" "}
-            {recientes.length} de ellos en esta década ({recientes.join(", ")}). {epoca(sq.actual.f)},{" "}
-            <strong className="font-semibold text-ink">{millones(sq.personas)} millones</strong> viven en sequía.
+            {epoca(sq.actual.f)}, <strong className="font-semibold text-ink">{millones(sq.personas)} millones</strong> viven en sequía.
           </p>
         </Aparecer>
         <Aparecer className="mt-12">
           <figure className="rounded-2xl bg-surface p-6 ring-1 ring-black/5">
             <figcaption className="mb-4">
               <p className="font-semibold">Mexicanos que viven en un municipio con sequía</p>
-              <p className="text-[13px] text-ink-3">% de la población, mes a mes · Monitor de Sequía de México (SMN) y Censo 2020</p>
+              <p className="text-[13px] text-ink-3">% de la población, mes a mes</p>
             </figcaption>
             <SequiaChart serie={sq.serie} />
           </figure>
@@ -339,8 +329,7 @@ function Proyeccion() {
             <div className="pt-2"><AyudaProyeccion /></div>
           </div>
           <p className="mt-5 max-w-[60ch] text-[1.1rem] leading-relaxed text-ink-2">
-            Entre {inicial.y} y {actual.y}, los acuíferos sobreexplotados pasaron de {inicial.acuiferos} a {actual.acuiferos}: unos{" "}
-            {fmt(pa.pendiente, 0)} más cada año, a un paso casi constante. Si nada cambia, este es el camino.
+            Cada año se suman unos {fmt(pa.pendiente, 0)} acuíferos sobreexplotados.
           </p>
         </Aparecer>
 
@@ -355,17 +344,11 @@ function Proyeccion() {
                 <p className="num font-serif text-[3rem] leading-none font-semibold">{t.anio}</p>
                 <p className="num mt-1 text-[13px] text-ink-3">rango probable {t.rango}</p>
                 <p className="mt-5 text-[1.05rem] leading-snug font-semibold">{t.titulo}</p>
-                <p className="mt-2 text-[14px] leading-relaxed text-ink-2">{t.texto}</p>
               </Aparecer>
             </li>
           ))}
         </ol>
 
-        <p className="mt-10 max-w-[70ch] border-l-2 border-ink pl-4 text-[15px] leading-relaxed text-ink-2">
-          <strong className="font-semibold text-ink">¿Significa que nos quedaremos sin agua en {c.todos.anio}?</strong> No exactamente: un
-          acuífero sobreexplotado no está vacío, se está gastando sus reservas. Cuándo se agoten depende de cuánta agua guarda cada uno, y eso
-          casi nunca se ha medido. Lo que sí sabemos es que cada año sin cambios acerca ese momento.
-        </p>
       </div>
     </section>
   );
@@ -385,6 +368,13 @@ function AyudaProyeccion() {
       <p>
         Es un <strong>escenario</strong>, no un pronóstico: supone que se siguen dando permisos para sacar agua al mismo ritmo que en la
         última década. Si se dejan de otorgar, se recuperan acuíferos o cambia la lluvia, el camino cambia.
+      </p>
+      <p>
+        <strong>¿Significa que nos quedaremos sin agua en {pa.cruces.todos.anio}?</strong> No exactamente: un acuífero sobreexplotado no
+        está vacío, se está gastando sus reservas. Cuándo se agoten depende de cuánta agua guarda cada uno, y eso casi nunca se ha medido.
+      </p>
+      <p>
+        Entre {inicial.y} y {actual.y}, los acuíferos sobreexplotados pasaron de {inicial.acuiferos} a {actual.acuiferos}.
       </p>
       <p>
         Las personas se calculan con el <strong>Censo 2020 (INEGI)</strong>: cada localidad se ubicó sobre su acuífero. La población se
@@ -409,16 +399,9 @@ function Presas() {
             Los años secos son cada vez más seguidos
           </h2>
           <p className="mt-5 text-[1.1rem] leading-relaxed text-ink-2">
-            Las presas se llenan con las lluvias y se vacían en la temporada seca. {recientes} de los {g.peores.length} años más secos
-            desde {g.anual[0].y} fueron después de 2019.
+            {recientes} de los {g.peores.length} años más secos desde {g.anual[0].y} fueron después de 2019.
+            {masVacio && <> Hoy, las presas de {masVacio.e} están al <strong className="font-semibold text-ink">{fmt(masVacio.pct, 0)}%</strong>.</>}
           </p>
-          {masVacio && (
-            <p className="mt-4 text-[1.1rem] leading-relaxed text-ink-2">
-              Al {fechaCorta(presas.ultima)}, el estado con las presas más vacías es{" "}
-              <strong className="font-semibold text-ink">{masVacio.e}</strong>: al{" "}
-              <strong className="font-semibold text-ink">{fmt(masVacio.pct, 0)}%</strong> de su capacidad.
-            </p>
-          )}
           <Link href="/presas" className="mt-8 inline-flex min-h-12 items-center gap-2 rounded-full bg-ink px-6 font-semibold text-white transition-opacity hover:opacity-85">
             Ver las presas de tu estado
             <svg aria-hidden viewBox="0 0 24 24" className="size-4" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
@@ -428,7 +411,7 @@ function Presas() {
           <figure className="rounded-2xl bg-surface p-6 shadow-[0_1px_0_rgba(0,0,0,0.04)] ring-1 ring-black/5">
             <figcaption className="mb-4">
               <p className="font-semibold">El punto más bajo de cada año</p>
-              <p className="text-[13px] text-ink-3">% de llenado · {g.presas} presas principales · en rojo, los {g.peores.length} años más secos</p>
+              <p className="text-[13px] text-ink-3">% de llenado · en rojo, los años más secos</p>
             </figcaption>
             <MinimosPresas anual={g.anual} tipico={g.minTipico} peores={g.peores} />
           </figure>
@@ -462,9 +445,8 @@ function DiasDeAgua() {
             <div className="pt-8"><AyudaDias /></div>
           </div>
           <p className="mt-5 max-w-[62ch] text-[1.1rem] leading-relaxed text-ink-2">
-            En {mesAnio(pc.antes.f)}, al Sistema Cutzamala le quedaban {fmt(pc.antes.dias, 0)} días de agua. Solo {mesesEntre(pc.antes.f, pc.f)} meses
-            después le quedaban <strong className="font-semibold text-ink">{pc.dias}</strong>: unos {enPalabras(pc.dias)} para la Ciudad de
-            México si no llovía. Así de rápido se vacían.
+            En {mesesEntre(pc.antes.f, pc.f)} meses, el agua del Cutzamala pasó de alcanzar para {fmt(pc.antes.dias, 0)} días a solo{" "}
+            <strong className="font-semibold text-ink">{pc.dias}</strong>, si dejara de llover.
           </p>
         </Aparecer>
         <div className="mt-14 grid gap-6 lg:grid-cols-2">
@@ -499,11 +481,7 @@ function TarjetaSistema({ s }: { s: Sistema }) {
         <span className="num font-serif text-[clamp(3.2rem,7vw,4.5rem)] leading-none font-semibold tracking-[-0.02em]">{fmt(p.dias, 0)}</span>
         <span className="text-[1.1rem] text-ink-2">días de agua</span>
       </p>
-      <p className="mt-2 text-[15px] leading-relaxed text-ink-2">
-        {mesesEntre(p.antes.f, p.f)} meses antes tenía {fmt(p.antes.dias, 0)} días. Las presas cayeron del{" "}
-        <span className="num font-semibold text-ink">{fmt(p.antes.pct, 0)}%</span> al{" "}
-        <span className="num font-semibold text-ink">{fmt(p.pct, 0)}%</span>.
-      </p>
+      <p className="mt-2 text-[15px] text-ink-2">{mesesEntre(p.antes.f, p.f)} meses antes: {fmt(p.antes.dias, 0)} días.</p>
 
       <div className="mt-6">
         <DiasChart serie={s.serie as [string, number, number][]} peor={s.peor} nombre={s.nombre} />
@@ -514,22 +492,11 @@ function TarjetaSistema({ s }: { s: Sistema }) {
           Hoy: <strong className="num font-semibold text-ink">{fmt(a.dias, 0)} días</strong> ({fmt(a.pct, 0)}% al {fechaCorta(a.f)})</span>
       </div>
 
-      <ul className="mt-6 divide-y divide-line border-t border-line text-[15px]">
-        {a.presas.map((x) => (
-          <li key={x.c} className="flex items-center justify-between py-2.5">
-            <span>Presa {x.n}</span>
-            <span className="inline-flex items-center gap-2">
-              <Burbuja color={nivel(x.pct).color} />
-              <span className="num font-semibold">{fmt(x.pct, 0)}%</span>
-            </span>
-          </li>
-        ))}
-      </ul>
 
       {baja.pct < 10 && (
         <p className="mt-auto pt-5 text-[14px] leading-relaxed text-ink-2">
-          El promedio esconde lo peor: en {mesAnio(baja.f)} la presa {baja.n} llegó al{" "}
-          <strong className="num font-semibold text-ink">{fmt(baja.pct, 1)}%</strong>. Prácticamente vacía.
+          En {mesAnio(baja.f)}, la presa {baja.n} quedó al{" "}
+          <strong className="num font-semibold text-ink">{fmt(baja.pct, 1)}%</strong>: prácticamente vacía.
         </p>
       )}
     </article>
@@ -579,8 +546,7 @@ function QuienUsa() {
             <div className="pt-8"><AyudaUsos /></div>
           </div>
           <p className="mt-5 max-w-[52ch] text-[1.1rem] leading-relaxed text-ink-2">
-            Así se reparte toda el agua que CONAGUA permite sacar cada año de ríos, presas y pozos. A las ciudades y las casas,
-            donde vivimos casi todos, les toca {Math.round((grupos.ciudades / usos.total) * 100)} de cada 100.
+            A las ciudades, donde vive casi todo el país, les tocan {Math.round((grupos.ciudades / usos.total) * 100)}.
           </p>
           <div className="mt-10"><Cien grupos={grupos} /></div>
         </Aparecer>
@@ -588,9 +554,6 @@ function QuienUsa() {
         <Aparecer retraso={120}>
           <div className="rounded-2xl bg-surface p-6 shadow-[0_1px_0_rgba(0,0,0,0.04)] ring-1 ring-black/5 sm:p-8">
             <h3 className="font-serif text-[1.6rem] leading-tight font-semibold">Las empresas con más agua</h3>
-            <p className="mt-2 text-[15px] leading-relaxed text-ink-2">
-              Cuánta agua puede sacar cada una al año, comparada con la que se permite para abastecer a una persona en la ciudad.
-            </p>
             <ol className="mt-6 divide-y divide-line border-t border-line">
               {empresas.map((e, i) => (
                 <li key={e.n} className="py-4">
@@ -605,15 +568,12 @@ function QuienUsa() {
                     </div>
                   </div>
                   <p className="mt-2 pl-7 text-[15px] text-ink-2">
-                    Tanta agua como la de <strong className="num font-semibold text-ink">{fmt(personas(e.hm3) / 1e6, 1)} millones de personas</strong>
+                    Agua de <strong className="num font-semibold text-ink">{fmt(personas(e.hm3) / 1e6, 1)} millones de personas</strong>
                   </p>
                 </li>
               ))}
             </ol>
-            <p className="mt-4 text-[13px] leading-relaxed text-ink-3">
-              Permisos vigentes en el Registro Público de Derechos de Agua al {fechaCorta(usos.fecha)}. Es lo que cada permiso
-              autoriza, no lo que se mide.
-            </p>
+            <p className="mt-4 text-[13px] text-ink-3">Permisos de CONAGUA al {fechaCorta(usos.fecha)}</p>
           </div>
           <Link href="/mapa" className="mt-8 inline-flex min-h-12 items-center gap-2 rounded-full bg-ink px-6 font-semibold text-white transition-opacity hover:opacity-85">
             Ver quién la usa en tu estado
@@ -644,13 +604,11 @@ function TarjetaCalidad({ titulo, r, rojo }: { titulo: string; r: ResumenCalidad
           </li>
         ))}
       </ul>
-      <p className="mt-6 text-[14px] font-semibold">Lo que más se encontró</p>
-      <ul className="mt-2 flex flex-wrap gap-2">
+      <ul className="mt-6 flex flex-wrap gap-2">
         {(r.q as [string, number][]).slice(0, 3).map(([q]) => (
           <li key={q} className="rounded-full bg-raised px-3 py-1.5 text-[14px]">{QUE_ES[q] ?? q}</li>
         ))}
       </ul>
-      <p className="mt-5 text-[13px] text-ink-3">{fmt(r.n, 0)} sitios medidos</p>
     </article>
   );
 }
@@ -673,8 +631,7 @@ function Calidad() {
             <div className="pt-8"><AyudaCalidad /></div>
           </div>
           <p className="mt-5 max-w-[62ch] text-[1.1rem] leading-relaxed text-ink-2">
-            Y no es solo en la superficie: en {Math.round((pozo.r / pozo.n) * 100)} de cada 100 pozos medidos el agua no sirve para
-            beber sin tratarla. Es el resultado más reciente de la red de monitoreo de CONAGUA ({calidad.anios.join(" y ")}).
+            De las {calidad.presas.n} presas principales que se miden, <strong className="font-semibold text-ink">{calidad.presas.r} están contaminadas</strong>.
           </p>
         </Aparecer>
         <div className="mt-14 grid gap-6 lg:grid-cols-2">
@@ -683,12 +640,8 @@ function Calidad() {
         </div>
         <Aparecer>
           <div className="mt-10 max-w-3xl border-l-4 border-critico pl-5">
-            <p className="font-semibold">Esto no es el agua de tu llave.</p>
-            <p className="mt-2 leading-relaxed text-ink-2">
-              CONAGUA mide el agua en su fuente. Lo que sale de la llave lo analiza el organismo de agua de cada ciudad, y no hay
-              una base pública nacional con esos resultados. Si en tu casa el agua sale turbia, con olor o con algo vivo, no la
-              tomes y repórtalo a tu organismo de agua.
-            </p>
+            <p className="font-semibold">Esto no es el agua de tu llave: se mide en ríos, presas y pozos.</p>
+            <p className="mt-1 text-ink-2">Si la tuya sale turbia o con olor, no la tomes.</p>
           </div>
           <Link href="/mapa" className="mt-10 inline-flex min-h-12 items-center gap-2 rounded-full bg-ink px-6 font-semibold text-white transition-opacity hover:opacity-85">
             Ver cómo está el agua en tu estado
@@ -718,14 +671,17 @@ function Metodologia() {
     <section id="metodologia" className="scroll-mt-20 border-t border-line">
       <div className="mx-auto max-w-6xl px-4 py-24 sm:px-8 lg:py-28">
         <h2 className="font-serif text-[clamp(1.9rem,3.6vw,2.8rem)] font-semibold tracking-[-0.01em]">Cómo leer estos datos</h2>
-        <dl className="mt-12 grid gap-x-14 gap-y-10 md:grid-cols-2">
+        <div className="mt-10 grid gap-x-14 md:grid-cols-2">
           {bloques.map(([t, d]) => (
-            <div key={t} className="border-t border-line-strong pt-5">
-              <dt className="font-semibold">{t}</dt>
-              <dd className="mt-2 leading-relaxed text-ink-2">{d}</dd>
-            </div>
+            <details key={t} className="group border-t border-line-strong">
+              <summary className="flex min-h-14 cursor-pointer list-none items-center justify-between gap-4 font-semibold">
+                {t}
+                <svg aria-hidden viewBox="0 0 24 24" className="size-4 shrink-0 transition-transform group-open:rotate-180" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round"><path d="m6 9 6 6 6-6" /></svg>
+              </summary>
+              <p className="pb-5 leading-relaxed text-ink-2">{d}</p>
+            </details>
           ))}
-        </dl>
+        </div>
         <p className="mt-12 max-w-[70ch] text-[14px] leading-relaxed text-ink-3">
           Lo que estos datos no dicen: medimos el agua que se <em>permite</em> sacar, no la que realmente se saca. La extracción real puede ser mayor por
           pozos sin registro. Muchos acuíferos no se reestudian en cada publicación. Mapa base: © OpenStreetMap, OpenFreeMap.

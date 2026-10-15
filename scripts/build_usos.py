@@ -79,11 +79,14 @@ def limpio(nombre: str) -> str:
     for i, w in enumerate(n.split(" ")):
         if "." in w or (len(w) <= 3 and w.isalpha() and w.upper() not in MINUSCULAS and i > 0 and palabras and palabras[-1].endswith(",")):
             palabras.append(w.upper())  # siglas: S.A., C.V., SAPI…
+        elif w.isalpha() and not re.search(r"[AEIOUÁÉÍÓÚ]", w.upper()):
+            palabras.append(w.upper())  # siglas sin vocales: "SPR", "CV"…
         elif w.upper() in MINUSCULAS and i > 0:
             palabras.append(w.lower())
         else:
             palabras.append(w[:1].upper() + w[1:].lower())
     n = " ".join(palabras)
+    n = re.sub(r"\b(Cpi|Sapi|Cfe|Ica)\b", lambda m: m.group(1).upper(), n)  # siglas con vocales
     return re.sub(r"\b(De|Del)\s(C\.\s?V)", lambda m: m.group(1).lower() + " " + m.group(2), n)
 
 
