@@ -348,6 +348,9 @@ function AyudaAcuiferos() {
   );
 }
 
+/** Los acuíferos se actualizan con cada publicación de CONAGUA en el DOF (no cada semana). */
+const DATO_ACUIFEROS = `Datos oficiales de ${resumen.anio}`;
+
 /* ---------- quién usa el agua y calidad (se cargan al abrir la ficha) ---------- */
 
 const sinAcentos = (s: string) => s.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toUpperCase().trim();
@@ -380,7 +383,7 @@ function ModuloNacional({ estados, onPick }: { estados: Estado[]; onPick: (cve: 
   const pct = estados.reduce((s, e) => s + (e.km2 * e.pct) / 100, 0) / km2 * 100;
   return (
     <div className="pb-4">
-      <Cabeza titulo="México" ayuda={<AyudaAcuiferos />} />
+      <Cabeza dato={DATO_ACUIFEROS} titulo="México" ayuda={<AyudaAcuiferos />} />
       <div className="mt-6 grid grid-cols-2 gap-5 px-6">
         <Cifra valor={`${fmt(pct, 0)}%`} texto="del territorio está sobre acuíferos sobreexplotados" tono="var(--s-critico)" />
         <Cifra valor={String(resumen.deficit)} texto={`de ${resumen.total} acuíferos: se permite sacar más agua de la que les entra`} />
@@ -412,7 +415,7 @@ function ModuloEstado({ e, acu, municipios, onPick }: {
 
   return (
     <div className="pb-4">
-      <Cabeza sobre="Estado" titulo={e.e} ayuda={<AyudaAcuiferos />} />
+      <Cabeza dato={DATO_ACUIFEROS} sobre="Estado" titulo={e.e} ayuda={<AyudaAcuiferos />} />
       <div className="mt-6 grid grid-cols-2 gap-5 px-6">
         <Cifra valor={`${fmt(e.pct, 0)}%`} texto="de su territorio sobre acuíferos sobreexplotados" tono={e.pct >= 50 ? "var(--s-critico)" : undefined} />
         <Cifra valor={`${e.deficit} de ${e.total}`} texto="acuíferos sobreexplotados" />
@@ -458,7 +461,7 @@ function ModuloMunicipio({ m, estado, acu, onPick }: { m: Municipio; estado: Est
   const cal = sitios ? resumir(sitios) : null;
   return (
     <div className="pb-4">
-      <Cabeza sobre={`Municipio de ${estado.e}`} titulo={m.n} ayuda={<AyudaAcuiferos />} />
+      <Cabeza dato={DATO_ACUIFEROS} sobre={`Municipio de ${estado.e}`} titulo={m.n} ayuda={<AyudaAcuiferos />} />
       <div className="mt-4 px-6">
         {m.pct >= 1 ? (
           <Cifra valor={`${fmt(m.pct, 0)}%`} texto="de su superficie está sobre acuíferos sobreexplotados" tono={m.pct >= 50 ? "var(--s-critico)" : undefined} />
@@ -503,7 +506,7 @@ function ModuloAcuifero({ a, municipio }: { a: Acuifero; municipio: Municipio | 
 
   return (
     <div className="pb-5">
-      <Cabeza sobre={`Acuífero ${a.c}${pctMun !== undefined && municipio ? ` · cubre el ${fmt(pctMun, 0)}% de ${municipio.n}` : ""}`} titulo={a.n}
+      <Cabeza dato={DATO_ACUIFEROS} sobre={`Acuífero ${a.c}${pctMun !== undefined && municipio ? ` · cubre el ${fmt(pctMun, 0)}% de ${municipio.n}` : ""}`} titulo={a.n}
         ayuda={<AyudaAcuiferos />}>
         <p className="mt-2.5 inline-flex items-center gap-2 rounded-full bg-raised py-1 pr-3 pl-1.5 text-[13px] font-semibold">
           <Burbuja color={st.color} grande />

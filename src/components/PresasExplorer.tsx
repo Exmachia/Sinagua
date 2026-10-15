@@ -334,7 +334,7 @@ function ModuloNacional({ d, onPick }: { d: Datos; onPick: (cve: string) => void
 
   return (
     <div className="pb-6">
-      <Cabeza sobre={`Datos oficiales al ${fechaCorta(resumen.ultima)}`} titulo="Presas de México" ayuda={<AyudaMedicion ultima={resumen.ultima} />} />
+      <Cabeza dato={`Datos al ${fechaCorta(resumen.ultima)}`} titulo="Presas de México" ayuda={<AyudaMedicion ultima={resumen.ultima} />} />
       <div className="mt-6 grid grid-cols-2 gap-5 px-6">
         <Cifra valor={`${fmt(resumen.actual.pct, 0)}%`} texto="de llenado promedio" tono={nivel(resumen.actual.pct).color} />
         <Cifra valor={String(resumen.actual.bajo20)} texto={`presas casi vacías (menos de 20%)`} tono="var(--s-critico)" />
@@ -397,9 +397,10 @@ function ModuloEstado({ estado, r, presas, onPick }: { estado: Estado; r: Estado
 
   const orden = [...presas].filter((p) => !p.aviso && p.reciente).sort((a, b) => a.pct - b.pct);
   const viejas = presas.filter((p) => !p.reciente);
+  const ultima = presas.reduce((u, p) => (p.fecha > u ? p.fecha : u), "");
   return (
     <div className="pb-6">
-      <Cabeza sobre="Estado" titulo={estado.e} />
+      <Cabeza dato={ultima ? `Datos al ${fechaCorta(ultima)}` : undefined} sobre="Estado" titulo={estado.e} />
       <div className="mt-6 grid grid-cols-2 gap-5 px-6">
         <Cifra valor={`${fmt(r.pct, 0)}%`} texto="de llenado de sus presas" tono={nivel(r.pct).color} />
         <Cifra valor={`${r.bajo20} de ${r.presas}`} texto="casi vacías (menos de 20%)" tono={r.bajo20 ? "var(--s-critico)" : undefined} />
@@ -459,7 +460,7 @@ function ModuloPresa({ p }: { p: Presa }) {
 
   return (
     <div className="pb-6">
-      <Cabeza sobre={`${p.mun}, ${p.e}`} titulo={p.n} ayuda={<AyudaPresa p={p} />} />
+      <Cabeza dato={`Datos al ${fechaCorta(p.fecha)}`} sobre={`${p.mun}, ${p.e}`} titulo={p.n} ayuda={<AyudaPresa p={p} />} />
 
       {!p.reciente && (
         <p className="mx-6 mt-5 rounded-md bg-raised px-3 py-2 text-[13px] text-ink-2">

@@ -44,9 +44,13 @@ export function Burbuja({ color, grande }: { color: string; grande?: boolean }) 
   );
 }
 
-export function Cabeza({ sobre, titulo, ayuda, children }: { sobre?: string; titulo: string; ayuda?: React.ReactNode; children?: React.ReactNode }) {
+/** Encabezado de cada ficha del mapa. `dato` (fecha de los datos) va siempre en la primera línea, arriba del título. */
+export function Cabeza({ sobre, titulo, ayuda, dato, children }: {
+  sobre?: string; titulo: string; ayuda?: React.ReactNode; dato?: string; children?: React.ReactNode;
+}) {
   return (
     <div className="px-6 pt-6">
+      {dato && <p className="mb-1 text-[12px] text-ink-3">{dato}</p>}
       {sobre && <p className="text-[13px] font-medium text-ink-3">{sobre}</p>}
       <div className="flex items-start justify-between gap-3">
         <h2 className="font-serif text-[2rem] leading-[1.08] font-semibold tracking-[-0.01em] text-balance">{titulo}</h2>
