@@ -5,6 +5,7 @@ import Marca from "@/components/Marca";
 import { Ayuda } from "@/components/ui";
 import { cacheLife } from "next/cache";
 import { alertas, VIGENCIA, type Alerta } from "@/lib/urgente";
+import { ilustracion } from "@/og/ilustraciones";
 
 export const metadata: Metadata = {
   title: "Urgente — Sinagua",
@@ -96,35 +97,39 @@ function TarjetaAlerta({ a }: { a: Alerta }) {
 }
 
 function TarjetaReporte({ a }: { a: Alerta }) {
+  const img = ilustracion(a.ilustracion);
   return (
-    <article id={a.id} className="scroll-mt-6 rounded-2xl bg-ink p-6 text-[#f2ebe1] sm:p-8">
-      <p className="text-[13px] font-semibold text-[#e7a98a]">{a.etiqueta} · {a.lugar}</p>
-      <h2 className="mt-2 max-w-[24ch] font-serif text-[clamp(1.8rem,3.4vw,2.6rem)] leading-tight font-semibold text-balance">{a.titulo}</h2>
-      <p className="mt-4 max-w-[62ch] leading-relaxed text-[#d9d1c5]">{a.reporte}</p>
-      {a.datosOficiales && a.datosOficiales.length > 0 && (
-        <div className="mt-6 max-w-[62ch] border-t border-white/15 pt-4">
-          <p className="text-[12px] font-semibold tracking-wide text-[#b8b0a3] uppercase">Datos oficiales</p>
-          <ul className="mt-2 space-y-1.5 text-[15px]">
-            {a.datosOficiales.map((d) => <li key={d.texto}>{d.texto} <span className="text-[#857d71]">({d.fuente})</span></li>)}
-          </ul>
+    <article id={a.id} className="grid scroll-mt-6 gap-6 rounded-2xl bg-ink p-6 text-[#f2ebe1] sm:p-8 md:grid-cols-[minmax(0,1fr)_auto] md:items-center">
+      <div>
+        <p className="text-[13px] font-semibold text-[#e7a98a]">{a.etiqueta} · {a.lugar}</p>
+        <h2 className="mt-2 font-serif text-[clamp(1.8rem,3.4vw,2.6rem)] leading-tight font-semibold text-balance">{a.titulo}</h2>
+        <ul className="mt-5 max-w-[56ch] space-y-2 text-[16px] leading-snug">
+          {a.puntos?.map((p) => (
+            <li key={p} className="flex gap-3">
+              <span aria-hidden className="mt-2 size-1.5 shrink-0 rounded-full bg-[#e7a98a]" />
+              {p}
+            </li>
+          ))}
+        </ul>
+        {a.accion && <p className="mt-4 text-[14px] text-[#d9d1c5]">{a.accion}</p>}
+        <p className="mt-4 text-[12px] text-[#b8b0a3]">
+          Fuentes:{" "}
+          {a.fuentes?.map((f, i) => (
+            <span key={f.url}>
+              {i > 0 && " · "}
+              <a href={f.url} target="_blank" rel="noopener noreferrer" className="underline underline-offset-2 hover:text-white">{f.nombre}</a>
+            </span>
+          ))}
+        </p>
+        <div className="mt-6 flex flex-wrap gap-3">
+          <BotonHistoria id={a.id} titulo={a.titulo} lugar={a.lugar} />
+          <Link href={a.destino} className="inline-flex min-h-12 items-center rounded-full px-5 font-semibold ring-1 ring-white/30 hover:bg-white/10">
+            Ver los datos de {a.lugar}
+          </Link>
         </div>
-      )}
-      {a.accion && <p className="mt-5 max-w-[62ch] rounded-lg bg-white/[0.07] px-4 py-3 text-[15px]">{a.accion}</p>}
-      <p className="mt-5 text-[12px] text-[#b8b0a3]">
-        Fuentes:{" "}
-        {a.fuentes?.map((f, i) => (
-          <span key={f.url}>
-            {i > 0 && " · "}
-            <a href={f.url} target="_blank" rel="noopener noreferrer" className="underline underline-offset-2 hover:text-white">{f.nombre}</a>
-          </span>
-        ))}
-      </p>
-      <div className="mt-6 flex flex-wrap gap-3">
-        <BotonHistoria id={a.id} titulo={a.titulo} lugar={a.lugar} />
-        <Link href={a.destino} className="inline-flex min-h-12 items-center rounded-full px-5 font-semibold ring-1 ring-white/30 hover:bg-white/10">
-          Ver los datos de {a.lugar}
-        </Link>
       </div>
+      {/* eslint-disable-next-line @next/next/no-img-element -- SVG propio en data URI */}
+      {img && <img src={img} alt="" width={150} height={221} className="mx-auto max-md:hidden" />}
     </article>
   );
 }

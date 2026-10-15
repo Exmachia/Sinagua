@@ -1,5 +1,5 @@
 {
-  "_nota": "Casos destacados que se agregan a mano en /urgente. Solo hechos verificables, con su fuente. Cada caso se deja de mostrar 31 días después de su fecha: para mantenerlo, actualiza la fecha con información nueva. Para quitar uno, bórralo de la lista. \"historia\" es la versión corta para la imagen que se comparte.",
+  "_nota": "Casos destacados que se agregan a mano en /urgente. Solo hechos verificables, con su fuente. Cada caso se deja de mostrar 31 días después de su fecha: para mantenerlo, actualiza la fecha con información nueva. 'puntos': máximo 3, cortos. 'historia': la cifra y frase de la imagen que se comparte. 'ilustracion': agua-turbia (por ahora la única).",
   "casos": [
     {
       "id": "guadalajara-agua-sucia",
@@ -7,25 +7,18 @@
       "estado": "jalisco",
       "municipio": "14039",
       "fecha": "2026-10-14",
-      "titulo": "Sale agua sucia de la llave en cientos de colonias",
-      "reporte": "Al menos 475 colonias reportaron agua sucia o turbia entre enero de 2025 y enero de 2026, con más de mil quejas formales. SIAPA reconoce entre 176 y 180. Desde el 15 de octubre hay tandeos de agua en la zona metropolitana.",
+      "titulo": "Sale agua sucia de la llave",
+      "ilustracion": "agua-turbia",
       "historia": {
-        "texto": "Al menos 475 colonias con agua sucia o turbia; SIAPA reconoce 180. Desde el 15 de octubre hay tandeos.",
-        "datos": [
-          "Su acuífero está sobreexplotado.",
-          "El río Santiago está contaminado con aguas negras."
-        ]
+        "cifra": "475",
+        "texto": "colonias con agua sucia o turbia"
       },
-      "datos": [
-        {
-          "texto": "Su acuífero, Atemajac, está sobreexplotado: cada año se saca más agua de la que le entra.",
-          "fuente": "CONAGUA, 2023"
-        },
-        {
-          "texto": "El río Santiago a su paso por Guadalajara está contaminado: aguas negras y bacterias de heces.",
-          "fuente": "CONAGUA, 2023"
-        }
+      "puntos": [
+        "Al menos 475 colonias con agua sucia o turbia; SIAPA reconoce 180.",
+        "Tandeos de agua desde el 15 de octubre.",
+        "Su acuífero está sobreexplotado y el río Santiago, contaminado (datos oficiales de CONAGUA)."
       ],
+      "accion": "Si sale turbia, no la tomes. SIAPATEL 33 3668 2482 o 073.",
       "fuentes": [
         {
           "nombre": "El Imparcial, 9 oct 2026",
@@ -34,9 +27,12 @@
         {
           "nombre": "El Informador, 12 oct 2026",
           "url": "https://www.informador.mx/jalisco/siapa-lemus-anuncia-rotacion-del-agua-en-guadalajara-inicia-el-15-de-octubre-20261012-0187.html"
+        },
+        {
+          "nombre": "Datos de CONAGUA en el mapa",
+          "url": "https://www.sinagua.org/mapa#e=jalisco&m=14039"
         }
-      ],
-      "accion": "Si sale turbia, con olor o con algo vivo, no la tomes. Para pipas o reportes: SIAPATEL 33 3668 2482 o 073 (8:00 a 20:00)."
+      ]
     }
   ]
 }
