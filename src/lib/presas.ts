@@ -87,3 +87,13 @@ export function fechaCorta(iso: string) {
   const [y, m, d] = iso.split("-").map(Number);
   return `${d} ${MESES[m - 1]} ${y}`;
 }
+
+/** Días de agua en palabras: "5 meses", "2 años y medio"… (aproximado a propósito). */
+export function enPalabras(dias: number) {
+  if (dias < 45) return `${dias} días`;
+  const meses = Math.round(dias / 30.4);
+  if (meses < 18) return `${meses} meses`;
+  const medios = Math.round(dias / 182.5); // en medios años
+  const anios = Math.floor(medios / 2);
+  return `${anios} ${anios === 1 ? "año" : "años"}${medios % 2 ? " y medio" : ""}`;
+}

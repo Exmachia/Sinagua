@@ -44,7 +44,7 @@ export default async function Compartir({ params }: Props) {
       <p className="mt-1 text-ink-2">{t.cifraTexto}</p>
       {t.frase && <p className="mt-4 text-ink-2">{t.frase}</p>}
       <Link href={t.destino} className="mt-10 inline-flex min-h-12 w-fit items-center rounded-full bg-ink px-6 font-semibold text-white">
-        Ver en el mapa
+        {t.boton ?? "Ver en el mapa"}
       </Link>
     </main>
   );

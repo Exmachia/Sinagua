@@ -7,10 +7,12 @@ import MinimosPresas from "@/components/landing/MinimosPresas";
 import NavFlotante from "@/components/landing/NavFlotante";
 import ProyeccionChart from "@/components/landing/ProyeccionChart";
 import SequiaChart from "@/components/landing/SequiaChart";
-import { Ayuda } from "@/components/ui";
+import DiasChart from "@/components/landing/DiasChart";
+import { Ayuda, Burbuja, BotonCompartir } from "@/components/ui";
 import { albercas, fmt } from "@/lib/acuiferos";
-import { fechaCorta, mesLargo } from "@/lib/presas";
+import { enPalabras, fechaCorta, mesLargo, nivel } from "@/lib/presas";
 import agua from "@/data/agua.json";
+import diasAgua from "@/data/dias_agua.json";
 import presas from "@/data/presas_resumen.json";
 import proy from "@/data/proyecciones.json";
 import resumen from "@/data/resumen.json";
@@ -40,6 +42,7 @@ export default function Home() {
         <Sequia />
         <Proyeccion />
         <Presas />
+        <DiasDeAgua />
         <MapaPreview />
         <Metodologia />
       </main>
@@ -428,6 +431,118 @@ function Presas() {
   );
 }
 
+/* ---------- 6b. Días de agua ---------- */
+
+type Sistema = (typeof diasAgua.sistemas)[number];
+const mesAnio = (f: string) => `${mesLargo(f)} de ${f.slice(0, 4)}`;
+
+function DiasDeAgua() {
+  return (
+    <section id="dias" className="scroll-mt-20 border-t border-line">
+      <div className="mx-auto max-w-6xl px-4 py-24 sm:px-8 lg:py-32">
+        <Aparecer>
+          <div className="flex max-w-3xl items-start gap-3">
+            <div>
+              <p className="text-[14px] font-semibold text-critico">Días de agua</p>
+              <h2 className="mt-3 font-serif text-[clamp(2rem,4vw,3rem)] leading-[1.06] font-semibold tracking-[-0.015em] text-balance">
+                ¿Cuánto duraría el agua si dejara de llover hoy?
+              </h2>
+            </div>
+            <div className="pt-8"><AyudaDias /></div>
+          </div>
+          <p className="mt-5 max-w-[62ch] text-[1.1rem] leading-relaxed text-ink-2">
+            Las presas que abastecen a las dos zonas metropolitanas más grandes del país, al ritmo al que hoy se saca el agua. Ya ha
+            estado cerca: hay años en que quedaban apenas unos meses.
+          </p>
+        </Aparecer>
+        <div className="mt-14 grid gap-6 lg:grid-cols-2">
+          {diasAgua.sistemas.map((s, i) => (
+            <Aparecer key={s.id} retraso={i * 120}>
+              <TarjetaSistema s={s} />
+            </Aparecer>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function TarjetaSistema({ s }: { s: Sistema }) {
+  const a = s.actual;
+  const baja = s.presaMasBaja;
+  return (
+    <article className="flex h-full flex-col rounded-2xl bg-surface p-6 shadow-[0_1px_0_rgba(0,0,0,0.04)] ring-1 ring-black/5 sm:p-7">
+      <header className="flex items-start justify-between gap-4">
+        <div>
+          <h3 className="font-serif text-[1.6rem] leading-tight font-semibold">{s.nombre}</h3>
+          <p className="text-[14px] text-ink-3">{s.ciudad}</p>
+        </div>
+        <BotonCompartir ruta={`/compartir/dias/${s.id}`} titulo={`${s.nombre}: ${a.dias} días de agua`}
+          texto={`Si dejara de llover hoy, al ${s.nombre} le quedarían unos ${a.dias} días de agua.`} />
+      </header>
+
+      <p className="mt-6 flex flex-wrap items-baseline gap-x-3">
+        <span className="num font-serif text-[clamp(3.2rem,7vw,4.5rem)] leading-none font-semibold tracking-[-0.02em]">{fmt(a.dias, 0)}</span>
+        <span className="text-[1.1rem] text-ink-2">días · unos {enPalabras(a.dias)}</span>
+      </p>
+      <p className="mt-2 text-[14px] text-ink-3">
+        Al {fechaCorta(a.f)}: llenas al <span className="num font-semibold text-ink">{fmt(a.pct, 0)}%</span>, salen{" "}
+        <span className="num font-semibold text-ink">{fmt(a.m3s, 1)}</span> m³ por segundo.
+      </p>
+
+      <div className="mt-6">
+        <DiasChart serie={s.serie as [string, number, number][]} peor={s.peor} nombre={s.nombre} />
+      </div>
+      <div className="mt-3 flex flex-wrap gap-x-5 gap-y-1 text-[13px] text-ink-2">
+        <span className="inline-flex items-center gap-2"><Burbuja color="var(--s-critico)" />
+          Peor momento: <strong className="num font-semibold text-ink">{s.peor.dias} días</strong> ({mesAnio(s.peor.f)})</span>
+        <span className="inline-flex items-center gap-2"><Burbuja color="var(--ink)" /> Hoy</span>
+      </div>
+
+      <ul className="mt-6 divide-y divide-line border-t border-line text-[15px]">
+        {a.presas.map((p) => (
+          <li key={p.c} className="flex items-center justify-between py-2.5">
+            <span>Presa {p.n}</span>
+            <span className="inline-flex items-center gap-2">
+              <Burbuja color={nivel(p.pct).color} />
+              <span className="num font-semibold">{fmt(p.pct, 0)}%</span>
+            </span>
+          </li>
+        ))}
+      </ul>
+
+      {baja.pct < 10 && (
+        <p className="mt-auto pt-5 text-[14px] leading-relaxed text-ink-2">
+          El promedio esconde lo peor: en {mesAnio(baja.f)} la presa {baja.n} llegó al{" "}
+          <strong className="num font-semibold text-ink">{fmt(baja.pct, 1)}%</strong>. Prácticamente vacía.
+        </p>
+      )}
+    </article>
+  );
+}
+
+function AyudaDias() {
+  return (
+    <Ayuda titulo="Cómo calculamos los días de agua">
+      <p>
+        Dividimos el agua guardada en las presas del sistema entre lo que sale de ellas cada día (el promedio de los últimos 30 días,
+        según el Sistema de Información Hidrológica de CONAGUA). Es decir: cuántos días alcanzaría si no volviera a entrar agua y se
+        siguiera sacando igual.
+      </p>
+      <p>Los días reales serían <strong>menos</strong>:</p>
+      <ul className="list-disc space-y-1 pl-5">
+        <li>No toda el agua se puede sacar: la del fondo de la presa no llega a las tomas.</li>
+        <li>No contamos lo que se evapora, que en temporada de calor es mucho.</li>
+      </ul>
+      <p>Y en sentido contrario: en temporada de lluvias entra agua nueva, y cuando escasea se raciona y se saca menos.</p>
+      <p>
+        Estas presas no son la única fuente: buena parte del agua de ambas ciudades viene de pozos (acuíferos), que también están
+        sobreexplotados. En Monterrey, parte de lo que sale de El Cuchillo también es para riego.
+      </p>
+    </Ayuda>
+  );
+}
+
 /* ---------- 7. Metodología ---------- */
 
 function Metodologia() {
@@ -437,6 +552,7 @@ function Metodologia() {
     ["Acuíferos sobreexplotados", "Cuando los permisos para sacar agua superan lo que le entra cada año (la lluvia que se filtra, menos lo que debe seguir llegando a ríos y manantiales). CONAGUA lo llama “déficit”. Fuente: CONAGUA, disponibilidad publicada en el DOF (2013–2023)."],
     ["Territorio y personas", "Cruzamos los 653 acuíferos con los 2,475 municipios y las localidades del Censo 2020 de INEGI para medir qué parte del territorio y de la población está sobre acuíferos sobreexplotados."],
     ["Presas", "Monitoreo de las ~210 presas principales de CONAGUA (SINA y Sistema de Información Hidrológica), semana a semana desde 1991 y hasta la semana más reciente. Descartamos registros físicamente imposibles."],
+    ["Días de agua", "Agua guardada en las presas del Sistema Cutzamala (Valle de Bravo, Villa Victoria y El Bosque) y de Monterrey (El Cuchillo, Cerro Prieto y La Boca), entre lo que sale cada día por sus tomas (promedio de 30 días). Fuente: SIH-CONAGUA, datos diarios."],
     ["Proyección", "Escenario de continuidad: una recta ajustada a las 5 actualizaciones oficiales, con su intervalo de predicción del 95%. No es un pronóstico: cambia si cambian los permisos o la lluvia."],
   ];
   return (
