@@ -238,6 +238,16 @@ function AyudaPorPersona() {
 
 /* ---------- 4. Sequía ---------- */
 
+/** Frase sobre la época del dato más reciente, para que el texto siga siendo cierto con cada actualización. */
+function epoca(iso: string) {
+  const mes = Number(iso.slice(5, 7));
+  const cuando = `Al ${fechaCorta(iso)}`;
+  if (mes >= 9 && mes <= 10) return `${cuando}, al terminar la temporada de lluvias`;
+  if (mes >= 6 && mes <= 8) return `${cuando}, en plena temporada de lluvias`;
+  if (mes >= 3 && mes <= 5) return `${cuando}, en lo más fuerte de la temporada seca`;
+  return `${cuando}, en la temporada seca`;
+}
+
 function Sequia() {
   const recientes = sq.aniosMitad.filter((y) => y >= 2020);
   // Titular: el pico más reciente por encima de 80% (si no hay, el récord histórico).
@@ -255,8 +265,8 @@ function Sequia() {
           <p className="mt-5 max-w-[62ch] text-[1.1rem] leading-relaxed text-ink-2">
             {mismoPico.f !== sq.peor.f && <>El récord fue {sq.peor.f.slice(0, 4)}, con {fmt(sq.peor.pct, 0)}%. </>}
             Desde {sq.serie[0].f.slice(0, 4)}, en {sq.aniosMitad.length} años más de la mitad del país vivió en sequía en algún momento;{" "}
-            {recientes.length} de ellos en esta década ({recientes.join(", ")}). Hoy, al terminar la temporada de lluvias,{" "}
-            <strong className="font-semibold text-ink">{millones(sq.personas)} millones</strong> siguen en sequía.
+            {recientes.length} de ellos en esta década ({recientes.join(", ")}). {epoca(sq.actual.f)},{" "}
+            <strong className="font-semibold text-ink">{millones(sq.personas)} millones</strong> viven en sequía.
           </p>
         </Aparecer>
         <Aparecer className="mt-12">
