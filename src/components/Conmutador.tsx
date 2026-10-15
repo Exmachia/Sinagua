@@ -1,8 +1,8 @@
 import Link from "next/link";
 
 const CAPAS = [
-  { href: "/mapa", label: "Acuíferos", sub: "agua subterránea" },
-  { href: "/presas", label: "Presas", sub: "agua superficial" },
+  { href: "/mapa", label: "Acuíferos" },
+  { href: "/presas", label: "Presas" },
 ] as const;
 
 /** Cambia entre los mapas del sitio. Vive sobre el mapa, junto al buscador. */
@@ -17,7 +17,6 @@ export default function Conmutador({ actual }: { actual: "/mapa" | "/presas" }) 
               activo ? "bg-ink text-white" : "text-ink-2 hover:bg-raised hover:text-ink"
             }`}>
             <span className="text-[14px] font-semibold">{c.label}</span>
-            <span className={`text-[11px] ${activo ? "text-white/75" : "text-ink-3"}`}>{c.sub}</span>
           </Link>
         );
       })}

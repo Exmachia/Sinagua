@@ -9,8 +9,8 @@ const SECCIONES = [
   { id: "sequia", label: "Sequía" },
   { id: "proyeccion", label: "Si seguimos así" },
   { id: "presas", label: "Presas" },
-  { id: "dias", label: "Días de agua" },
-  { id: "metodologia", label: "Método" },
+  { id: "usos", label: "Quién la usa" },
+  { id: "calidad", label: "¿Está limpia?" },
 ] as const;
 
 /** Barra flotante que acompaña toda la landing: resalta la sección visible y siempre ofrece el mapa. */

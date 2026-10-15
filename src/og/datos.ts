@@ -71,7 +71,7 @@ export function tarjeta(tipo: string, clave: string): Tarjeta | null {
     const e = estados.find((x) => x.slug === clave);
     if (!e) return null;
     return {
-      sobre: "Estado · agua subterránea",
+      sobre: "Estado · acuíferos",
       titulo: e.e,
       cifra: `${fmt(e.pct, 0)}%`,
       cifraTexto: "de su territorio está sobre acuíferos sobreexplotados",

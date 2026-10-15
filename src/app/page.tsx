@@ -7,12 +7,17 @@ import MinimosPresas from "@/components/landing/MinimosPresas";
 import NavFlotante from "@/components/landing/NavFlotante";
 import ProyeccionChart from "@/components/landing/ProyeccionChart";
 import SequiaChart from "@/components/landing/SequiaChart";
+import Cien from "@/components/landing/Cien";
 import DiasChart from "@/components/landing/DiasChart";
+import { AyudaCalidad, AyudaUsos, BarraSemaforo } from "@/components/Usos";
 import { Ayuda, Burbuja, BotonCompartir } from "@/components/ui";
 import { albercas, fmt } from "@/lib/acuiferos";
 import { enPalabras, fechaCorta, mesLargo, nivel } from "@/lib/presas";
 import agua from "@/data/agua.json";
 import diasAgua from "@/data/dias_agua.json";
+import calidad from "@/data/calidad.json";
+import usos from "@/data/usos.json";
+import { QUE_ES, SEMAFORO, USO, type GrupoUso, type ResumenCalidad } from "@/lib/usos";
 import presas from "@/data/presas_resumen.json";
 import proy from "@/data/proyecciones.json";
 import resumen from "@/data/resumen.json";
@@ -43,6 +48,8 @@ export default function Home() {
         <Proyeccion />
         <Presas />
         <DiasDeAgua />
+        <QuienUsa />
+        <Calidad />
         <MapaPreview />
         <Metodologia />
       </main>
@@ -551,6 +558,148 @@ function AyudaDias() {
   );
 }
 
+/* ---------- 6c. ¿Quién se lleva el agua? ---------- */
+
+function QuienUsa() {
+  const grupos = usos.grupos as Record<GrupoUso, number>;
+  const campo10 = Math.round((grupos.campo / usos.total) * 10);
+  const empresas = usos.empresas.slice(0, 5);
+  const personas = (hm3: number) => (hm3 * 1e6) / usos.m3PersonaCiudad;
+  return (
+    <section id="usos" className="scroll-mt-20 border-t border-line bg-raised">
+      <div className="mx-auto grid max-w-6xl gap-14 px-4 py-24 sm:px-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:py-32">
+        <Aparecer>
+          <div className="flex items-start gap-3">
+            <div>
+              <p className="text-[14px] font-semibold text-critico">¿Quién se lleva el agua?</p>
+              <h2 className="mt-3 font-serif text-[clamp(2rem,4vw,3rem)] leading-[1.06] font-semibold tracking-[-0.015em] text-balance">
+                El campo se lleva {campo10} de cada 10 litros
+              </h2>
+            </div>
+            <div className="pt-8"><AyudaUsos /></div>
+          </div>
+          <p className="mt-5 max-w-[52ch] text-[1.1rem] leading-relaxed text-ink-2">
+            Así se reparte toda el agua que CONAGUA permite sacar cada año de ríos, presas y pozos. A las ciudades y las casas,
+            donde vivimos casi todos, les toca {Math.round((grupos.ciudades / usos.total) * 100)} de cada 100.
+          </p>
+          <div className="mt-10"><Cien grupos={grupos} /></div>
+        </Aparecer>
+
+        <Aparecer retraso={120}>
+          <div className="rounded-2xl bg-surface p-6 shadow-[0_1px_0_rgba(0,0,0,0.04)] ring-1 ring-black/5 sm:p-8">
+            <h3 className="font-serif text-[1.6rem] leading-tight font-semibold">Las empresas con más agua</h3>
+            <p className="mt-2 text-[15px] leading-relaxed text-ink-2">
+              Cuánta agua puede sacar cada una al año, comparada con la que se permite para abastecer a una persona en la ciudad.
+            </p>
+            <ol className="mt-6 divide-y divide-line border-t border-line">
+              {empresas.map((e, i) => (
+                <li key={e.n} className="py-4">
+                  <div className="flex items-baseline gap-3">
+                    <span className="num w-4 shrink-0 text-[13px] text-ink-3">{i + 1}</span>
+                    <div className="min-w-0 flex-1">
+                      <p className="leading-snug font-semibold">{e.n}</p>
+                      <p className="mt-0.5 flex items-center gap-2 text-[13px] text-ink-3">
+                        <span aria-hidden className="size-2.5 rounded-[2px]" style={{ background: USO[e.g as GrupoUso].color }} />
+                        {USO[e.g as GrupoUso].label}
+                      </p>
+                    </div>
+                  </div>
+                  <p className="mt-2 pl-7 text-[15px] text-ink-2">
+                    Tanta agua como la de <strong className="num font-semibold text-ink">{fmt(personas(e.hm3) / 1e6, 1)} millones de personas</strong>
+                  </p>
+                </li>
+              ))}
+            </ol>
+            <p className="mt-4 text-[13px] leading-relaxed text-ink-3">
+              Permisos vigentes en el Registro Público de Derechos de Agua al {fechaCorta(usos.fecha)}. Es lo que cada permiso
+              autoriza, no lo que se mide.
+            </p>
+          </div>
+          <Link href="/mapa" className="mt-8 inline-flex min-h-12 items-center gap-2 rounded-full bg-ink px-6 font-semibold text-white transition-opacity hover:opacity-85">
+            Ver quién la usa en tu estado
+            <svg aria-hidden viewBox="0 0 24 24" className="size-4" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
+          </Link>
+        </Aparecer>
+      </div>
+    </section>
+  );
+}
+
+/* ---------- 6d. ¿Está limpia? ---------- */
+
+function TarjetaCalidad({ titulo, r, rojo }: { titulo: string; r: ResumenCalidad; rojo: string }) {
+  const pct = (k: "r" | "a" | "v") => Math.round((r[k] / r.n) * 100);
+  return (
+    <article className="rounded-2xl bg-surface p-6 shadow-[0_1px_0_rgba(0,0,0,0.04)] ring-1 ring-black/5 sm:p-7">
+      <h3 className="font-semibold">{titulo}</h3>
+      <p className="mt-4 flex flex-wrap items-baseline gap-x-3">
+        <span className="num font-serif text-[clamp(3rem,6vw,4rem)] leading-none font-semibold tracking-[-0.02em]">{pct("r")}%</span>
+        <span className="text-[1.05rem] text-ink-2">{rojo}</span>
+      </p>
+      <div className="mt-5"><BarraSemaforo r={r} /></div>
+      <ul className="mt-3 flex flex-wrap gap-x-5 gap-y-1 text-[13px] text-ink-2">
+        {(["r", "a", "v"] as const).map((k) => (
+          <li key={k} className="inline-flex items-center gap-2">
+            <Burbuja color={SEMAFORO[k].color} /> {SEMAFORO[k].label} <span className="num font-semibold text-ink">{pct(k)}%</span>
+          </li>
+        ))}
+      </ul>
+      <p className="mt-6 text-[14px] font-semibold">Lo que más se encontró</p>
+      <ul className="mt-2 flex flex-wrap gap-2">
+        {(r.q as [string, number][]).slice(0, 3).map(([q]) => (
+          <li key={q} className="rounded-full bg-raised px-3 py-1.5 text-[14px]">{QUE_ES[q] ?? q}</li>
+        ))}
+      </ul>
+      <p className="mt-5 text-[13px] text-ink-3">{fmt(r.n, 0)} sitios medidos</p>
+    </article>
+  );
+}
+
+function Calidad() {
+  const sup = calidad.superficie as ResumenCalidad;
+  const pozo = calidad.pozo as ResumenCalidad;
+  const de10 = Math.round((sup.r / sup.n) * 10);
+  return (
+    <section id="calidad" className="scroll-mt-20 border-t border-line">
+      <div className="mx-auto max-w-6xl px-4 py-24 sm:px-8 lg:py-32">
+        <Aparecer>
+          <div className="flex max-w-3xl items-start gap-3">
+            <div>
+              <p className="text-[14px] font-semibold text-critico">¿Está limpia?</p>
+              <h2 className="mt-3 font-serif text-[clamp(2rem,4vw,3rem)] leading-[1.06] font-semibold tracking-[-0.015em] text-balance">
+                {de10} de cada 10 ríos, lagos y presas medidos están contaminados
+              </h2>
+            </div>
+            <div className="pt-8"><AyudaCalidad /></div>
+          </div>
+          <p className="mt-5 max-w-[62ch] text-[1.1rem] leading-relaxed text-ink-2">
+            Y no es solo en la superficie: en {Math.round((pozo.r / pozo.n) * 100)} de cada 100 pozos medidos el agua no sirve para
+            beber sin tratarla. Es el resultado más reciente de la red de monitoreo de CONAGUA ({calidad.anios.join(" y ")}).
+          </p>
+        </Aparecer>
+        <div className="mt-14 grid gap-6 lg:grid-cols-2">
+          <Aparecer><TarjetaCalidad titulo="Ríos, lagos y presas" r={sup} rojo="contaminados" /></Aparecer>
+          <Aparecer retraso={120}><TarjetaCalidad titulo="Pozos" r={pozo} rojo="no sirven para beber sin tratarla" /></Aparecer>
+        </div>
+        <Aparecer>
+          <div className="mt-10 max-w-3xl border-l-4 border-critico pl-5">
+            <p className="font-semibold">Esto no es el agua de tu llave.</p>
+            <p className="mt-2 leading-relaxed text-ink-2">
+              CONAGUA mide el agua en su fuente. Lo que sale de la llave lo analiza el organismo de agua de cada ciudad, y no hay
+              una base pública nacional con esos resultados. Si en tu casa el agua sale turbia, con olor o con algo vivo, no la
+              tomes y repórtalo a tu organismo de agua.
+            </p>
+          </div>
+          <Link href="/mapa" className="mt-10 inline-flex min-h-12 items-center gap-2 rounded-full bg-ink px-6 font-semibold text-white transition-opacity hover:opacity-85">
+            Ver cómo está el agua en tu estado
+            <svg aria-hidden viewBox="0 0 24 24" className="size-4" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
+          </Link>
+        </Aparecer>
+      </div>
+    </section>
+  );
+}
+
 /* ---------- 7. Metodología ---------- */
 
 function Metodologia() {
@@ -561,6 +710,8 @@ function Metodologia() {
     ["Territorio y personas", "Cruzamos los 653 acuíferos con los 2,475 municipios y las localidades del Censo 2020 de INEGI para medir qué parte del territorio y de la población está sobre acuíferos sobreexplotados."],
     ["Presas", "Monitoreo de las ~210 presas principales de CONAGUA (SINA y Sistema de Información Hidrológica), semana a semana desde 1991 y hasta la semana más reciente. Descartamos registros físicamente imposibles."],
     ["Días de agua", "Agua guardada en las presas del Sistema Cutzamala (Valle de Bravo, Villa Victoria y El Bosque) y de Monterrey (El Cuchillo, Cerro Prieto y La Boca), entre lo que sale cada día por sus tomas (promedio de 30 días). Fuente: SIH-CONAGUA, datos diarios."],
+    ["Quién usa el agua", "Registro Público de Derechos de Agua (REPDA, CONAGUA): cada permiso con su uso, titular y volumen anual, ubicado por los anexos de cada pozo, río o presa. Sin hidroeléctricas (el agua regresa a su cauce). Nombres solo de organizaciones."],
+    ["Calidad del agua", "Red Nacional de Medición de Calidad del Agua (CONAGUA): semáforo oficial de cada sitio de monitoreo en ríos, lagos, presas, costas y pozos; dato más reciente de 2023 o, si no hay, de 2021. Mide el agua en su fuente, no la de la llave."],
     ["Proyección", "Escenario de continuidad: una recta ajustada a las 5 actualizaciones oficiales, con su intervalo de predicción del 95%. No es un pronóstico: cambia si cambian los permisos o la lluvia."],
   ];
   return (
