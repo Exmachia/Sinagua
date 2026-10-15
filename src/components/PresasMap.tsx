@@ -1,9 +1,10 @@
 "use client";
 
-import maplibregl, { type ExpressionSpecification, type GeoJSONSource, type LngLatBoundsLike } from "maplibre-gl";
+import * as maplibregl from "maplibre-gl";
+import { type ExpressionSpecification, type GeoJSONSource, type LngLatBoundsLike } from "maplibre-gl";
 import { useEffect, useEffectEvent, useRef, useState } from "react";
 import { fmt, type Bbox } from "@/lib/acuiferos";
-import { agregarEtiquetasEstados, BASE, filtrarEtiquetasEstados, FONDO, prepararBase, TINTA } from "@/lib/mapa";
+import { agregarEtiquetasEstados, configurarMapLibre, BASE, filtrarEtiquetasEstados, FONDO, prepararBase, TINTA } from "@/lib/mapa";
 import { NIVELES, nivel, SIN_DATO, type EstadoPresas, type Presa } from "@/lib/presas";
 import type { Margen } from "./AquiferMap";
 
@@ -48,7 +49,7 @@ export default function PresasMap({ vista, focus, margen, presas, estados, nombr
     if (capa === "estados-fill") {
       const e = estados.get(id);
       if (!e) return { titulo: nombres.get(id) ?? "", linea: "Sin presas principales en el monitoreo" };
-      return { titulo: e.e, linea: `Sus ${e.presas} presas, al ${fmt(e.pct, 0)}% de su capacidad`, color: nivel(e.pct).color };
+      return { titulo: e.e, linea: `${e.presas === 1 ? "Su presa" : `Sus ${e.presas} presas`}, al ${fmt(e.pct, 0)}% de su capacidad`, color: nivel(e.pct).color };
     }
     const p = presas.find((x) => x.c === id);
     if (!p) return null;
@@ -59,6 +60,7 @@ export default function PresasMap({ vista, focus, margen, presas, estados, nombr
   useEffect(() => {
     if (!container.current) return;
     const tactil = window.matchMedia("(pointer: coarse)").matches;
+    configurarMapLibre(maplibregl);
     const map = new maplibregl.Map({
       container: container.current,
       style: BASE,

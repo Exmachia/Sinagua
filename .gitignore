@@ -43,3 +43,6 @@ next-env.d.ts
 # datos crudos e intermedios (se regeneran con `npm run data`)
 /data/raw/
 /data/interim/
+
+# worker de MapLibre (se copia de node_modules al compilar)
+/public/maplibre/
