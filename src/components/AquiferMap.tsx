@@ -17,6 +17,7 @@ import {
   type Estado,
   type Municipio,
 } from "@/lib/acuiferos";
+import { SEMAFORO, type Semaforo } from "@/lib/usos";
 import { agregarEtiquetasEstados, BASE, filtrarEtiquetasEstados, FONDO, prepararBase, TINTA } from "@/lib/mapa";
 
 export type Vista = { e: string | null; m: string | null; a: string | null };
@@ -32,6 +33,8 @@ type Props = {
   municipios: Map<string, Municipio>;
   acuiferos: Map<string, Acuifero>;
   onNavigate: (v: Vista) => void;
+  /** Mostrar los sitios de medición de calidad del agua (gotas) del estado abierto. */
+  calidad: boolean;
 };
 
 const MEXICO: LngLatBoundsLike = [
@@ -58,11 +61,41 @@ const hover: ExpressionSpecification = ["boolean", ["feature-state", "hover"], f
 const vacio: GeoJSON.FeatureCollection = { type: "FeatureCollection", features: [] };
 
 type Tip = { x: number; y: number; titulo: string; linea: string; color?: string };
+
+/** Gota de semáforo dibujada en un canvas (la forma la distingue de las burbujas de acuíferos). */
+function gota(color: string, pr: number) {
+  const w = 20 * pr, h = 26 * pr;
+  const c = document.createElement("canvas");
+  c.width = w;
+  c.height = h;
+  const ctx = c.getContext("2d")!;
+  ctx.scale(pr, pr);
+  const forma = () => {
+    ctx.beginPath();
+    ctx.moveTo(10, 2);
+    ctx.bezierCurveTo(10, 2, 3, 11, 3, 16.5);
+    ctx.arc(10, 16.5, 7, Math.PI, 0, true);
+    ctx.bezierCurveTo(17, 11, 10, 2, 10, 2);
+    ctx.closePath();
+  };
+  forma();
+  ctx.lineWidth = 4;
+  ctx.strokeStyle = "rgba(25,23,20,0.35)";
+  ctx.stroke();
+  ctx.lineWidth = 2.2;
+  ctx.strokeStyle = "#ffffff";
+  ctx.stroke();
+  ctx.fillStyle = color;
+  ctx.fill();
+  return { width: w, height: h, data: new Uint8Array(ctx.getImageData(0, 0, w, h).data.buffer) };
+}
+const NOMBRE_SEMAFORO: Record<Semaforo, string> = { r: "Contaminada", a: "Con problemas", v: "Cumple" };
 const FUENTE: Record<string, string> = { "estados-fill": "estados", "municipios-fill": "municipios", burbujas: "burbujas" };
 
-export default function AquiferMap({ vista, focus, margen, estados, municipios, acuiferos, onNavigate }: Props) {
+export default function AquiferMap({ vista, focus, margen, estados, municipios, acuiferos, onNavigate, calidad }: Props) {
   const container = useRef<HTMLDivElement>(null);
   const mapRef = useRef<maplibregl.Map | null>(null);
+  const calidadCargada = useRef(false); // el GeoJSON de calidad se pide una sola vez
   const [ready, setReady] = useState(false);
   const [tip, setTip] = useState<Tip | null>(null);
 
@@ -137,6 +170,21 @@ export default function AquiferMap({ vista, focus, margen, estados, municipios, 
 
       agregarEtiquetasEstados(map);
 
+      // Calidad del agua: una gota por sitio de medición. Se carga al abrir el primer estado.
+      const pr = Math.min(window.devicePixelRatio || 1, 2);
+      for (const k of ["r", "a", "v"] as Semaforo[]) map.addImage(`gota-${k}`, gota(SEMAFORO[k].color, pr), { pixelRatio: pr });
+      map.addSource("calidad", { type: "geojson", data: vacio });
+      map.addLayer({ id: "calidad", type: "symbol", source: "calidad", filter: ["==", ["get", "cve"], ""],
+        layout: {
+          "icon-image": ["concat", "gota-", ["get", "s"]],
+          "icon-anchor": "bottom",
+          "icon-size": ["interpolate", ["linear"], ["zoom"], 5, 0.75, 10, 1.05],
+          "icon-allow-overlap": true,
+          "icon-ignore-placement": true,
+          // Las rojas, encima
+          "symbol-sort-key": ["match", ["get", "s"], "r", 3, "a", 2, 1],
+        } });
+
       // Burbujas: encima de todo, incluso de los nombres de la base.
       // Halo oscuro fino por fuera del borde blanco: las burbujas claras (amarillo) no se pierden en la base.
       map.addLayer({ id: "burbujas-halo", type: "circle", source: "burbujas", filter: ["in", ["get", "clave"], ["literal", []]],
@@ -179,8 +227,17 @@ export default function AquiferMap({ vista, focus, margen, estados, municipios, 
     };
     const tocar = (e: MapMouseEvent) => {
       if (!map.getLayer("burbujas")) return null;
-      const f = map.queryRenderedFeatures(e.point, { layers: ["burbujas", "municipios-fill", "estados-fill"] })[0];
-      return f && f.id !== undefined ? { capa: f.layer.id, id: String(f.id) } : null;
+      const f = map.queryRenderedFeatures(e.point, { layers: ["burbujas", "calidad", "municipios-fill", "estados-fill"] })[0];
+      if (f?.layer.id === "calidad") return { capa: "calidad", id: String(f.properties.c), props: f.properties };
+      return f && f.id !== undefined ? { capa: f.layer.id, id: String(f.id), props: f.properties } : null;
+    };
+    const tipGota = (p: Record<string, unknown>) => {
+      const s = p.s as Semaforo;
+      return {
+        titulo: String(p.cuerpo || p.n),
+        linea: `${p.t === "pozo" ? "Pozo" : "Agua superficial"} · ${NOMBRE_SEMAFORO[s]}${p.q ? `: ${p.q}` : ""} · ${p.y}`,
+        color: SEMAFORO[s].color,
+      };
     };
 
     map.on("mousemove", (e) => {
@@ -194,9 +251,13 @@ export default function AquiferMap({ vista, focus, margen, estados, municipios, 
         setTip(null);
         return;
       }
+      map.getCanvas().style.cursor = "pointer";
+      if (valido.capa === "calidad") {
+        setTip({ x: e.point.x, y: e.point.y, ...tipGota(valido.props) });
+        return;
+      }
       hovered[valido.capa] = valido.id;
       map.setFeatureState({ source: FUENTE[valido.capa], id: valido.id }, { hover: true });
-      map.getCanvas().style.cursor = "pointer";
       const d = describir(valido.capa, valido.id);
       setTip(d ? { x: e.point.x, y: e.point.y, ...d } : null);
     });
@@ -212,7 +273,9 @@ export default function AquiferMap({ vista, focus, margen, estados, municipios, 
         if (v.e) navegar({ e: null, m: null, a: null });
         return;
       }
-      if (hit.capa === "burbujas") navegar({ ...v, a: hit.id });
+      // Gota: en pantallas táctiles no hay "hover", así que el toque muestra su etiqueta.
+      if (hit.capa === "calidad") setTip({ x: e.point.x, y: e.point.y, ...tipGota(hit.props) });
+      else if (hit.capa === "burbujas") navegar({ ...v, a: hit.id });
       else if (hit.capa === "municipios-fill") navegar({ e: v.e, m: hit.id, a: null });
       else if (hit.id !== v.e) navegar({ e: hit.id, m: null, a: null });
     });
@@ -222,6 +285,7 @@ export default function AquiferMap({ vista, focus, margen, estados, municipios, 
       mapRef.current = null;
       // Si el mapa se recrea (recarga en caliente), sus capas no existen hasta el próximo "load".
       setReady(false);
+      calidadCargada.current = false;
     };
   }, []);
 
@@ -277,6 +341,19 @@ export default function AquiferMap({ vista, focus, margen, estados, municipios, 
     map.setFilter("acuifero-sel", ["==", ["get", "clave"], vista.a ?? ""]);
     map.setFilter("burbuja-sel", ["==", ["get", "clave"], vista.a ?? ""]);
   }, [vista, ready, estados, municipios]);
+
+  // Gotas de calidad del agua del estado abierto.
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !ready || !map.getLayer("calidad")) return;
+    const ver = calidad && !!vista.e;
+    if (ver && !calidadCargada.current) {
+      (map.getSource("calidad") as GeoJSONSource).setData("/data/calidad.geojson");
+      calidadCargada.current = true;
+    }
+    map.setLayoutProperty("calidad", "visibility", ver ? "visible" : "none");
+    map.setFilter("calidad", ["==", ["get", "cve"], vista.e ?? ""]);
+  }, [calidad, vista.e, ready]);
 
   // Volar al foco.
   useEffect(() => {

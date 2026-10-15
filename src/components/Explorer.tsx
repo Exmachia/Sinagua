@@ -20,7 +20,7 @@ import {
 import type { Margen, Vista } from "./AquiferMap";
 import resumen from "@/data/resumen.json";
 import calidad from "@/data/calidad.json";
-import type { ResumenCalidad, SitioCalidad, UsoLugar, UsosEstado } from "@/lib/usos";
+import { SEMAFORO, type ResumenCalidad, type SitioCalidad, type UsoLugar, type UsosEstado } from "@/lib/usos";
 import { BloqueCalidad, BloqueUsos, useJson } from "./Usos";
 import HistoryChart from "./HistoryChart";
 import Conmutador from "./Conmutador";
@@ -92,6 +92,7 @@ export default function Explorer() {
   const [intento, setIntento] = useState(0);
   const [abierto, setAbierto] = useState(true);
   const [nivel, setNivel] = useState<Nivel>("medio");
+  const [verCalidad, setVerCalidad] = useState(true);
   const seccion = useRef<HTMLElement>(null);
   const cuerpo = useRef<HTMLDivElement>(null);
   const hash = useSyncExternalStore(suscribirHash, () => window.location.hash, () => "");
@@ -166,7 +167,7 @@ export default function Explorer() {
       className="relative h-dvh min-h-[480px] overflow-clip bg-raised">
       <div className="absolute inset-0">
         {d && (
-          <AquiferMap vista={vista} focus={focus} margen={margen} estados={idx.est} municipios={idx.mun} acuiferos={idx.acu} onNavigate={navegar} />
+          <AquiferMap vista={vista} focus={focus} margen={margen} estados={idx.est} municipios={idx.mun} acuiferos={idx.acu} onNavigate={navegar} calidad={verCalidad} />
         )}
         {error && (
           <div className="absolute inset-0 grid place-items-center p-6 text-center">
@@ -196,6 +197,8 @@ export default function Explorer() {
         </div>
 
         <Conmutador actual="/mapa" />
+
+        {estado && <InterruptorCalidad activo={verCalidad} onCambio={setVerCalidad} className="lg:hidden" />}
 
       </div>
 
@@ -236,14 +239,43 @@ export default function Explorer() {
         )}
       </PanelMapa>
 
-      <Leyenda modo={estado ? "estatus" : "territorio"} />
+      {estado && (
+        <div className="absolute top-3 right-16 z-20 max-lg:hidden">
+          <InterruptorCalidad activo={verCalidad} onCambio={setVerCalidad} />
+        </div>
+      )}
+      <Leyenda modo={estado ? "estatus" : "territorio"} calidad={!!estado && verCalidad} />
     </section>
   );
 }
 
 /* ---------- piezas comunes ---------- */
 
-function Leyenda({ modo }: { modo: "territorio" | "estatus" }) {
+/** Muestra u oculta las gotas de calidad del agua. */
+function InterruptorCalidad({ activo, onCambio, className = "" }: { activo: boolean; onCambio: (v: boolean) => void; className?: string }) {
+  return (
+    <button type="button" role="switch" aria-checked={activo} onClick={() => onCambio(!activo)}
+      className={`pointer-events-auto inline-flex min-h-11 w-fit cursor-pointer items-center gap-2.5 rounded-full bg-surface py-1.5 pr-2 pl-3.5 text-[14px] font-semibold shadow-[0_6px_24px_rgba(25,23,20,0.14)] ring-1 ring-black/5 ${className}`}>
+      <Gota color={SEMAFORO.r.color} />
+      Calidad del agua
+      <span aria-hidden className={`relative block h-6 w-10 shrink-0 rounded-full transition-colors ${activo ? "bg-ink" : "bg-line-strong"}`}>
+        <span className={`absolute top-0.5 left-0.5 block size-5 rounded-full bg-white shadow transition-transform ${activo ? "translate-x-4" : ""}`} />
+      </span>
+    </button>
+  );
+}
+
+/** La misma gota que dibuja el mapa, para leyendas y botones. */
+function Gota({ color }: { color: string }) {
+  return (
+    <svg aria-hidden viewBox="0 0 20 26" className="h-[18px] w-[14px] shrink-0">
+      <path d="M10 2C10 2 3 11 3 16.5a7 7 0 0 0 14 0C17 11 10 2 10 2Z" fill={color} stroke="#fff" strokeWidth="2.2" />
+      <path d="M10 2C10 2 3 11 3 16.5a7 7 0 0 0 14 0C17 11 10 2 10 2Z" fill="none" stroke="rgba(25,23,20,.35)" strokeWidth="0.8" />
+    </svg>
+  );
+}
+
+function Leyenda({ modo, calidad }: { modo: "territorio" | "estatus"; calidad: boolean }) {
   return (
     <div className="pointer-events-none absolute right-3 bottom-9 z-10 rounded-lg bg-surface/95 px-3 py-2.5 text-[12px] shadow-[0_4px_16px_rgba(25,23,20,0.12)] ring-1 ring-black/5 backdrop-blur max-lg:hidden">
       {modo === "territorio" ? (
@@ -269,6 +301,19 @@ function Leyenda({ modo }: { modo: "territorio" | "estatus" }) {
               </li>
             ))}
           </ul>
+          {calidad && (
+            <>
+              <p className="mt-3 mb-1.5 font-semibold">Cada gota es un sitio donde se mide el agua</p>
+              <ul className="space-y-1">
+                {(["r", "a", "v"] as const).map((k) => (
+                  <li key={k} className="flex items-center gap-2 text-ink-2">
+                    <Gota color={SEMAFORO[k].color} />
+                    {SEMAFORO[k].label}
+                  </li>
+                ))}
+              </ul>
+            </>
+          )}
         </>
       )}
     </div>

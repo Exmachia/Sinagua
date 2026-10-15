@@ -50,6 +50,15 @@ def sin_acentos(s: str) -> str:
     return "".join(c for c in unicodedata.normalize("NFD", s.upper()) if unicodedata.category(c) != "Mn").strip()
 
 
+MINUSCULAS = {"De", "Del", "La", "Las", "Los", "El", "Y", "E", "En", "A", "Al"}
+
+
+def titulo(s: str) -> str:
+    """'RIO DE LOS REMEDIOS' → 'Río de los Remedios' (sin inventar acentos: solo minúsculas y conectores)."""
+    palabras = s.strip().title().split()
+    return " ".join(w.lower() if i and w in MINUSCULAS else w for i, w in enumerate(palabras))
+
+
 def contaminantes(texto: str) -> list[str]:
     vistos = []
     for c in texto.replace(" ", "").split(","):
@@ -101,8 +110,8 @@ def main():
                 sin_estado[r.get("ESTADO", "")] += 1
                 continue
             sitios[clave] = {
-                "c": clave, "n": r.get("SITIO", "").title(), "cve": cve, "mun": r.get("MUNICIPIO", "").title(),
-                "cuerpo": (r.get("CUERPO DE AGUA") or r.get("ACUIFERO") or "").title(),
+                "c": clave, "n": titulo(r.get("SITIO", "")), "cve": cve, "mun": titulo(r.get("MUNICIPIO", "")),
+                "cuerpo": titulo(r.get("CUERPO DE AGUA") or r.get("ACUIFERO") or ""),
                 "t": tipo, "y": anio_, "presa": "PRESA" in sin_acentos(r.get("SUBTIPO", "")), "s": sem, "q": contaminantes(r.get("CONTAMINANTES", "")),
                 "x": round(lon, 5), "yy": round(lat, 5),
             }
