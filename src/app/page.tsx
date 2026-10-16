@@ -100,10 +100,6 @@ function Personas({ llenas }: { llenas: number }) {
           </svg>
         ))}
       </div>
-      <figcaption className="mt-5 text-[14px] text-ink-2">
-        <span className="inline-flex items-center gap-2"><span className="size-3 rounded-full bg-critico" />Vive donde el agua escasea</span>
-        <span className="ml-5 inline-flex items-center gap-2"><span className="size-3 rounded-full bg-line-strong" />No</span>
-      </figcaption>
     </figure>
   );
 }
