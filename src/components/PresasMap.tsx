@@ -143,7 +143,9 @@ export default function PresasMap({ vista, focus, margen, presas, estados, nombr
       const f = map.queryRenderedFeatures(pt, { layers: ["presas", "estados-fill"] })[0];
       return f && f.id !== undefined ? { capa: f.layer.id, id: String(f.id) } : null;
     };
+    // En pantallas táctiles no hay "pasar el cursor": el toque abre la ficha y la etiqueta se quedaría pegada.
     map.on("mousemove", (e) => {
+      if (tactil) return;
       const hit = tocar(e.point);
       const v = vistaActual();
       const valido = hit && !(hit.capa === "estados-fill" && hit.id === v.e) ? hit : null;

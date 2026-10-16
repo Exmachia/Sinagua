@@ -103,7 +103,9 @@ export default function SequiaMap({ vista, focus, margen, datos, nombres, onNavi
       const f = map.queryRenderedFeatures(p, { layers: ["mun-fill"] })[0];
       return f?.id !== undefined ? String(f.id) : null;
     };
+    // En pantallas táctiles no hay "pasar el cursor": el toque abre la ficha y la etiqueta se quedaría pegada.
     map.on("mousemove", (e) => {
+      if (tactil) return;
       const id = tocar(e.point);
       if (id !== hovered) limpiar();
       if (!id) {
