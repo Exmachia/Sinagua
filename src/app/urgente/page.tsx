@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import BotonHistoria from "@/components/BotonHistoria";
 import Marca from "@/components/Marca";
+import { CONTACTO } from "@/lib/sitio";
 import { Ayuda } from "@/components/ui";
 import { cacheLife } from "next/cache";
 import { alertas, VIGENCIA, type Alerta } from "@/lib/urgente";
@@ -53,6 +54,14 @@ export default async function Urgente() {
         <section aria-label="Alertas de los datos oficiales" className="mt-6 grid gap-6 md:grid-cols-2">
           {datos.map((a) => <TarjetaAlerta key={a.id} a={a} />)}
         </section>
+
+        <p className="mt-14 text-[15px] text-ink-2">
+          ¿Sabes de un caso que deba estar aquí?{" "}
+          <a href={CONTACTO} target="_blank" rel="noopener noreferrer" className="font-semibold text-ink underline underline-offset-4 hover:text-critico">
+            Escríbeme en LinkedIn
+          </a>{" "}
+          con la nota o el dato.
+        </p>
       </main>
     </>
   );

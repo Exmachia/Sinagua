@@ -6,3 +6,6 @@ export const SITIO =
     : process.env.VERCEL_URL
       ? `https://${process.env.VERCEL_URL}`
       : "http://localhost:3100");
+
+/** Para quien tenga datos, sepa del tema o quiera ayudar. */
+export const CONTACTO = "https://www.linkedin.com/in/eduardo-chacon-171367275/";
