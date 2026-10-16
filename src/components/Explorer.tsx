@@ -216,7 +216,7 @@ export default function Explorer() {
               <span className="px-2.5 text-[14px] font-semibold">Panorama nacional</span>
             )}
             <span className="min-w-0 flex-1" />
-            {ruta.length > 2 && <BotonInicio onClick={() => navegar(ruta[0].v)} />}
+            {ruta.length > 2 && <BotonInicio onClick={() => { navegar(ruta[0].v); setNivel("bajo"); }} />}
           </>
         }>
         {!d ? (
