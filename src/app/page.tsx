@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { CONTACTO } from "@/lib/sitio";
 import HeroSearch from "@/components/HeroSearch";
 import Marca from "@/components/Marca";
 import MapaPreview from "@/components/MapaPreview";
@@ -709,6 +710,12 @@ function Pie() {
         <p className="mt-4 max-w-[70ch]">
           Proyecto ciudadano independiente. No está afiliado a la Comisión Nacional del Agua (CONAGUA) ni a ninguna dependencia de
           gobierno; el nombre es una parodia.
+        </p>
+        <p className="mt-6 text-[15px] text-ink">
+          ¿Tienes datos, sabes del tema o quieres ayudar?{" "}
+          <a href={CONTACTO} target="_blank" rel="noopener noreferrer" className="font-semibold underline underline-offset-4 hover:text-critico">
+            Escríbeme en LinkedIn
+          </a>
         </p>
       </div>
     </footer>
