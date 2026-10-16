@@ -10,7 +10,7 @@
     "start": "next start",
     "lint": "eslint",
     "data:fetch": "bash scripts/fetch.sh",
-    "data:build": "bash scripts/geo_pre.sh && python3 -I scripts/build_data.py && bash scripts/geo_post.sh && python3 -I scripts/build_poblacion.py && python3 -I scripts/build_proyecciones.py",
+    "data:build": "bash scripts/geo_pre.sh && python3 -I scripts/build_data.py && bash scripts/geo_post.sh && python3 -I scripts/build_poblacion.py && python3 -I scripts/build_proyecciones.py && python3 -I scripts/ajustar_encuadres.py",
     "data": "npm run data:fetch && npm run data:build",
     "data:abiertos": "bash scripts/fetch_abiertos.sh && python3 -I scripts/build_usos.py && python3 -I scripts/build_calidad.py",
     "data:presas": "bash scripts/fetch_sih.sh && python3 -I scripts/build_presas.py && python3 -I scripts/build_dias.py",

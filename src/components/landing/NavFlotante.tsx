@@ -17,10 +17,14 @@ const SECCIONES = [
 export default function NavFlotante() {
   const [activa, setActiva] = useState<string | null>(null);
   const [elevada, setElevada] = useState(false);
+  const [lejos, setLejos] = useState(false); // ya bajó bastante: se ofrece volver arriba
   const [menu, setMenu] = useState(false);
 
   useEffect(() => {
-    const onScroll = () => setElevada(window.scrollY > 24);
+    const onScroll = () => {
+      setElevada(window.scrollY > 24);
+      setLejos(window.scrollY > window.innerHeight * 2);
+    };
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     const io = new IntersectionObserver(
@@ -82,6 +86,14 @@ export default function NavFlotante() {
           </svg>
         </button>
       </nav>
+
+      {lejos && (
+        <button type="button" aria-label="Volver al inicio de la página"
+          onClick={() => window.scrollTo({ top: 0, behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" })}
+          className="pointer-events-auto fixed right-4 bottom-5 grid size-12 cursor-pointer place-items-center rounded-full bg-ink text-white shadow-[0_8px_24px_rgba(25,23,20,0.25)] transition-opacity hover:opacity-85">
+          <svg aria-hidden viewBox="0 0 24 24" className="size-5" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 19V5M6 11l6-6 6 6" /></svg>
+        </button>
+      )}
 
       {menu && (
         <ul id="menu-movil" className="pointer-events-auto mx-auto mt-2 max-w-5xl rounded-2xl bg-surface/95 p-2 shadow-[0_10px_30px_rgba(25,23,20,0.14)] ring-1 ring-black/5 backdrop-blur-xl md:hidden">
