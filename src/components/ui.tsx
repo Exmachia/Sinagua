@@ -104,7 +104,7 @@ export function VerMas({ abierto, total, onClick }: { abierto: boolean; total: n
   );
 }
 
-/** Fila de lista: barra de % o burbuja de estatus, nombre, valor. */
+/** Fila de lista que se abre al tocarla: barra de % o burbuja de estatus, nombre, valor y flecha. */
 export function Fila({ onClick, inicio, nombre, sub, valor, valorTono }: {
   onClick: () => void; inicio: React.ReactNode; nombre: string; sub?: React.ReactNode; valor: string; valorTono?: string;
 }) {
@@ -117,7 +117,9 @@ export function Fila({ onClick, inicio, nombre, sub, valor, valorTono }: {
           <span className="block truncate text-[15px] leading-snug">{nombre}</span>
           {sub && <span className="block truncate text-[12px] text-ink-3">{sub}</span>}
         </span>
-        <span className="num shrink-0 text-[14px] font-semibold" style={valorTono ? { color: valorTono } : undefined}>{valor}</span>
+        {valor && <span className="num shrink-0 text-[14px] font-semibold" style={valorTono ? { color: valorTono } : undefined}>{valor}</span>}
+        {/* Flecha: deja claro que la fila se puede abrir */}
+        <svg aria-hidden viewBox="0 0 24 24" className="-mr-1 size-4 shrink-0 text-ink-3" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="m9 6 6 6-6 6" /></svg>
       </button>
     </li>
   );
@@ -179,5 +181,16 @@ export function BotonCompartir({ ruta, titulo, texto, className = "" }: { ruta: 
       </button>
       <span className="sr-only" role="status">{copiado ? "Enlace copiado al portapapeles" : ""}</span>
     </>
+  );
+}
+
+/** Regresa de un golpe a la vista de todo México (en fichas de municipio, acuífero o presa). */
+export function BotonInicio({ onClick }: { onClick: () => void }) {
+  return (
+    <button type="button" onClick={onClick} title="Volver a todo México"
+      className="inline-flex min-h-11 shrink-0 cursor-pointer items-center gap-1.5 rounded-md px-2.5 text-[13px] font-semibold text-ink-2 transition-colors hover:bg-raised hover:text-ink">
+      <svg aria-hidden viewBox="0 0 24 24" className="size-4" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 11.5 12 4l9 7.5M5.5 9.5V20h13V9.5" /></svg>
+      Inicio
+    </button>
   );
 }

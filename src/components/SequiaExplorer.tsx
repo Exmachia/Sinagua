@@ -11,7 +11,7 @@ import Buscador, { type Opcion } from "./Buscador";
 import Conmutador from "./Conmutador";
 import PanelMapa, { visibleMovil, type Nivel } from "./PanelMapa";
 import type { VistaSequia } from "./SequiaMap";
-import { Ayuda, ayudaAbierta, BotonCompartir, Cabeza, Cifra, Esqueleto, Fila, Pista, Seccion, VerMas } from "./ui";
+import { Ayuda, ayudaAbierta, BotonInicio, BotonCompartir, Cabeza, Cifra, Esqueleto, Fila, Pista, Seccion, VerMas } from "./ui";
 
 const SequiaMap = dynamic(() => import("./SequiaMap"), {
   ssr: false,
@@ -187,6 +187,8 @@ export default function SequiaExplorer() {
             ) : (
               <span className="px-2.5 text-[14px] font-semibold">Panorama nacional</span>
             )}
+            <span className="min-w-0 flex-1" />
+            {ruta.length > 2 && <BotonInicio onClick={() => navegar(ruta[0].v)} />}
           </>
         }>
         {!d ? (

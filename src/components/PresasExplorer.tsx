@@ -13,7 +13,7 @@ import type { VistaPresas } from "./PresasMap";
 import { AyudaCalidad, useJson } from "./Usos";
 import { SEMAFORO, type Semaforo } from "@/lib/usos";
 import SerieChart from "./SerieChart";
-import { Ayuda, ayudaAbierta, BotonCompartir, Burbuja, Cabeza, Cifra, Esqueleto, Fila, Pista, Seccion, VerMas } from "./ui";
+import { Ayuda, ayudaAbierta, BotonInicio, BotonCompartir, Burbuja, Cabeza, Cifra, Esqueleto, Fila, Pista, Seccion, VerMas } from "./ui";
 
 const PresasMap = dynamic(() => import("./PresasMap"), {
   ssr: false,
@@ -183,11 +183,8 @@ export default function PresasExplorer() {
             ) : (
               <span className="px-2.5 text-[14px] font-semibold">Panorama nacional</span>
             )}
-            <nav aria-label="Ruta" className="min-w-0 flex-1 truncate text-right text-[12px] text-ink-3 max-sm:hidden">
-              {ruta.length > 2 && ruta.slice(0, -2).map((r) => (
-                <button key={r.label} type="button" onClick={() => navegar(r.v)} className="link cursor-pointer">{r.label}</button>
-              ))}
-            </nav>
+            <span className="min-w-0 flex-1" />
+            {ruta.length > 2 && <BotonInicio onClick={() => navegar(ruta[0].v)} />}
           </>
         }>
         {!d ? (
