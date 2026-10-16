@@ -242,7 +242,9 @@ export default function AquiferMap({ vista, focus, margen, estados, municipios, 
       };
     };
 
+    // En pantallas táctiles no hay "pasar el cursor": el toque abre la ficha y la etiqueta se quedaría pegada.
     map.on("mousemove", (e) => {
+      if (tactil) return;
       const hit = tocar(e);
       const v = vistaActual();
       // En la vista estatal, el estado elegido no se resalta: se resaltan sus municipios.
@@ -263,6 +265,8 @@ export default function AquiferMap({ vista, focus, margen, estados, municipios, 
       const d = describir(valido.capa, valido.id);
       setTip(d ? { x: e.point.x, y: e.point.y, ...d } : null);
     });
+    let quitarTip = 0;
+    map.on("movestart", () => setTip(null));
     map.on("mouseout", () => {
       Object.keys(FUENTE).forEach(limpiar);
       setTip(null);
@@ -276,7 +280,11 @@ export default function AquiferMap({ vista, focus, margen, estados, municipios, 
         return;
       }
       // Gota: en pantallas táctiles no hay "hover", así que el toque muestra su etiqueta.
-      if (hit.capa === "calidad") setTip({ x: e.point.x, y: e.point.y, ...tipGota(hit.props) });
+      if (hit.capa === "calidad") {
+        setTip({ x: e.point.x, y: e.point.y, ...tipGota(hit.props) });
+        window.clearTimeout(quitarTip);
+        quitarTip = window.setTimeout(() => setTip(null), 4000);
+      }
       else if (hit.capa === "burbujas") navegar({ ...v, a: hit.id });
       else if (hit.capa === "municipios-fill") navegar({ e: v.e, m: hit.id, a: null });
       else if (hit.id !== v.e) navegar({ e: hit.id, m: null, a: null });
