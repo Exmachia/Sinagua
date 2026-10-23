@@ -3,7 +3,6 @@ import Link from "next/link";
 import Marca from "@/components/Marca";
 import agua from "@/data/agua.json";
 import calidad from "@/data/calidad.json";
-import diasAgua from "@/data/dias_agua.json";
 import presasResumen from "@/data/presas_resumen.json";
 import resumen from "@/data/resumen.json";
 import usos from "@/data/usos.json";
@@ -53,14 +52,6 @@ const temas: Tema[] = [
     enlace: { href: "/presas", texto: "Ver el mapa de presas" },
   },
   {
-    id: "dias",
-    titulo: "Días de agua",
-    muestra: "Cuánto duraría el agua de las presas del Cutzamala y de Monterrey si dejara de llover, al ritmo al que hoy se saca. Los días reales serían menos: no toda el agua se puede sacar y no contamos la evaporación.",
-    fuente: "CONAGUA, Sistema de Información Hidrológica (agua guardada y extracción diaria).",
-    cada: "Diario en la fuente. Se descarga solo lunes y jueves.",
-    dato: `Al ${fechaCorta(diasAgua.sistemas[0].actual.f)}`,
-  },
-  {
     id: "acuiferos",
     titulo: "Acuíferos (agua bajo tierra)",
     muestra: "Cuánta agua se permite sacar de cada acuífero comparada con la que le entra cada año.",
@@ -91,22 +82,6 @@ const temas: Tema[] = [
     fuente: "CONAGUA, Red Nacional de Medición de Calidad del Agua.",
     cada: "Una vez al año. Usamos el dato más reciente de cada sitio.",
     dato: `Resultados de ${calidad.anios.join(" y ")}`,
-  },
-  {
-    id: "persona",
-    titulo: "Agua por persona",
-    muestra: "El agua que traen cada año la lluvia y los ríos, dividida entre los habitantes de cada estado. Menos de 1,700 m³ por persona al año es estrés hídrico; menos de 1,000, escasez; menos de 500, escasez absoluta (umbrales de la ONU).",
-    fuente: "CONAGUA vía SEMARNAT. Población: Censo 2020 (INEGI).",
-    cada: "Cuando se publica una nueva estimación (pocas veces).",
-    dato: `Dato de ${agua.aguaPorPersona.nacional[agua.aguaPorPersona.nacional.length - 1].y}`,
-  },
-  {
-    id: "proyeccion",
-    titulo: "Si seguimos así",
-    muestra: "Una línea recta sobre las 5 revisiones oficiales de los acuíferos, con su rango probable. Es un escenario si nada cambia, no un pronóstico.",
-    fuente: "CONAGUA, Diario Oficial de la Federación (2013–2023).",
-    cada: "Con cada nueva revisión oficial.",
-    dato: `Revisiones 2013–${resumen.anio}`,
   },
 ];
 

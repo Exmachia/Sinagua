@@ -69,7 +69,7 @@ export default function Buscador<T>({ opciones, onPick, etiqueta, placeholder, g
         {etiqueta}
       </label>
       <div className="relative">
-        <svg aria-hidden viewBox="0 0 24 24" className="pointer-events-none absolute top-1/2 left-3.5 size-5 -translate-y-1/2 text-ink-3" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+        <svg aria-hidden viewBox="0 0 24 24" className={`pointer-events-none absolute top-1/2 size-5 -translate-y-1/2 text-ink-3 ${grande && !flotante ? "left-5" : "left-3.5"}`} fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
           <circle cx="11" cy="11" r="7" />
           <path d="m20 20-3.5-3.5" />
         </svg>
@@ -97,13 +97,13 @@ export default function Buscador<T>({ opciones, onPick, etiqueta, placeholder, g
           className={`w-full pr-3 pl-11 text-ink placeholder:text-ink-3 outline-none ${
             flotante
               ? "h-12 rounded-[10px] bg-transparent text-base focus:shadow-[inset_0_0_0_2px_var(--focus)]"
-              : `border border-ink bg-surface focus:shadow-[0_0_0_3px_rgba(31,111,199,0.25)] ${grande ? "h-14 text-lg" : "h-12 text-base"}`
+              : `rounded-full bg-surface shadow-[0_6px_24px_rgba(25,23,20,0.10)] ring-1 ring-line-strong transition-shadow hover:shadow-[0_8px_28px_rgba(25,23,20,0.14)] focus:shadow-[0_0_0_3px_rgba(31,111,199,0.25)] focus:ring-ink ${grande ? "h-14 pl-12 text-lg" : "h-12 text-base"}`
           }`}
         />
       </div>
 
       {expanded && (
-        <ul id={`${id}-list`} role="listbox" className={`absolute inset-x-0 top-full z-30 mt-1.5 max-h-[26rem] overflow-y-auto bg-surface ${flotante ? "rounded-[10px] shadow-[0_10px_40px_rgba(25,23,20,0.2)] ring-1 ring-black/5" : "border border-ink shadow-[4px_4px_0_0_rgba(25,23,20,0.12)]"}`}>
+        <ul id={`${id}-list`} role="listbox" className={`absolute inset-x-0 top-full z-30 mt-1.5 max-h-[26rem] overflow-y-auto bg-surface ${flotante ? "rounded-[10px] shadow-[0_10px_40px_rgba(25,23,20,0.2)] ring-1 ring-black/5" : "rounded-2xl shadow-[0_12px_40px_rgba(25,23,20,0.18)] ring-1 ring-black/5"}`}>
           {resultados.length === 0 && (
             <li className="px-4 py-3 text-[15px] text-ink-2">
               No encontramos “{q}”. Revisa la ortografía o prueba con tu estado.
