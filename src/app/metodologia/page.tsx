@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import Marca from "@/components/Marca";
+import NavFlotante from "@/components/landing/NavFlotante";
 import agua from "@/data/agua.json";
 import calidad from "@/data/calidad.json";
 import presasResumen from "@/data/presas_resumen.json";
@@ -88,13 +88,8 @@ const temas: Tema[] = [
 export default function Metodologia() {
   return (
     <>
-      <header className="mx-auto flex max-w-4xl items-center justify-between px-4 pt-6 sm:px-8">
-        <Link href="/" aria-label="Sinagua, inicio" className="text-xl"><Marca /></Link>
-        <Link href="/mapa" className="inline-flex min-h-10 items-center rounded-full bg-ink px-4 text-[14px] font-semibold text-white hover:opacity-85">
-          Abrir el mapa
-        </Link>
-      </header>
-      <main className="mx-auto max-w-4xl px-4 pt-14 pb-24 sm:px-8">
+      <NavFlotante />
+      <main className="mx-auto max-w-4xl px-4 pt-32 pb-24 sm:px-8 lg:pt-40">
         <h1 className="font-serif text-[clamp(2.2rem,5vw,3.4rem)] leading-[1.04] font-semibold tracking-[-0.02em]">Cómo se mide</h1>
         <p className="mt-4 max-w-[56ch] text-[1.1rem] leading-relaxed text-ink-2">
           Todo sale de datos públicos oficiales. Cada dato tiene su fecha: unos cambian cada semana y otros, cada año o más.

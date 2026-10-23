@@ -1,6 +1,7 @@
 import type { MetadataRoute } from "next";
 import agua from "@/data/agua.json";
 import presas from "@/data/presas_resumen.json";
+import { ARTICULOS } from "@/data/articulos";
 import { SITIO } from "@/lib/sitio";
 
 // La fecha de cada página es la de sus datos: así el buscador sabe cuándo hubo algo nuevo.
@@ -12,6 +13,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${SITIO}/`, lastModified: reciente, changeFrequency: "weekly", priority: 1 },
     { url: `${SITIO}/mapa`, lastModified: new Date("2023-11-09"), changeFrequency: "monthly", priority: 0.8 },
     { url: `${SITIO}/presas`, lastModified: presasF, changeFrequency: "weekly", priority: 0.8 },
+    { url: `${SITIO}/articulos`, lastModified: new Date(ARTICULOS.map((a) => a.fecha).sort().at(-1)!), changeFrequency: "weekly", priority: 0.8 },
+    ...ARTICULOS.map((a) => ({ url: `${SITIO}/articulos/${a.slug}`, lastModified: new Date(a.fecha), changeFrequency: "monthly" as const, priority: 0.7 })),
     { url: `${SITIO}/metodologia`, lastModified: reciente, changeFrequency: "weekly", priority: 0.5 },
     { url: `${SITIO}/urgente`, lastModified: reciente, changeFrequency: "weekly", priority: 0.9 },
     { url: `${SITIO}/sequia`, lastModified: sequia, changeFrequency: "weekly", priority: 0.8 },
