@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import Marca from "../Marca";
+import Reportar from "../Reportar";
 
 const SECCIONES = [
   { id: "realidad", label: "La realidad" },
@@ -165,10 +166,12 @@ export default function NavFlotante() {
       {lejos && (
         <button type="button" aria-label="Volver al inicio de la página"
           onClick={() => window.scrollTo({ top: 0, behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" })}
-          className="pointer-events-auto fixed right-4 bottom-5 grid size-12 cursor-pointer place-items-center rounded-full bg-ink text-white shadow-[0_8px_24px_rgba(25,23,20,0.25)] transition-opacity hover:opacity-85">
+          className="pointer-events-auto fixed right-4 bottom-20 grid size-12 cursor-pointer place-items-center rounded-full bg-ink text-white shadow-[0_8px_24px_rgba(25,23,20,0.25)] transition-opacity hover:opacity-85">
           <svg aria-hidden viewBox="0 0 24 24" className="size-5" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 19V5M6 11l6-6 6 6" /></svg>
         </button>
       )}
+
+      <Reportar />
     </header>
   );
 }
