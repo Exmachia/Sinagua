@@ -62,6 +62,11 @@ export default function Home() {
   );
 }
 
+/** Fecha del dato junto al rótulo de cada sección: chica y en gris, para no distraer. */
+function Fecha({ children }: { children: React.ReactNode }) {
+  return <span className="ml-1.5 font-normal text-ink-3">· {children}</span>;
+}
+
 /* ---------- 1. Portada ---------- */
 
 function Portada() {
@@ -168,7 +173,7 @@ function PorEstado() {
     <section id="estados" className="scroll-mt-20">
       <div className="mx-auto grid max-w-6xl gap-14 px-4 py-24 sm:px-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.2fr)] lg:py-32">
         <Aparecer>
-          <p className="text-[14px] font-semibold text-critico">Por estado</p>
+          <p className="text-[14px] font-semibold text-critico">Por estado <Fecha>{`Dato de ${porPersona1.y}`}</Fecha></p>
           <div className="mt-3 flex items-start gap-3">
             <h2 className="font-serif text-[clamp(2rem,4vw,3rem)] leading-[1.06] font-semibold tracking-[-0.015em] text-balance">
               En la Ciudad de México le tocan {fmt(app.estados[0].m3, 0)} m³ de agua al año a cada persona. En Chiapas, {fmt(app.estados[app.estados.length - 1].m3, 0)}.
@@ -261,7 +266,7 @@ function Sequia() {
     <section id="sequia" className="scroll-mt-20 border-t border-line bg-raised">
       <div className="mx-auto max-w-6xl px-4 py-24 sm:px-8 lg:py-32">
         <Aparecer>
-          <p className="text-[14px] font-semibold text-critico">Sequía</p>
+          <p className="text-[14px] font-semibold text-critico">Sequía <Fecha>{`Al ${fechaCorta(sq.actual.f)}`}</Fecha></p>
           <h2 className="mt-3 max-w-[24ch] font-serif text-[clamp(2rem,4.4vw,3.4rem)] leading-[1.05] font-semibold tracking-[-0.015em]">
             En {mesLargo(mismoPico.f)} de {picoAnio}, casi {Math.round(mismoPico.pct / 10)} de cada 10 mexicanos vivían en sequía
           </h2>
@@ -325,7 +330,7 @@ function Proyeccion() {
     <section id="proyeccion" className="scroll-mt-20">
       <div className="mx-auto max-w-6xl px-4 py-24 sm:px-8 lg:py-32">
         <Aparecer>
-          <p className="text-[14px] font-semibold text-critico">Si seguimos así</p>
+          <p className="text-[14px] font-semibold text-critico">Si seguimos así <Fecha>{`Revisiones oficiales 2013–${actual.y}`}</Fecha></p>
           <div className="mt-3 flex items-start gap-3">
             <h2 className="max-w-[24ch] font-serif text-[clamp(2rem,4.4vw,3.4rem)] leading-[1.05] font-semibold tracking-[-0.015em]">
               A este ritmo, hacia {c.todos.anio} ningún acuífero de México tendría agua disponible
@@ -398,7 +403,7 @@ function Presas() {
     <section id="presas" className="scroll-mt-20 border-t border-line bg-raised">
       <div className="mx-auto grid max-w-6xl gap-14 px-4 py-24 sm:px-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.25fr)] lg:items-center lg:py-32">
         <Aparecer>
-          <p className="text-[14px] font-semibold text-critico">Presas</p>
+          <p className="text-[14px] font-semibold text-critico">Presas <Fecha>{`Al ${fechaCorta(presas.ultima)}`}</Fecha></p>
           <h2 className="mt-3 font-serif text-[clamp(2rem,4vw,3rem)] leading-[1.06] font-semibold tracking-[-0.015em] text-balance">
             Los años secos son cada vez más seguidos
           </h2>
@@ -441,7 +446,7 @@ function DiasDeAgua() {
         <Aparecer>
           <div className="flex max-w-3xl items-start gap-3">
             <div>
-              <p className="text-[14px] font-semibold text-critico">Días de agua</p>
+              <p className="text-[14px] font-semibold text-critico">Días de agua <Fecha>{`Al ${fechaCorta(cutz.actual.f)}`}</Fecha></p>
               <h2 className="mt-3 font-serif text-[clamp(2rem,4vw,3rem)] leading-[1.06] font-semibold tracking-[-0.015em] text-balance">
                 Una sola temporada seca basta para vaciar las presas
               </h2>
@@ -542,7 +547,7 @@ function QuienUsa() {
         <Aparecer>
           <div className="flex items-start gap-3">
             <div>
-              <p className="text-[14px] font-semibold text-critico">¿Quién se lleva el agua?</p>
+              <p className="text-[14px] font-semibold text-critico">¿Quién se lleva el agua? <Fecha>{`Permisos al ${fechaCorta(usos.fecha)}`}</Fecha></p>
               <h2 className="mt-3 font-serif text-[clamp(2rem,4vw,3rem)] leading-[1.06] font-semibold tracking-[-0.015em] text-balance">
                 El campo se lleva {campo10} de cada 10 litros
               </h2>
@@ -627,7 +632,7 @@ function Calidad() {
         <Aparecer>
           <div className="flex max-w-3xl items-start gap-3">
             <div>
-              <p className="text-[14px] font-semibold text-critico">¿Está limpia?</p>
+              <p className="text-[14px] font-semibold text-critico">¿Está limpia? <Fecha>{`Resultados de ${calidad.anios.join(" y ")}`}</Fecha></p>
               <h2 className="mt-3 font-serif text-[clamp(2rem,4vw,3rem)] leading-[1.06] font-semibold tracking-[-0.015em] text-balance">
                 {de10} de cada 10 ríos, lagos y presas medidos están contaminados
               </h2>
@@ -674,7 +679,12 @@ function Metodologia() {
   return (
     <section id="metodologia" className="scroll-mt-20 border-t border-line">
       <div className="mx-auto max-w-6xl px-4 py-24 sm:px-8 lg:py-28">
-        <h2 className="font-serif text-[clamp(1.9rem,3.6vw,2.8rem)] font-semibold tracking-[-0.01em]">Cómo leer estos datos</h2>
+        <div className="flex flex-wrap items-baseline justify-between gap-4">
+          <h2 className="font-serif text-[clamp(1.9rem,3.6vw,2.8rem)] font-semibold tracking-[-0.01em]">Cómo leer estos datos</h2>
+          <Link href="/metodologia" className="text-[15px] font-semibold underline underline-offset-4 hover:text-critico">
+            Fuentes, colores y fechas →
+          </Link>
+        </div>
         <div className="mt-10 grid gap-x-14 md:grid-cols-2">
           {bloques.map(([t, d]) => (
             <details key={t} className="group border-t border-line-strong">

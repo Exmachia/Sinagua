@@ -91,7 +91,7 @@ function gota(color: string, pr: number) {
   return { width: w, height: h, data: new Uint8Array(ctx.getImageData(0, 0, w, h).data.buffer) };
 }
 const NOMBRE_SEMAFORO: Record<Semaforo, string> = { r: "Contaminada", a: "Con problemas", v: "Cumple" };
-const FUENTE: Record<string, string> = { "estados-fill": "estados", "municipios-fill": "municipios", burbujas: "burbujas" };
+const FUENTE: Record<string, string> = { "estados-fill": "estados", "acuiferos-fill": "acuiferos", burbujas: "burbujas" };
 
 export default function AquiferMap({ vista, focus, margen, estados, municipios, acuiferos, onNavigate, calidad }: Props) {
   const container = useRef<HTMLDivElement>(null);
@@ -106,10 +106,6 @@ export default function AquiferMap({ vista, focus, margen, estados, municipios, 
     if (capa === "estados-fill") {
       const e = estados.get(id);
       return e ? { titulo: e.e, linea: `${fmt(e.pct, 0)}% del territorio sobre acuíferos sobreexplotados` } : null;
-    }
-    if (capa === "municipios-fill") {
-      const m = municipios.get(id);
-      return m ? { titulo: m.n, linea: `${fmt(m.pct, 0)}% de su superficie sobre acuíferos sobreexplotados` } : null;
     }
     const a = acuiferos.get(id);
     return a ? { titulo: a.n, linea: ESTATUS[a.s].label, color: ESTATUS[a.s].color } : null;
@@ -220,7 +216,7 @@ export default function AquiferMap({ vista, focus, margen, estados, municipios, 
       setReady(true);
     });
 
-    // Interacción: hover con tooltip y clic que navega. Prioridad: burbuja > municipio > estado.
+    // Interacción: hover con tooltip y clic que navega. Prioridad: burbuja > acuífero > estado (sin nivel de municipio).
     const hovered: Record<string, string | undefined> = {};
     const limpiar = (capa: string) => {
       const id = hovered[capa];
@@ -229,7 +225,7 @@ export default function AquiferMap({ vista, focus, margen, estados, municipios, 
     };
     const tocar = (e: MapMouseEvent) => {
       if (!map.getLayer("burbujas")) return null;
-      const f = map.queryRenderedFeatures(e.point, { layers: ["burbujas", "calidad", "municipios-fill", "estados-fill"] })[0];
+      const f = map.queryRenderedFeatures(e.point, { layers: ["burbujas", "calidad", "acuiferos-fill", "estados-fill"] })[0];
       if (f?.layer.id === "calidad") return { capa: "calidad", id: String(f.properties.c), props: f.properties };
       return f && f.id !== undefined ? { capa: f.layer.id, id: String(f.id), props: f.properties } : null;
     };
@@ -286,7 +282,7 @@ export default function AquiferMap({ vista, focus, margen, estados, municipios, 
         quitarTip = window.setTimeout(() => setTip(null), 4000);
       }
       else if (hit.capa === "burbujas") navegar({ ...v, a: hit.id });
-      else if (hit.capa === "municipios-fill") navegar({ e: v.e, m: hit.id, a: null });
+      else if (hit.capa === "acuiferos-fill") navegar({ e: v.e, m: null, a: hit.id });
       else if (hit.id !== v.e) navegar({ e: hit.id, m: null, a: null });
     });
 
@@ -299,35 +295,14 @@ export default function AquiferMap({ vista, focus, margen, estados, municipios, 
     };
   }, []);
 
-  // Municipios del estado elegido (un archivo por estado).
-  useEffect(() => {
-    const map = mapRef.current;
-    if (!map || !ready) return;
-    const src = map.getSource("municipios") as GeoJSONSource | undefined;
-    if (!src) return;
-    if (!vista.e) {
-      src.setData(vacio);
-      return;
-    }
-    let vivo = true;
-    fetch(`/data/mun/${vista.e}.json`)
-      .then((r) => r.json())
-      .then((d) => {
-        if (vivo) src.setData(d);
-      })
-      .catch(() => {});
-    return () => {
-      vivo = false;
-    };
-  }, [vista.e, ready]);
-
   // Estilo según la vista.
   useEffect(() => {
     const map = mapRef.current;
     if (!map || !ready) return;
     const est = vista.e ? estados.get(vista.e) : null;
     const claves = est?.a ?? (vista.a ? [vista.a] : []);
-    const enMun = vista.m ? (municipios.get(vista.m)?.a.map((x) => x[0]) ?? []) : null;
+    // Con un acuífero abierto, los demás del estado se atenúan para que se note cuál es.
+    const enMun = vista.a ? [vista.a] : null;
 
     // Nacional: coropleta por estado. Estatal: el estado elegido se abre y los demás se apagan.
     map.setPaintProperty("estados-fill", "fill-color", est
@@ -337,8 +312,8 @@ export default function AquiferMap({ vista, focus, margen, estados, municipios, 
     map.setFilter("estado-sel", ["==", ["get", "CVE_ENT"], est?.cve ?? ""]);
     map.setFilter("acuiferos-fill", ["in", ["get", "clave"], ["literal", claves]]);
     map.setPaintProperty("acuiferos-fill", "fill-opacity", enMun
-      ? ["case", ["in", ["get", "clave"], ["literal", enMun]], 0.55, 0.12]
-      : 0.42);
+      ? ["case", ["in", ["get", "clave"], ["literal", enMun]], 0.55, ["case", hover, 0.3, 0.12]]
+      : ["case", hover, 0.62, 0.42]);
     map.setFilter("burbujas", ["in", ["get", "clave"], ["literal", claves]]);
     map.setFilter("burbujas-halo", ["in", ["get", "clave"], ["literal", claves]]);
     map.setFilter("burbujas-label", ["in", ["get", "clave"], ["literal", enMun ?? claves]]);
@@ -388,7 +363,7 @@ export default function AquiferMap({ vista, focus, margen, estados, municipios, 
         ref={container}
         className="h-full w-full"
         role="region"
-        aria-label="Mapa de México por estado. Al elegir un estado se muestran sus municipios y una burbuja por cada acuífero. El buscador permite hacer lo mismo con el teclado."
+        aria-label="Mapa de México por estado. Al elegir un estado se muestran sus acuíferos, cada uno con su burbuja. El buscador permite hacer lo mismo con el teclado."
       />
       {!ready && (
         <div className="absolute inset-0 grid place-items-center bg-bg text-sm text-ink-3" aria-live="polite">

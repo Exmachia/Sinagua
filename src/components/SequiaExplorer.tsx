@@ -9,6 +9,7 @@ import { CATEGORIAS, duracion, enSequia, type DatosSequia, type SequiaMun } from
 import type { Margen } from "./AquiferMap";
 import Buscador, { type Opcion } from "./Buscador";
 import Conmutador from "./Conmutador";
+import LeyendaMapa from "./LeyendaMapa";
 import PanelMapa, { visibleMovil, type Nivel } from "./PanelMapa";
 import type { VistaSequia } from "./SequiaMap";
 import { Ayuda, ayudaAbierta, BotonInicio, BotonCompartir, Cabeza, Cifra, Esqueleto, Fila, Pista, Seccion, VerMas } from "./ui";
@@ -211,7 +212,7 @@ export default function SequiaExplorer() {
 
 function Leyenda() {
   return (
-    <div className="pointer-events-none absolute right-3 bottom-9 z-10 rounded-lg bg-surface/95 px-3 py-2.5 text-[12px] shadow-[0_4px_16px_rgba(25,23,20,0.12)] ring-1 ring-black/5 backdrop-blur max-lg:hidden">
+    <LeyendaMapa arriba="top-[128px]">
       <p className="mb-1.5 font-semibold">Sequía en cada municipio</p>
       <ul className="space-y-1">
         {[...CATEGORIAS].reverse().map((c) => (
@@ -221,7 +222,7 @@ function Leyenda() {
           </li>
         ))}
       </ul>
-    </div>
+    </LeyendaMapa>
   );
 }
 

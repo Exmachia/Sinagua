@@ -8,6 +8,7 @@ import { fechaCorta, nivel, NIVELES, SIN_DATO, USO_CORTO, type EstadoPresas, typ
 import type { Margen } from "./AquiferMap";
 import Buscador, { type Opcion } from "./Buscador";
 import Conmutador from "./Conmutador";
+import LeyendaMapa from "./LeyendaMapa";
 import PanelMapa, { visibleMovil, type Nivel } from "./PanelMapa";
 import type { VistaPresas } from "./PresasMap";
 import { AyudaCalidad, useJson } from "./Usos";
@@ -208,7 +209,7 @@ export default function PresasExplorer() {
 
 function Leyenda({ modo }: { modo: "estados" | "presas" }) {
   return (
-    <div className="pointer-events-none absolute right-3 bottom-9 z-10 rounded-lg bg-surface/95 px-3 py-2.5 text-[12px] shadow-[0_4px_16px_rgba(25,23,20,0.12)] ring-1 ring-black/5 backdrop-blur max-lg:hidden">
+    <LeyendaMapa arriba="top-[128px]">
       <p className="mb-1.5 font-semibold">{modo === "estados" ? "Qué tan llenas están sus presas" : "Cada burbuja es una presa"}</p>
       <ul className="space-y-1">
         {[...NIVELES].reverse().map((n) => (
@@ -230,7 +231,7 @@ function Leyenda({ modo }: { modo: "estados" | "presas" }) {
         )}
       </ul>
       {modo === "presas" && <p className="mt-2 border-t border-line pt-1.5 text-ink-3">Tamaño = capacidad</p>}
-    </div>
+    </LeyendaMapa>
   );
 }
 
