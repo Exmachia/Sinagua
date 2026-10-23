@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import BotonHistoria from "@/components/BotonHistoria";
-import Marca from "@/components/Marca";
+import NavFlotante from "@/components/landing/NavFlotante";
 import { CONTACTO } from "@/lib/sitio";
 import { Ayuda } from "@/components/ui";
 import { cacheLife } from "next/cache";
@@ -27,13 +27,8 @@ export default async function Urgente() {
   const datos = lista.filter((a) => a.tipo !== "reporte");
   return (
     <>
-      <header className="mx-auto flex max-w-6xl items-center justify-between px-4 pt-6 sm:px-8">
-        <Link href="/" aria-label="Sinagua, inicio" className="text-xl"><Marca /></Link>
-        <Link href="/mapa" className="inline-flex min-h-10 items-center rounded-full bg-ink px-4 text-[14px] font-semibold text-white hover:opacity-85">
-          Abrir el mapa
-        </Link>
-      </header>
-      <main className="mx-auto max-w-6xl px-4 pt-14 pb-24 sm:px-8 lg:pt-20">
+      <NavFlotante />
+      <main className="mx-auto max-w-6xl px-4 pt-32 pb-24 sm:px-8 lg:pt-40">
         <p className="inline-flex items-center gap-2 text-[14px] font-semibold text-critico">
           <span aria-hidden className="size-2 rounded-full bg-critico" /> Urgente
         </p>

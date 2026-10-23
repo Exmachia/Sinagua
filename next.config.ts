@@ -9,6 +9,7 @@ const nextConfig: NextConfig = {
     "/opengraph-image": ["src/og/fuentes/**/*"],
     "/compartir/**": ["src/og/fuentes/**/*"],
     "/urgente/**": ["src/og/fuentes/**/*"],
+    "/articulos/**": ["src/og/fuentes/**/*"],
   },
   partialPrefetching: true,
   // Encabezados de seguridad básicos: nadie puede meter el sitio en un iframe ajeno, el navegador no adivina tipos
