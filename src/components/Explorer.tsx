@@ -24,9 +24,10 @@ import { SEMAFORO, type ResumenCalidad, type SitioCalidad, type UsoLugar, type U
 import { BloqueCalidad, BloqueUsos, useJson } from "./Usos";
 import HistoryChart from "./HistoryChart";
 import Conmutador from "./Conmutador";
+import LeyendaMapa from "./LeyendaMapa";
 import PanelMapa, { visibleMovil, type Nivel } from "./PanelMapa";
 import SearchBox from "./SearchBox";
-import { Ayuda, ayudaAbierta, BotonInicio, BotonCompartir, Burbuja, Cabeza, Cifra, Esqueleto, Fila, Pestanas, Pista, Seccion, VerMas } from "./ui";
+import { Ayuda, ayudaAbierta, BotonInicio, BotonCompartir, Burbuja, Cabeza, Cifra, Esqueleto, Fila, Pista, Seccion, VerMas } from "./ui";
 
 const AquiferMap = dynamic(() => import("./AquiferMap"), {
   ssr: false,
@@ -66,23 +67,29 @@ function hashDe(v: Vista, estados: Map<string, Estado>) {
   return s ? `#${s}` : "";
 }
 
-/** Lee la vista y completa el estado cuando el enlace solo trae municipio o acuífero. */
+/** El acuífero que tiene debajo la mayor parte de un municipio. */
+const acuiferoDe = (m: Municipio | undefined) => m?.a[0]?.[0] ?? null;
+
+/**
+ * Lee la vista: estado → acuífero (ya no hay nivel de municipio). Un enlace viejo o una búsqueda con municipio
+ * lleva al acuífero que tiene debajo, dentro de su estado.
+ */
 function leerVista(hash: string, d: Datos | null, porSlug: Map<string, Estado>, mun: Map<string, Municipio>, acu: Map<string, Acuifero>): Vista {
   const p = new URLSearchParams(hash.slice(1));
   const m = p.get("m");
-  const a = p.get("a");
+  let a = p.get("a");
   let e = p.get("e");
   if (e && porSlug.has(e)) e = porSlug.get(e)!.cve;
-  if (!d) return { e, m, a };
+  if (!d) return { e, m: null, a };
+  if (m && !a) a = acuiferoDe(mun.get(m));
   if (!e && m) e = mun.get(m)?.ent ?? null;
   if (!e && a) e = acu.get(a)?.st[0] ?? null;
-  return { e, m: m && mun.has(m) ? m : null, a: a && acu.has(a) ? a : null };
+  return { e, m: null, a: a && acu.has(a) ? a : null };
 }
 
-/** El nivel de arriba de la vista actual (acuífero → municipio → estado → México). */
+/** El nivel de arriba de la vista actual (acuífero → estado → México). */
 function arriba(v: Vista): Vista {
-  if (v.a) return { ...v, a: null };
-  if (v.m) return { e: v.e, m: null, a: null };
+  if (v.a) return { e: v.e, m: null, a: null };
   return { e: null, m: null, a: null };
 }
 
@@ -118,10 +125,13 @@ export default function Explorer() {
 
   const vista = useMemo(() => leerVista(hash, d, idx.slug, idx.mun, idx.acu), [hash, d, idx]);
   const estado = vista.e ? idx.est.get(vista.e) ?? null : null;
-  const municipio = vista.m ? idx.mun.get(vista.m) ?? null : null;
   const acuifero = vista.a ? idx.acu.get(vista.a) ?? null : null;
 
-  function navegar(v: Vista) {
+  function navegar(destino: Vista) {
+    // Del buscador puede llegar un municipio: se abre su acuífero principal.
+    const v: Vista = destino.m && !destino.a
+      ? { e: destino.e ?? idx.mun.get(destino.m)?.ent ?? null, m: null, a: acuiferoDe(idx.mun.get(destino.m)) }
+      : { ...destino, m: null };
     const h = hashDe(v, idx.est);
     if (h !== window.location.hash) {
       window.history.pushState(null, "", `${window.location.pathname}${window.location.search}${h}`);
@@ -151,14 +161,13 @@ export default function Explorer() {
     return () => window.removeEventListener("keydown", onKey);
   }, []);
 
-  const focus: Bbox | null = acuifero && !municipio ? acuifero.b : municipio?.b ?? estado?.b ?? null;
+  const focus: Bbox | null = acuifero?.b ?? estado?.b ?? null;
   const margen: Margen = escritorio
     ? { top: 0, right: 48, bottom: 0, left: abierto ? 424 : 0 }
     : { top: 120, right: 0, bottom: visibleMovil(nivel, window.innerHeight), left: 0 };
 
   const ruta: { label: string; v: Vista }[] = [{ label: "México", v: { e: null, m: null, a: null } }];
   if (estado) ruta.push({ label: estado.e, v: { e: estado.cve, m: null, a: null } });
-  if (municipio) ruta.push({ label: municipio.n, v: { e: vista.e, m: municipio.g, a: null } });
   if (acuifero) ruta.push({ label: acuifero.n, v: vista });
   const padre = ruta.length > 1 ? ruta[ruta.length - 2] : null;
 
@@ -222,12 +231,9 @@ export default function Explorer() {
         {!d ? (
           <Esqueleto />
         ) : acuifero ? (
-          <ModuloAcuifero a={acuifero} municipio={municipio} />
-        ) : municipio && estado ? (
-          <ModuloMunicipio m={municipio} estado={estado} acu={idx.acu} onPick={(a) => navegar({ ...vista, a })} />
+          <ModuloAcuifero a={acuifero} />
         ) : estado ? (
-          <ModuloEstado key={estado.cve} e={estado} acu={idx.acu} municipios={d.municipios.filter((m) => m.ent === estado.cve)}
-            onPick={(v) => navegar({ e: estado.cve, ...v })} />
+          <ModuloEstado key={estado.cve} e={estado} acu={idx.acu} onPick={(a) => navegar({ e: estado.cve, m: null, a })} />
         ) : (
           <ModuloNacional estados={d.estados} onPick={(e) => navegar({ e, m: null, a: null })} />
         )}
@@ -271,13 +277,13 @@ function Gota({ color }: { color: string }) {
 
 function Leyenda({ modo, calidad }: { modo: "territorio" | "estatus"; calidad: boolean }) {
   return (
-    <div className="pointer-events-none absolute right-3 bottom-9 z-10 rounded-lg bg-surface/95 px-3 py-2.5 text-[12px] shadow-[0_4px_16px_rgba(25,23,20,0.12)] ring-1 ring-black/5 backdrop-blur max-lg:hidden">
+    <LeyendaMapa arriba="top-[128px]">
       {modo === "territorio" ? (
         <>
           <p className="mb-1.5 font-semibold">Territorio sobre acuíferos sobreexplotados</p>
-          <div className="flex">
+          <div className="flex w-full min-w-40">
             {RAMPA.map((r) => (
-              <div key={r.desde} className="w-10">
+              <div key={r.desde} className="min-w-10 flex-1">
                 <div className="h-2.5 border-r-2 border-surface" style={{ background: r.color }} />
                 <span className="num mt-1 block text-ink-3">{r.desde}%</span>
               </div>
@@ -310,7 +316,7 @@ function Leyenda({ modo, calidad }: { modo: "territorio" | "estatus"; calidad: b
           )}
         </>
       )}
-    </div>
+    </LeyendaMapa>
   );
 }
 
@@ -395,15 +401,10 @@ function ModuloNacional({ estados, onPick }: { estados: Estado[]; onPick: (cve: 
   );
 }
 
-function ModuloEstado({ e, acu, municipios, onPick }: {
-  e: Estado; acu: Map<string, Acuifero>; municipios: Municipio[]; onPick: (v: { m: string | null; a: string | null }) => void;
-}) {
-  const [tab, setTab] = useState<"mun" | "acu">("mun");
+function ModuloEstado({ e, acu, onPick }: { e: Estado; acu: Map<string, Acuifero>; onPick: (a: string) => void }) {
   const [todos, setTodos] = useState(false);
   const items = e.a.map((c) => acu.get(c)!).filter(Boolean).sort((x, y) => x.dma - y.dma);
-  const muns = [...municipios].sort((x, y) => y.pct - x.pct || x.n.localeCompare(y.n));
-  const lista = tab === "mun" ? muns : items;
-  const visibles = todos ? lista : lista.slice(0, 6);
+  const visibles = todos ? items : items.slice(0, 6);
   const usos = useJson<UsosEstado>(`/data/usos/${e.cve}.json`);
   const cal = calidadEstado(e.cve);
 
@@ -414,27 +415,16 @@ function ModuloEstado({ e, acu, municipios, onPick }: {
         <Cifra valor={`${fmt(e.pct, 0)}%`} texto="de su territorio sobre acuíferos sobreexplotados" tono={e.pct >= 50 ? "var(--s-critico)" : undefined} />
         <Cifra valor={`${e.deficit} de ${e.total}`} texto="acuíferos sobreexplotados" />
       </div>
-      <Pista>Toca tu municipio o una burbuja en el mapa.</Pista>
-
-      <Pestanas valor={tab} onChange={(v) => { setTab(v); setTodos(false); }}
-        opciones={[["mun", `Municipios (${muns.length})`], ["acu", `Acuíferos (${items.length})`]]} />
-      <div className="px-6 pt-3">
-        <p className="mb-1 text-[12px] text-ink-3">
-          {tab === "mun" ? "% de su superficie sobre acuíferos sobreexplotados" : "Agua que falta (−) o sobra (+) cada año · millones de m³"}
-        </p>
+      <Seccion titulo={`Sus ${items.length} acuíferos`} accion={<span className="text-[12px] whitespace-nowrap text-ink-3">falta (−) · millones de m³</span>}>
         <ul>
-          {tab === "mun"
-            ? (visibles as Municipio[]).map((m) => (
-                <Fila key={m.g} onClick={() => onPick({ m: m.g, a: null })} inicio={<BarraPct pct={m.pct} />} nombre={m.n} valor={`${fmt(m.pct, 0)}%`} />
-              ))
-            : (visibles as Acuifero[]).map((a) => (
-                <Fila key={a.c} onClick={() => onPick({ m: null, a: a.c })} inicio={<Burbuja color={ESTATUS[a.s].color} />}
-                  nombre={a.n} sub={ESTATUS[a.s].label} valor={`${a.dma > 0 ? "+" : ""}${fmt(a.dma, 1)}`}
-                  valorTono={a.dma < 0 ? "var(--s-critico)" : undefined} />
-              ))}
+          {visibles.map((a) => (
+            <Fila key={a.c} onClick={() => onPick(a.c)} inicio={<Burbuja color={ESTATUS[a.s].color} />}
+              nombre={a.n} sub={ESTATUS[a.s].label} valor={`${a.dma > 0 ? "+" : ""}${fmt(a.dma, 1)}`}
+              valorTono={a.dma < 0 ? "var(--s-critico)" : undefined} />
+          ))}
         </ul>
-        {lista.length > 6 && <VerMas abierto={todos} total={lista.length} onClick={() => setTodos((x) => !x)} />}
-      </div>
+        {items.length > 6 && <VerMas abierto={todos} total={items.length} onClick={() => setTodos((x) => !x)} />}
+      </Seccion>
       <BloqueUsos u={usos ? usos.e : undefined} lugar={e.e} compartir={{ ruta: `/compartir/usos-estado/${e.slug}`, titulo: `¿Quién se lleva el agua en ${e.e}? — Sinagua` }} />
       <BloqueCalidad sup={cal.superficie} pozo={cal.pozo} />
       <div className="px-6 pt-4">
@@ -445,53 +435,10 @@ function ModuloEstado({ e, acu, municipios, onPick }: {
   );
 }
 
-function ModuloMunicipio({ m, estado, acu, onPick }: { m: Municipio; estado: Estado; acu: Map<string, Acuifero>; onPick: (c: string) => void }) {
-  const debajo = m.a.map(([c, pct]) => ({ a: acu.get(c)!, pct })).filter((x) => x.a);
-  const principal = debajo[0];
-  const usos = useJson<UsosEstado>(`/data/usos/${estado.cve}.json`);
-  const nombre = sinAcentos(m.n);
-  const filtro = useMemo(() => (s: SitioCalidad) => s.cve === m.ent && sinAcentos(s.mun) === nombre, [m.ent, nombre]);
-  const sitios = useSitios(filtro);
-  const cal = sitios ? resumir(sitios) : null;
-  return (
-    <div className="pb-4">
-      <Cabeza dato={DATO_ACUIFEROS} sobre={`Municipio de ${estado.e}`} titulo={m.n} ayuda={<AyudaAcuiferos />} />
-      <div className="mt-4 px-6">
-        {m.pct >= 1 ? (
-          <Cifra valor={`${fmt(m.pct, 0)}%`} texto="de su superficie está sobre acuíferos sobreexplotados" tono={m.pct >= 50 ? "var(--s-critico)" : undefined} />
-        ) : (
-          <p className="font-serif text-xl leading-snug">Ninguno de los acuíferos bajo su territorio está sobreexplotado.</p>
-        )}
-        {principal && debajo.length > 1 && (
-          <p className="mt-3 text-[14px] text-ink-2">
-            La mayor parte ({fmt(principal.pct, 0)}%) está sobre <strong className="font-semibold text-ink">{principal.a.n}</strong>.
-          </p>
-        )}
-      </div>
-      <Seccion titulo={debajo.length === 1 ? "El acuífero bajo sus pies" : `Los ${debajo.length} acuíferos bajo sus pies`}
-        accion={<span className="text-[12px] text-ink-3">% del municipio</span>}>
-        <ul className="pb-2">
-          {debajo.map(({ a, pct }) => (
-            <Fila key={a.c} onClick={() => onPick(a.c)} inicio={<Burbuja color={ESTATUS[a.s].color} grande />}
-              nombre={a.n} sub={ESTATUS[a.s].label} valor={`${fmt(pct, pct < 10 ? 1 : 0)}%`} />
-          ))}
-        </ul>
-      </Seccion>
-      <BloqueUsos u={usos ? (usos.m[m.g] ?? null) : undefined} lugar={m.n} />
-      {cal && <BloqueCalidad sup={cal.sup} pozo={cal.pozo} sitios={sitios ?? undefined} />}
-      <div className="px-6 pt-4">
-        <BotonCompartir ruta={`/compartir/municipio/${m.g}`} titulo={`${m.n} — Sinagua`} className="w-full"
-          texto={`El ${fmt(m.pct, 0)}% de ${m.n} (${estado.e}) está sobre acuíferos sobreexplotados. ¿Y tu municipio?`} />
-      </div>
-    </div>
-  );
-}
-
-function ModuloAcuifero({ a, municipio }: { a: Acuifero; municipio: Municipio | null }) {
+function ModuloAcuifero({ a }: { a: Acuifero }) {
   const renovable = Math.max(0, a.r - a.dnc);
   const escala = Math.max(renovable, a.veas, 0.001);
   const st = ESTATUS[a.s];
-  const pctMun = municipio?.a.find(([c]) => c === a.c)?.[1];
   const usos = useJson<Record<string, UsoLugar>>("/data/usos_acuiferos.json");
   const nombre = sinAcentos(a.n);
   const filtro = useMemo(() => (s: SitioCalidad) => s.t === "pozo" && sinAcentos(s.cuerpo) === nombre, [nombre]);
@@ -500,7 +447,7 @@ function ModuloAcuifero({ a, municipio }: { a: Acuifero; municipio: Municipio | 
 
   return (
     <div className="pb-5">
-      <Cabeza dato={DATO_ACUIFEROS} sobre={`Acuífero ${a.c}${pctMun !== undefined && municipio ? ` · cubre el ${fmt(pctMun, 0)}% de ${municipio.n}` : ""}`} titulo={a.n}
+      <Cabeza dato={DATO_ACUIFEROS} sobre={`Acuífero ${a.c}`} titulo={a.n}
         ayuda={<AyudaAcuiferos />}>
         <p className="mt-2.5 inline-flex items-center gap-2 rounded-full bg-raised py-1 pr-3 pl-1.5 text-[13px] font-semibold">
           <Burbuja color={st.color} grande />
