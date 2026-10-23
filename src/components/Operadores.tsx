@@ -68,3 +68,28 @@ export function ListaOperadores({ casos, sinEtiqueta }: { casos: Operador[]; sin
     </ul>
   );
 }
+
+/** Tarjeta de una ciudad para la cuadrícula de la portada. */
+export function TarjetaCaso({ c }: { c: Operador }) {
+  const t = TIPO[c.tipo];
+  return (
+    <article className="flex h-full flex-col rounded-2xl bg-surface p-5 ring-1 ring-black/5">
+      <div className="flex items-center justify-between gap-2">
+        <span className={`rounded-full px-2.5 py-0.5 text-[12px] font-semibold ${t.clase}`}>{t.label}</span>
+        <span className="num text-[13px] text-ink-3">hasta {c.hasta}</span>
+      </div>
+      <h4 className="mt-3 font-serif text-[1.35rem] leading-tight font-semibold">{c.ciudad}</h4>
+      {c.estadoNombre !== c.ciudad && <p className="text-[13px] text-ink-3">{c.estadoNombre}</p>}
+      <p className="mt-3 text-[14px] leading-snug">{c.empresa}</p>
+      <p className="mt-2 text-[13px] leading-snug text-ink-2">{c.situacion}</p>
+      <p className="mt-auto pt-4 text-[12px] text-ink-3">
+        {c.fuentes.map((f, i) => (
+          <span key={f.url}>
+            {i > 0 && " · "}
+            <a href={f.url} target="_blank" rel="noopener noreferrer" className="underline underline-offset-2 hover:text-ink">{f.nombre}</a>
+          </span>
+        ))}
+      </p>
+    </article>
+  );
+}
