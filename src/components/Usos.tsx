@@ -162,7 +162,13 @@ function FilaCalidad({ titulo, r, rojo }: { titulo: string; r: ResumenCalidad; r
     <div className="py-3">
       <p className="text-[14px] text-ink-2">{titulo}</p>
       <p className="mt-0.5 text-[15px]">
-        <strong className="num font-semibold">{r.r} de {r.n}</strong> {rojo}
+        {r.r > 0 ? (
+          <><strong className="num font-semibold">{r.r} de {r.n}</strong> {rojo}</>
+        ) : r.a > 0 ? (
+          <>Ninguno en rojo; <strong className="num font-semibold">{r.a} de {r.n}</strong> {r.a === 1 ? "tiene" : "tienen"} problemas</>
+        ) : (
+          <>{r.n === 1 ? "El único medido cumple" : `Los ${r.n} cumplen`}</>
+        )}
       </p>
       <div className="mt-2"><BarraSemaforo r={r} /></div>
       {r.q.length > 0 && (
@@ -172,6 +178,22 @@ function FilaCalidad({ titulo, r, rojo }: { titulo: string; r: ResumenCalidad; r
       )}
     </div>
   );
+}
+
+const sinAcentos = (x: string) => x.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim();
+/** Nombre del sitio sin repetir el municipio ni la abreviatura del estado ("Pozo Campo Azul, Celaya, Gto" → "Pozo Campo Azul"). */
+function nombreSitio(s: SitioCalidad) {
+  const partes = s.n.split(",").map((x) => x.trim()).filter(Boolean);
+  const limpio = partes.filter((x, i) => i === 0 || (sinAcentos(x) !== sinAcentos(s.mun) && x.replace(".", "").length > 4));
+  return limpio.join(", ");
+}
+
+/** Qué tiene un sitio, en palabras: "Con problemas: exceso de sales". */
+function estadoSitio(s: SitioCalidad) {
+  if (s.s === "v") return "Cumple";
+  const base = s.s === "r" ? (s.t === "pozo" ? "No sirve para beber sin tratarla" : "Contaminado") : "Con problemas";
+  const que = s.q ? s.q.split(", ").map((q) => QUE_ES[q] ?? q).join(", ") : "";
+  return que ? `${base}: ${que}` : base;
 }
 
 export function BloqueCalidad({ sup, pozo, sitios }: { sup?: ResumenCalidad; pozo?: ResumenCalidad; sitios?: SitioCalidad[] }) {
@@ -193,7 +215,7 @@ export function BloqueCalidad({ sup, pozo, sitios }: { sup?: ResumenCalidad; poz
         <>
           <button type="button" onClick={() => setVer((x) => !x)} aria-expanded={ver}
             className="mt-1 mb-2 flex min-h-10 w-full cursor-pointer items-center justify-between rounded-md px-2 text-[14px] font-semibold text-ink-2 transition-colors hover:bg-raised hover:text-ink">
-            Ver los {sitios.length} sitios
+            Ver dónde se midió ({sitios.length} {sitios.every((x) => x.t === "pozo") ? (sitios.length === 1 ? "pozo" : "pozos") : sitios.length === 1 ? "sitio" : "sitios"})
             <svg aria-hidden viewBox="0 0 24 24" className={`size-4 transition-transform ${ver ? "rotate-180" : ""}`} fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round"><path d="m6 9 6 6 6-6" /></svg>
           </button>
           {ver && (
@@ -202,11 +224,8 @@ export function BloqueCalidad({ sup, pozo, sitios }: { sup?: ResumenCalidad; poz
                 <li key={s.c} className="flex gap-3">
                   <span className="pt-1"><Burbuja color={SEMAFORO[s.s].color} /></span>
                   <span className="min-w-0 flex-1">
-                    <span className="block leading-snug">{s.cuerpo || s.n}</span>
-                    <span className="block text-[12px] text-ink-3">
-                      {s.t === "pozo" ? "Pozo" : "Agua superficial"} · {SEMAFORO[s.s].label.toLowerCase()}
-                      {s.q ? ` (${s.q})` : ""} · {s.y}
-                    </span>
+                    <span className="block leading-snug">{s.mun} · {s.t === "pozo" ? nombreSitio(s) : s.cuerpo || nombreSitio(s)}</span>
+                    <span className="block text-[12px] text-ink-3">{estadoSitio(s)} · {s.y}</span>
                   </span>
                 </li>
               ))}
