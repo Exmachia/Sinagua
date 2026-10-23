@@ -11,7 +11,8 @@ import SequiaChart from "@/components/landing/SequiaChart";
 import Cien from "@/components/landing/Cien";
 import DiasChart from "@/components/landing/DiasChart";
 import { AyudaCalidad, AyudaUsos, BarraSemaforo } from "@/components/Usos";
-import { AyudaOperadores, ListaOperadores, OPERADORES } from "@/components/Operadores";
+import Desplegable from "@/components/Desplegable";
+import { AyudaOperadores, OPERADORES, TarjetaCaso } from "@/components/Operadores";
 import { Ayuda, Burbuja, BotonCompartir } from "@/components/ui";
 import { albercas, fmt } from "@/lib/acuiferos";
 import { fechaCorta, mesLargo } from "@/lib/presas";
@@ -47,7 +48,6 @@ export default function Home() {
       <main id="inicio">
         <Portada />
         <Realidad />
-        <PorEstado />
         <Sequia />
         <Proyeccion />
         <Presas />
@@ -158,88 +158,6 @@ function Realidad() {
         </div>
       </div>
     </section>
-  );
-}
-
-/* ---------- 3. Por estado: agua por persona ---------- */
-
-function PorEstado() {
-  const { umbrales } = app;
-  const escasos = app.estados.filter((e) => e.m3 < umbrales.estres);
-  const tope = umbrales.estres;
-  return (
-    <section id="estados" className="scroll-mt-20">
-      <div className="mx-auto grid max-w-6xl gap-14 px-4 py-24 sm:px-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.2fr)] lg:py-32">
-        <Aparecer>
-          <p className="text-[14px] font-semibold text-critico">Por estado <Fecha>{`Dato de ${porPersona1.y}`}</Fecha></p>
-          <div className="mt-3 flex items-start gap-3">
-            <h2 className="font-serif text-[clamp(2rem,4vw,3rem)] leading-[1.06] font-semibold tracking-[-0.015em] text-balance">
-              En la Ciudad de México le tocan {fmt(app.estados[0].m3, 0)} m³ de agua al año a cada persona. En Chiapas, {fmt(app.estados[app.estados.length - 1].m3, 0)}.
-            </h2>
-            <div className="pt-2"><AyudaPorPersona /></div>
-          </div>
-          <p className="mt-5 text-[1.1rem] leading-relaxed text-ink-2">
-            El agua está en el sureste; la gente, en el centro y el norte.
-          </p>
-        </Aparecer>
-        <Aparecer retraso={120}>
-          <figure className="rounded-2xl bg-surface p-6 ring-1 ring-black/5">
-            <figcaption className="mb-5">
-              <p className="font-semibold">Agua renovable por persona al año</p>
-              <p className="text-[13px] text-ink-3">m³ por persona · los {escasos.length} estados con menos agua</p>
-            </figcaption>
-            <ol className="space-y-2">
-              {escasos.map((e) => {
-                const nivel = e.m3 < umbrales.absoluta ? "var(--s-critico)" : e.m3 < umbrales.escasez ? "var(--s-deficit)" : "var(--s-limite)";
-                return (
-                  <li key={e.e} className="grid grid-cols-[8.5rem_1fr_3.5rem] items-center gap-3 text-[14px] max-sm:grid-cols-[6.5rem_1fr_3rem] max-sm:text-[13px]">
-                    <span className="truncate">{e.e}</span>
-                    <span className="relative h-3 rounded-full bg-raised">
-                      <span className="absolute inset-y-0 left-0 rounded-full" style={{ width: `${Math.max((e.m3 / tope) * 100, 2)}%`, background: nivel }} />
-                      {[umbrales.absoluta, umbrales.escasez].map((u) => (
-                        <span key={u} aria-hidden className="absolute -inset-y-1 w-px bg-ink/40" style={{ left: `${(u / tope) * 100}%` }} />
-                      ))}
-                    </span>
-                    <span className="num text-right font-semibold">{fmt(e.m3, 0)}</span>
-                  </li>
-                );
-              })}
-            </ol>
-            <div className="mt-5 flex flex-wrap gap-x-5 gap-y-1 text-[12px] text-ink-2">
-              <span className="inline-flex items-center gap-1.5"><span className="size-2.5 rounded-full bg-critico" />Escasez absoluta (&lt; {umbrales.absoluta})</span>
-              <span className="inline-flex items-center gap-1.5"><span className="size-2.5 rounded-full bg-deficit" />Escasez (&lt; {fmt(umbrales.escasez, 0)})</span>
-              <span className="inline-flex items-center gap-1.5"><span className="size-2.5 rounded-full bg-limite" />Estrés (&lt; {fmt(umbrales.estres, 0)})</span>
-            </div>
-          </figure>
-        </Aparecer>
-      </div>
-    </section>
-  );
-}
-
-function AyudaPorPersona() {
-  return (
-    <Ayuda titulo="Agua por persona">
-      <p>
-        Es el <strong>agua renovable</strong> (la que traen cada año los ríos y la lluvia que se filtra al subsuelo) dividida entre los
-        habitantes. CONAGUA la publica por estado.
-      </p>
-      <p>
-        Usamos los umbrales internacionales de Falkenmark, los más usados por la ONU: con menos de <strong>1,700 m³</strong> por persona
-        al año hay <strong>estrés hídrico</strong>; con menos de <strong>1,000</strong>, <strong>escasez</strong>; con menos de{" "}
-        <strong>500</strong>, <strong>escasez absoluta</strong>.
-      </p>
-      <p>
-        A nivel nacional, el agua por persona bajó de {fmt(porPersona0.m3, 0)} m³ en {porPersona0.y} a {fmt(porPersona1.m3, 0)} en{" "}
-        {porPersona1.y}: la lluvia no aumenta y la población sí.
-      </p>
-      <p>
-        {fmt(app.pctEscasez, 0)}% de los mexicanos viven en un estado con escasez de agua y {fmt(app.pctAbsoluta, 0)}% en escasez absoluta.
-      </p>
-      <p className="text-[13px] text-ink-3">
-        Fuente: CONAGUA, vía SEMARNAT, Compendio de Estadísticas Ambientales 2021 (dato estatal de {porPersona1.y}); población: Censo 2020.
-      </p>
-    </Ayuda>
   );
 }
 
@@ -582,35 +500,47 @@ function QuienUsa() {
             </ol>
             <p className="mt-4 text-[13px] text-ink-3">Permisos de CONAGUA al {fechaCorta(usos.fecha)}</p>
           </div>
-          <TarjetaOperadores />
           <Link href="/mapa" className="mt-8 inline-flex min-h-12 items-center gap-2 rounded-full bg-ink px-6 font-semibold text-white transition-opacity hover:opacity-85">
             Ver quién la usa en tu estado
             <svg aria-hidden viewBox="0 0 24 24" className="size-4" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
           </Link>
         </Aparecer>
+        <Aparecer className="lg:col-span-2"><Operadores /></Aparecer>
       </div>
     </section>
   );
 }
 
-function TarjetaOperadores() {
+/** Quién da el servicio de agua: cuadrícula a lo ancho; en celular se abre con un botón. */
+function Operadores() {
   const conEmpresa = OPERADORES.filter((c) => c.tipo !== "revertido");
   const revertidos = OPERADORES.filter((c) => c.tipo === "revertido");
   return (
-    <div className="mt-6 rounded-2xl bg-surface p-6 shadow-[0_1px_0_rgba(0,0,0,0.04)] ring-1 ring-black/5 sm:p-8">
-      <div className="flex items-start justify-between gap-3">
-        <h3 className="font-serif text-[1.6rem] leading-tight font-semibold text-balance">
+    <div className="border-t border-line-strong pt-10">
+      <div className="flex max-w-3xl items-start gap-3">
+        <h3 className="font-serif text-[clamp(1.6rem,3vw,2.2rem)] leading-tight font-semibold text-balance">
           En {conEmpresa.length} ciudades, el agua la maneja una empresa
         </h3>
         <div className="pt-1"><AyudaOperadores /></div>
       </div>
-      <div className="mt-4 border-t border-line"><ListaOperadores casos={conEmpresa} /></div>
-      {revertidos.length > 0 && (
-        <>
-          <p className="mt-5 text-[13px] font-semibold text-ink-3">Volvieron a ser públicos</p>
-          <ListaOperadores casos={revertidos} sinEtiqueta />
-        </>
-      )}
+      <p className="mt-2 text-[15px] text-ink-2 md:hidden">{conEmpresa.map((c) => c.ciudad).join(" · ")}</p>
+      <Desplegable etiqueta={`Ver los ${conEmpresa.length} casos`}>
+        <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          {conEmpresa.map((c) => <TarjetaCaso key={c.id} c={c} />)}
+        </div>
+        {revertidos.length > 0 && (
+          <p className="mt-5 text-[14px] text-ink-2">
+            <span className="font-semibold text-ink">Volvieron a ser públicos:</span>{" "}
+            {revertidos.map((c, i) => (
+              <span key={c.id}>
+                {i > 0 && " · "}
+                {c.ciudad} ({c.hasta}){" "}
+                <a href={c.fuentes[0].url} target="_blank" rel="noopener noreferrer" className="text-[12px] text-ink-3 underline underline-offset-2 hover:text-ink">fuente</a>
+              </span>
+            ))}
+          </p>
+        )}
+      </Desplegable>
     </div>
   );
 }
