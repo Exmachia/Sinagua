@@ -3,7 +3,6 @@ import Link from "next/link";
 import { CONTACTO } from "@/lib/sitio";
 import HeroSearch from "@/components/HeroSearch";
 import Marca from "@/components/Marca";
-import MapaPreview from "@/components/MapaPreview";
 import Aparecer from "@/components/landing/Aparecer";
 import MinimosPresas from "@/components/landing/MinimosPresas";
 import NavFlotante from "@/components/landing/NavFlotante";
@@ -12,6 +11,7 @@ import SequiaChart from "@/components/landing/SequiaChart";
 import Cien from "@/components/landing/Cien";
 import DiasChart from "@/components/landing/DiasChart";
 import { AyudaCalidad, AyudaUsos, BarraSemaforo } from "@/components/Usos";
+import { AyudaOperadores, ListaOperadores, OPERADORES } from "@/components/Operadores";
 import { Ayuda, Burbuja, BotonCompartir } from "@/components/ui";
 import { albercas, fmt } from "@/lib/acuiferos";
 import { fechaCorta, mesLargo } from "@/lib/presas";
@@ -54,8 +54,6 @@ export default function Home() {
         <DiasDeAgua />
         <QuienUsa />
         <Calidad />
-        <MapaPreview />
-        <Metodologia />
       </main>
       <Pie />
     </>
@@ -584,6 +582,7 @@ function QuienUsa() {
             </ol>
             <p className="mt-4 text-[13px] text-ink-3">Permisos de CONAGUA al {fechaCorta(usos.fecha)}</p>
           </div>
+          <TarjetaOperadores />
           <Link href="/mapa" className="mt-8 inline-flex min-h-12 items-center gap-2 rounded-full bg-ink px-6 font-semibold text-white transition-opacity hover:opacity-85">
             Ver quién la usa en tu estado
             <svg aria-hidden viewBox="0 0 24 24" className="size-4" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
@@ -591,6 +590,28 @@ function QuienUsa() {
         </Aparecer>
       </div>
     </section>
+  );
+}
+
+function TarjetaOperadores() {
+  const conEmpresa = OPERADORES.filter((c) => c.tipo !== "revertido");
+  const revertidos = OPERADORES.filter((c) => c.tipo === "revertido");
+  return (
+    <div className="mt-6 rounded-2xl bg-surface p-6 shadow-[0_1px_0_rgba(0,0,0,0.04)] ring-1 ring-black/5 sm:p-8">
+      <div className="flex items-start justify-between gap-3">
+        <h3 className="font-serif text-[1.6rem] leading-tight font-semibold text-balance">
+          En {conEmpresa.length} ciudades, el agua la maneja una empresa
+        </h3>
+        <div className="pt-1"><AyudaOperadores /></div>
+      </div>
+      <div className="mt-4 border-t border-line"><ListaOperadores casos={conEmpresa} /></div>
+      {revertidos.length > 0 && (
+        <>
+          <p className="mt-5 text-[13px] font-semibold text-ink-3">Volvieron a ser públicos</p>
+          <ListaOperadores casos={revertidos} sinEtiqueta />
+        </>
+      )}
+    </div>
   );
 }
 
@@ -662,56 +683,16 @@ function Calidad() {
   );
 }
 
-/* ---------- 7. Metodología ---------- */
-
-function Metodologia() {
-  const bloques: [string, string][] = [
-    ["Agua por persona", "Agua renovable (ríos y lluvia que se filtra al subsuelo) entre habitantes, por estado (CONAGUA vía SEMARNAT). Umbrales de Falkenmark: estrés < 1,700 m³ por persona al año, escasez < 1,000, escasez absoluta < 500."],
-    ["Sequía", "Monitor de Sequía de México (SMN-CONAGUA): categoría de sequía de cada municipio cada quincena desde 2003. Contamos como sequía las categorías moderada a excepcional (D1–D4) y la población del Censo 2020 de cada municipio."],
-    ["Acuíferos sobreexplotados", "Cuando los permisos para sacar agua superan lo que le entra cada año (la lluvia que se filtra, menos lo que debe seguir llegando a ríos y manantiales). CONAGUA lo llama “déficit”. Fuente: CONAGUA, disponibilidad publicada en el DOF (2013–2023)."],
-    ["Territorio y personas", "Cruzamos los 653 acuíferos con los 2,475 municipios y las localidades del Censo 2020 de INEGI para medir qué parte del territorio y de la población está sobre acuíferos sobreexplotados."],
-    ["Presas", "Monitoreo de las ~210 presas principales de CONAGUA (SINA y Sistema de Información Hidrológica), semana a semana desde 1991 y hasta la semana más reciente. Descartamos registros físicamente imposibles."],
-    ["Días de agua", "Agua guardada en las presas del Sistema Cutzamala (Valle de Bravo, Villa Victoria y El Bosque) y de Monterrey (El Cuchillo, Cerro Prieto y La Boca), entre lo que sale cada día por sus tomas (promedio de 30 días). Fuente: SIH-CONAGUA, datos diarios."],
-    ["Quién usa el agua", "Registro Público de Derechos de Agua (REPDA, CONAGUA): cada permiso con su uso, titular y volumen anual, ubicado por los anexos de cada pozo, río o presa. Sin hidroeléctricas (el agua regresa a su cauce). Nombres solo de organizaciones."],
-    ["Calidad del agua", "Red Nacional de Medición de Calidad del Agua (CONAGUA): semáforo oficial de cada sitio de monitoreo en ríos, lagos, presas, costas y pozos; dato más reciente de 2023 o, si no hay, de 2021. Mide el agua en su fuente, no la de la llave."],
-    ["Proyección", "Escenario de continuidad: una recta ajustada a las 5 actualizaciones oficiales, con su intervalo de predicción del 95%. No es un pronóstico: cambia si cambian los permisos o la lluvia."],
-  ];
-  return (
-    <section id="metodologia" className="scroll-mt-20 border-t border-line">
-      <div className="mx-auto max-w-6xl px-4 py-24 sm:px-8 lg:py-28">
-        <div className="flex flex-wrap items-baseline justify-between gap-4">
-          <h2 className="font-serif text-[clamp(1.9rem,3.6vw,2.8rem)] font-semibold tracking-[-0.01em]">Cómo leer estos datos</h2>
-          <Link href="/metodologia" className="text-[15px] font-semibold underline underline-offset-4 hover:text-critico">
-            Fuentes, colores y fechas →
-          </Link>
-        </div>
-        <div className="mt-10 grid gap-x-14 md:grid-cols-2">
-          {bloques.map(([t, d]) => (
-            <details key={t} className="group border-t border-line-strong">
-              <summary className="flex min-h-14 cursor-pointer list-none items-center justify-between gap-4 font-semibold">
-                {t}
-                <svg aria-hidden viewBox="0 0 24 24" className="size-4 shrink-0 transition-transform group-open:rotate-180" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round"><path d="m6 9 6 6 6-6" /></svg>
-              </summary>
-              <p className="pb-5 leading-relaxed text-ink-2">{d}</p>
-            </details>
-          ))}
-        </div>
-        <p className="mt-12 max-w-[70ch] text-[14px] leading-relaxed text-ink-3">
-          Lo que estos datos no dicen: medimos el agua que se <em>permite</em> sacar, no la que realmente se saca. La extracción real puede ser mayor por
-          pozos sin registro. Muchos acuíferos no se reestudian en cada publicación. Mapa base: © OpenStreetMap, OpenFreeMap.
-        </p>
-      </div>
-    </section>
-  );
-}
-
 function Pie() {
   return (
     <footer className="border-t border-ink">
       <div className="mx-auto max-w-6xl px-4 py-10 text-[14px] text-ink-3 sm:px-8">
         <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
           <Marca className="text-xl text-ink" />
-          <span>Datos públicos oficiales: CONAGUA, DOF, SMN, INEGI y SEMARNAT.</span>
+          <span>
+            Datos públicos oficiales: CONAGUA, DOF, SMN, INEGI y SEMARNAT ·{" "}
+            <Link href="/metodologia" className="underline underline-offset-2 hover:text-ink">Cómo se mide</Link>
+          </span>
         </div>
         <p className="mt-4 max-w-[70ch]">
           Proyecto ciudadano independiente. No está afiliado a la Comisión Nacional del Agua (CONAGUA) ni a ninguna dependencia de

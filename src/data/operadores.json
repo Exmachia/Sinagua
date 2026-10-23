@@ -1,0 +1,138 @@
+{
+  "_nota": "Quién da el servicio de agua potable en ciudades donde participa (o participó) una empresa privada. Se revisa a mano: cada caso con fuentes. Solo casos confirmados; actualizar 'revisado' al revisar.",
+  "revisado": "2026-10-23",
+  "casos": [
+    {
+      "id": "cancun",
+      "ciudad": "Cancún y Riviera Maya",
+      "estado": "23",
+      "estadoNombre": "Quintana Roo",
+      "municipios": "Benito Juárez, Isla Mujeres, Puerto Morelos y Solidaridad",
+      "tipo": "privado",
+      "empresa": "Aguakan (Desarrollos Hidráulicos de Cancún)",
+      "desde": 1993,
+      "hasta": 2053,
+      "situacion": "El Congreso le retiró la concesión en 2023; sigue en tribunales.",
+      "fuentes": [
+        {
+          "nombre": "Proceso, 23 ene 2026",
+          "url": "https://www.proceso.com.mx/nacional/estados/2026/1/23/federacion-no-puede-pagar-12-mmdp-para-recuperar-agua-de-cancun-riviera-maya-cedida-empresa-365046.html"
+        },
+        {
+          "nombre": "El Quintanarroense, 22 ene 2026",
+          "url": "https://elquintanarroense.com.mx/2026/01/22/claudia-sheinbaum-analiza-retirar-o-comprar-concesion-de-aguakan-en-quintana-roo/"
+        }
+      ]
+    },
+    {
+      "id": "puebla",
+      "ciudad": "Puebla",
+      "estado": "21",
+      "estadoNombre": "Puebla",
+      "municipios": "Puebla, San Andrés Cholula, San Pedro Cholula, Cuautlancingo, Coronango, Amozoc, Juan C. Bonilla y Huejotzingo",
+      "tipo": "privado",
+      "empresa": "Agua de Puebla para Todos (Concesiones Integrales)",
+      "desde": 2014,
+      "hasta": 2044,
+      "situacion": "El gobierno del estado anunció en 2026 una demanda por incumplimiento.",
+      "fuentes": [
+        {
+          "nombre": "Milenio, 2026",
+          "url": "https://www.milenio.com/estados/gobierno-anuncia-demanda-contra-agua-de-puebla-para-todos"
+        },
+        {
+          "nombre": "Urbano Puebla, 14 jul 2025",
+          "url": "https://www.urbanopuebla.com.mx/politica/al-menos-13-municipios-de-puebla-han-privatizado-el-servicio-de-agua-hasta-2044-julio-huerta/"
+        }
+      ]
+    },
+    {
+      "id": "veracruz",
+      "ciudad": "Veracruz",
+      "estado": "30",
+      "estadoNombre": "Veracruz",
+      "municipios": "Veracruz",
+      "tipo": "privado",
+      "empresa": "Grupo MAS (Grupo Metropolitano de Agua y Saneamiento)",
+      "desde": 2015,
+      "hasta": 2045,
+      "situacion": "En octubre de 2026 el Ayuntamiento lo denunció por presunto fraude en cobros.",
+      "fuentes": [
+        {
+          "nombre": "Luces del Siglo, 20 oct 2026",
+          "url": "https://lucesdelsiglo.com/2026/10/20/denuncia-veracruz-a-grupo-mas-por-presunto-fraude-en-cobros-de-agua-veracruz/"
+        },
+        {
+          "nombre": "Plumas Libres, 20 sep 2026",
+          "url": "https://plumaslibres.com.mx/2026/09/20/por-culpa-de-grupo-mas-la-ciudad-de-veracruz-dejara-de-percibir-62-mdp-destinados-para-agua-y-saneamiento/"
+        }
+      ]
+    },
+    {
+      "id": "saltillo",
+      "ciudad": "Saltillo",
+      "estado": "05",
+      "estadoNombre": "Coahuila",
+      "municipios": "Saltillo",
+      "tipo": "mixto",
+      "empresa": "Aguas de Saltillo: municipio 55%, Veolia (Agbar) 45%",
+      "desde": 2001,
+      "hasta": 2034,
+      "situacion": "El Cabildo amplió el contrato en 2023.",
+      "fuentes": [
+        {
+          "nombre": "Vanguardia, 2023",
+          "url": "https://vanguardia.com.mx/coahuila/avala-cabildo-ampliar-hasta-2034-contrato-con-aguas-de-saltillo-DH9801599"
+        },
+        {
+          "nombre": "El Heraldo de Saltillo, 30 oct 2023",
+          "url": "https://elheraldodesaltillo.mx/2023/10/30/operara-agsal-servicio-de-agua-potable-en-saltillo-hasta-2034/"
+        }
+      ]
+    },
+    {
+      "id": "aguascalientes",
+      "ciudad": "Aguascalientes",
+      "estado": "01",
+      "estadoNombre": "Aguascalientes",
+      "municipios": "Aguascalientes",
+      "tipo": "revertido",
+      "empresa": "Veolia (antes CAASA), de 1993 a 2023",
+      "desde": 1993,
+      "hasta": 2023,
+      "situacion": "Desde 2023 lo opera el organismo municipal MIAA; sigue un pleito legal con la empresa.",
+      "fuentes": [
+        {
+          "nombre": "LJA, oct 2023",
+          "url": "https://www.lja.mx/2023/10/que-implica-el-cambio-de-veolia-a-miaa-en-el-servicio-de-agua-en-aguascalientes/"
+        },
+        {
+          "nombre": "El Sol del Centro",
+          "url": "https://oem.com.mx/elsoldelcentro/local/pelea-legal-con-veolia-sigue-activa-ayuntamiento-de-aguascalientes-defiende-su-derecho-a-resolver-el-conflicto-24387127"
+        }
+      ]
+    },
+    {
+      "id": "cdmx",
+      "ciudad": "Ciudad de México",
+      "estado": "09",
+      "estadoNombre": "Ciudad de México",
+      "municipios": "Ciudad de México",
+      "tipo": "revertido",
+      "empresa": "4 empresas medían y cobraban el agua, hasta 2021",
+      "desde": 1993,
+      "hasta": 2021,
+      "situacion": "Desde 2021 la medición y el cobro los hace el gobierno (SACMEX).",
+      "fuentes": [
+        {
+          "nombre": "Jefatura de Gobierno de la CDMX",
+          "url": "https://www.jefaturadegobierno.cdmx.gob.mx/comunicacion/nota/concluye-gobierno-capitalino-contrato-de-cobro-de-agua-para-generar-ahorro-de-469-mdp"
+        },
+        {
+          "nombre": "Forbes México",
+          "url": "https://forbes.com.mx/gobierno-de-la-cdmx-controlara-servicio-del-agua-termina-concesiones-privadas/"
+        }
+      ]
+    }
+  ]
+}

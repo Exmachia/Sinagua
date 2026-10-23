@@ -25,6 +25,7 @@ import { BloqueCalidad, BloqueUsos, useJson } from "./Usos";
 import HistoryChart from "./HistoryChart";
 import Conmutador from "./Conmutador";
 import LeyendaMapa from "./LeyendaMapa";
+import { AyudaOperadores, ListaOperadores, OPERADORES } from "./Operadores";
 import PanelMapa, { visibleMovil, type Nivel } from "./PanelMapa";
 import SearchBox from "./SearchBox";
 import { Ayuda, ayudaAbierta, BotonInicio, BotonCompartir, Burbuja, Cabeza, Cifra, Esqueleto, Fila, Pista, Seccion, VerMas } from "./ui";
@@ -99,7 +100,7 @@ export default function Explorer() {
   const [intento, setIntento] = useState(0);
   const [abierto, setAbierto] = useState(true);
   const [nivel, setNivel] = useState<Nivel>("medio");
-  const [verCalidad, setVerCalidad] = useState(true);
+  const [verCalidad, setVerCalidad] = useState(false); // apagado: lo activa quien quiera ver las gotas
   const seccion = useRef<HTMLElement>(null);
   const cuerpo = useRef<HTMLDivElement>(null);
   const hash = useSyncExternalStore(suscribirHash, () => window.location.hash, () => "");
@@ -388,7 +389,7 @@ function ModuloNacional({ estados, onPick }: { estados: Estado[]; onPick: (cve: 
         <Cifra valor={`${fmt(pct, 0)}%`} texto="del territorio está sobre acuíferos sobreexplotados" tono="var(--s-critico)" />
         <Cifra valor={String(resumen.deficit)} texto={`de ${resumen.total} acuíferos: se permite sacar más agua de la que les entra`} />
       </div>
-      <Pista>Toca un estado en el mapa para ver sus municipios.</Pista>
+      <Pista>Toca un estado en el mapa para ver sus acuíferos.</Pista>
       <Seccion titulo="Estados más expuestos" accion={<span className="text-[12px] text-ink-3">% del territorio</span>}>
         <ol>
           {(todos ? orden : orden.slice(0, 6)).map((e) => (
@@ -407,6 +408,7 @@ function ModuloEstado({ e, acu, onPick }: { e: Estado; acu: Map<string, Acuifero
   const visibles = todos ? items : items.slice(0, 6);
   const usos = useJson<UsosEstado>(`/data/usos/${e.cve}.json`);
   const cal = calidadEstado(e.cve);
+  const operadores = OPERADORES.filter((o) => o.estado === e.cve);
 
   return (
     <div className="pb-4">
@@ -427,6 +429,11 @@ function ModuloEstado({ e, acu, onPick }: { e: Estado; acu: Map<string, Acuifero
       </Seccion>
       <BloqueUsos u={usos ? usos.e : undefined} lugar={e.e} compartir={{ ruta: `/compartir/usos-estado/${e.slug}`, titulo: `¿Quién se lleva el agua en ${e.e}? — Sinagua` }} />
       <BloqueCalidad sup={cal.superficie} pozo={cal.pozo} />
+      {operadores.length > 0 && (
+        <Seccion titulo="¿Quién da el servicio de agua?" ayuda={<AyudaOperadores />}>
+          <ListaOperadores casos={operadores} />
+        </Seccion>
+      )}
       <div className="px-6 pt-4">
         <BotonCompartir ruta={`/compartir/estado/${e.slug}`} titulo={`${e.e} — Sinagua`} className="w-full"
           texto={`El ${fmt(e.pct, 0)}% de ${e.e} está sobre acuíferos sobreexplotados.`} />

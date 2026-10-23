@@ -35,7 +35,7 @@ export default function HeroSearch() {
     return (
       <div>
         <p className="mb-2 text-[15px] font-semibold">Busca tu municipio, estado o acuífero</p>
-        <div className="h-14 animate-pulse border border-line-strong bg-raised" aria-hidden />
+        <div className="h-14 animate-pulse rounded-full bg-raised ring-1 ring-line-strong" aria-hidden />
       </div>
     );
   }
