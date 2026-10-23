@@ -40,10 +40,18 @@ export default function Reportar() {
 
   useEffect(() => {
     if (!abierto) return;
-    caja.current?.querySelector<HTMLElement>("input, select, textarea")?.focus();
+    caja.current?.querySelector<HTMLElement>("input, select, textarea")?.focus({ preventScroll: true });
+    // Mientras está abierto, la página de atrás no se mueve (en celular el scroll se iba al fondo)
+    const html = document.documentElement;
+    const antes = [html.style.overflow, document.body.style.overflow];
+    html.style.overflow = "hidden";
+    document.body.style.overflow = "hidden";
     const esc = (e: KeyboardEvent) => e.key === "Escape" && cerrar();
     window.addEventListener("keydown", esc);
-    return () => window.removeEventListener("keydown", esc);
+    return () => {
+      window.removeEventListener("keydown", esc);
+      [html.style.overflow, document.body.style.overflow] = antes;
+    };
   }, [abierto]);
 
   function cerrar() {
@@ -114,9 +122,9 @@ export default function Reportar() {
       </button>
 
       {abierto && (
-        <div className="pointer-events-auto fixed inset-0 z-[60] flex items-end justify-center bg-ink/40 sm:items-center sm:p-4" onPointerDown={(e) => e.target === e.currentTarget && cerrar()}>
+        <div className="pointer-events-auto fixed inset-0 z-[60] flex overscroll-contain items-end justify-center bg-ink/40 sm:items-center sm:p-4" onPointerDown={(e) => e.target === e.currentTarget && cerrar()}>
           <div ref={caja} role="dialog" aria-modal="true" aria-labelledby="reportar-titulo"
-            className="relative max-h-[92dvh] w-full overflow-y-auto rounded-t-3xl bg-bg p-6 shadow-[0_20px_60px_rgba(25,23,20,0.3)] sm:max-w-lg sm:rounded-3xl sm:p-8">
+            className="relative max-h-[92dvh] w-full overflow-y-auto overscroll-contain rounded-t-3xl bg-bg p-6 shadow-[0_20px_60px_rgba(25,23,20,0.3)] sm:max-w-lg sm:rounded-3xl sm:p-8">
             <button type="button" onClick={cerrar} aria-label="Cerrar"
               className="absolute top-3 right-3 grid size-11 cursor-pointer place-items-center rounded-full text-ink-2 hover:bg-raised">
               <svg aria-hidden viewBox="0 0 24 24" className="size-5" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round"><path d="M6 6l12 12M18 6 6 18" /></svg>
