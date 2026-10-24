@@ -12,10 +12,11 @@ type Props = {
   onPick: (v: Vista) => void;
   grande?: boolean;
   flotante?: boolean;
+  cargando?: boolean;
 };
 
 /** Buscador de acuíferos: estados, municipios y acuíferos. */
-export default function SearchBox({ estados, municipios, acuiferos, onPick, grande, flotante }: Props) {
+export default function SearchBox({ estados, municipios, acuiferos, onPick, grande, flotante, cargando }: Props) {
   const opciones = useMemo<Opcion<Vista>[]>(() => {
     const nombreEstado = new Map(estados.map((e) => [e.cve, e.e]));
     return [
@@ -35,7 +36,7 @@ export default function SearchBox({ estados, municipios, acuiferos, onPick, gran
   }, [estados, municipios, acuiferos]);
 
   return (
-    <Buscador opciones={opciones} onPick={onPick} grande={grande} flotante={flotante}
+    <Buscador opciones={opciones} onPick={onPick} grande={grande} flotante={flotante} cargando={cargando}
       etiqueta="Busca tu municipio, estado o acuífero"
       placeholder={grande ? "Ej. León, Hermosillo, Valle de Celaya" : "Busca municipio, estado o acuífero"} />
   );
