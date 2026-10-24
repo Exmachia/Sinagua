@@ -105,6 +105,13 @@
       "municipio": "Nicolás Romero",
       "fecha": "2026-10-24",
       "mensaje": "En mi casa no hubo agua durante una semana. Donde trabajo tampoco había; apenas hoy cayó un poco."
+    },
+    {
+      "id": "landa-manantiales",
+      "estado": "22",
+      "municipio": "Landa de Matamoros",
+      "fecha": "2026-10-24",
+      "mensaje": "Están cobrando precios altos por el agua. Aunque donde vivo hay muchos manantiales, el acceso es cada vez más limitado, y el agua que llega tiene mucho cloro: ni siquiera sirve para tomar."
     }
   ]
 }
