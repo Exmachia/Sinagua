@@ -27,13 +27,15 @@ export default function Denuncias() {
           </p>
         </div>
         <MuroDenuncias denuncias={DENUNCIAS} />
-        <p className="mt-10 max-w-[64ch] border-t border-line pt-6 text-[13px] leading-relaxed text-ink-3">
-          Estas denuncias las escribe la gente que está viviendo estas situaciones; no las verificamos una por una. Las
-          publicamos para que se conozcan.{" "}
-          ¿Una denuncia te afecta, o es tuya y quieres que la quitemos?{" "}
-          <a href={CONTACTO} className="underline underline-offset-2 hover:text-ink">Escríbenos a {CORREO}</a>{" "}
-          y la revisamos. <Link href="/privacidad" className="underline underline-offset-2 hover:text-ink">Aviso de privacidad</Link>.
-        </p>
+        <div className="mt-10 border-t border-line pt-6">
+          <p className="max-w-[64ch] text-[13px] leading-relaxed text-ink-3">
+            Estas denuncias las escribe la gente que está viviendo estas situaciones; no las verificamos una por una. Las
+            publicamos para que se conozcan.{" "}
+            ¿Una denuncia te afecta, o es tuya y quieres que la quitemos?{" "}
+            <a href={CONTACTO} className="underline underline-offset-2 hover:text-ink">Escríbenos a {CORREO}</a>{" "}
+            y la revisamos. <Link href="/privacidad" className="underline underline-offset-2 hover:text-ink">Aviso de privacidad</Link>.
+          </p>
+        </div>
       </main>
     </>
   );
