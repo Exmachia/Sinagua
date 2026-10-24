@@ -148,7 +148,7 @@ export default function PresasMap({ vista, focus, margen, presas, estados, nombr
       if (tactil) return;
       const hit = tocar(e.point);
       const v = vistaActual();
-      const valido = hit && !(hit.capa === "estados-fill" && hit.id === v.e) ? hit : null;
+      const valido = hit && !(hit.capa === "estados-fill" && v.e) ? hit : null;
       for (const c of Object.keys(fuente)) if (!valido || valido.capa !== c || hovered[c] !== valido.id) limpiar(c);
       if (!valido) {
         map.getCanvas().style.cursor = "";
@@ -178,7 +178,8 @@ export default function PresasMap({ vista, focus, margen, presas, estados, nombr
         return;
       }
       if (hit.capa === "presas") navegar({ e: v.e, p: hit.id });
-      else if (hit.id !== v.e) navegar({ e: hit.id, p: null });
+      // Con un estado abierto, tocar otro estado regresa a la vista nacional (no salta al otro).
+      else if (hit.id !== v.e) navegar(v.e ? { e: null, p: null } : { e: hit.id, p: null });
     });
 
     return () => {
