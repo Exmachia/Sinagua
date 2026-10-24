@@ -31,6 +31,16 @@ export default function Reportar() {
   const caja = useRef<HTMLDivElement>(null);
   const boton = useRef<HTMLButtonElement>(null);
 
+  // El muro de denuncias también lo abre (botón "Manda tu denuncia")
+  useEffect(() => {
+    const abrir = () => {
+      setAbierto(true);
+      setEstado((x) => (x === "enviando" ? x : "listo"));
+    };
+    window.addEventListener("sinagua:reportar", abrir);
+    return () => window.removeEventListener("sinagua:reportar", abrir);
+  }, []);
+
   // Las listas se cargan solo cuando alguien abre el formulario
   useEffect(() => {
     if (!abierto || estados) return;
@@ -192,6 +202,11 @@ export default function Reportar() {
                   </div>
                 </div>
 
+                <label className="flex cursor-pointer items-start gap-3 text-[14px] leading-snug">
+                  <input name="publicar" type="checkbox" defaultChecked className="mt-0.5 size-5 shrink-0 cursor-pointer accent-[var(--ink)]" />
+                  <span>Se puede publicar en el <a href="/denuncias" target="_blank" className="underline underline-offset-2">muro de denuncias</a>, como anónima.</span>
+                </label>
+
                 {/* Trampa para bots: la gente no la ve */}
                 <input name="sitio_web" tabIndex={-1} autoComplete="off" aria-hidden className="absolute -left-[9999px] size-px opacity-0" />
 
@@ -202,7 +217,8 @@ export default function Reportar() {
                   {estado === "enviando" ? "Enviando…" : "Enviar"}
                 </button>
                 <p className="text-[12px] leading-snug text-ink-3">
-                  Tu correo solo es para responderte; no se publica. No publicamos nombres de personas.
+                  Tu correo solo es para responderte; nunca se publica. Tampoco publicamos nombres de personas.{" "}
+                  <a href="/privacidad" target="_blank" className="underline underline-offset-2 hover:text-ink">Aviso de privacidad</a>
                 </p>
               </form>
             )}

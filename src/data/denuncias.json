@@ -1,0 +1,110 @@
+{
+  "_nota": "Muro de denuncias. Se agregan a mano: solo las que se pueden publicar. Reglas: siempre anónimas; sin nombres de personas (funcionarios: solo su cargo); partidos: 'un partido político'; se quitan groserías, rumores ('se rumora', 'no estoy segura') y cualquier ataque a un grupo por su religión u origen (se corta, no se reescribe); se corrige la ortografía sin cambiar lo que dice. fecha: AAAA-MM-DD, o AAAA-MM si no se sabe el día.",
+  "denuncias": [
+    {
+      "id": "sinaloa-rio-fuerte",
+      "estado": "25",
+      "municipio": "Choix, Ahome y El Fuerte",
+      "fecha": "2026-10-23",
+      "mensaje": "Quieren contaminar el río Fuerte con la instalación de empresas mineras. Como pasó en Sonora, nos quieren dejar sin agua. Dicen que es seguro, pero todos sabemos que la minería envenena el agua."
+    },
+    {
+      "id": "chiapas-saneamiento",
+      "estado": "07",
+      "municipio": "",
+      "fecha": "2026-10-23",
+      "mensaje": "El primer problema es el saneamiento: las principales ciudades están contaminadas por aguas negras y por los agroquímicos que llegan hasta las dos cuencas más grandes. Lo segundo es que falta agua en ciudades y pueblos aunque los acuíferos tienen agua; se han usado como herramienta de control político. Hay comunidades con un lago enorme en medio y ni una gota en la llave."
+    },
+    {
+      "id": "chiapas-cosecha",
+      "estado": "07",
+      "municipio": "",
+      "fecha": "2026-10",
+      "mensaje": "Este año hubo sequía y se murió la cosecha."
+    },
+    {
+      "id": "guadalajara-fuentes",
+      "estado": "14",
+      "municipio": "Guadalajara",
+      "fecha": "2026-10",
+      "mensaje": "Aquí no es que falte agua: se contaminaron muchísimo las fuentes que llegan a una de las principales potabilizadoras, y por años se descuidó el mantenimiento. Es negligencia del organismo cuya única misión es darnos agua potable."
+    },
+    {
+      "id": "yucatan-granjas",
+      "estado": "31",
+      "municipio": "",
+      "fecha": "2026-10",
+      "mensaje": "Las megagranjas porcícolas tiran sus desechos a la intemperie y se filtran a los mantos acuíferos."
+    },
+    {
+      "id": "saltillo-empresa",
+      "estado": "05",
+      "municipio": "Saltillo",
+      "fecha": "2026-10",
+      "mensaje": "El agua la maneja en parte una empresa extranjera desde hace años, y aun así la ciudad se está quedando sin agua."
+    },
+    {
+      "id": "aguascalientes-venta",
+      "estado": "01",
+      "municipio": "",
+      "fecha": "2026-10-23",
+      "mensaje": "Aquí un partido político ya vendió el agua al mejor postor."
+    },
+    {
+      "id": "ensenada-colonias",
+      "estado": "02",
+      "municipio": "Ensenada",
+      "fecha": "2026-10-23",
+      "mensaje": "En Baja California no solo hay poca agua: la administran muy mal. En Ensenada muchas colonias ya llevaban semanas sin agua antes de la tormenta Rachel, y el organismo del agua (CESPE) no da razones."
+    },
+    {
+      "id": "tlajomulco-pozo",
+      "estado": "14",
+      "municipio": "Tlajomulco de Zúñiga",
+      "fecha": "2026-10-23",
+      "mensaje": "En mi fraccionamiento había un pozo para abastecernos. El gobierno nos mintió y nunca nos dio acceso a esa agua; hace poco descubrimos que va directo a las plantas de las empresas sobre la carretera a Chapala. Unos cuantos se benefician y a quienes vivimos aquí desde hace más de 15 años nos racionan el agua: unas horas cada tercer día."
+    },
+    {
+      "id": "cdmx-hidrocarburos",
+      "estado": "09",
+      "municipio": "",
+      "fecha": "2026-10-23",
+      "mensaje": "Hay colonias con hidrocarburos en el agua, y ya llegaron al manto. Hay tuberías rotas sin mantenimiento por donde se filtran heces. Por ley, agua potable no significa agua limpia. SACMEX y Segiagua no dan mantenimiento, no analizan el agua y no cuidan los pozos."
+    },
+    {
+      "id": "coahuila-fracking",
+      "estado": "05",
+      "municipio": "",
+      "fecha": "2026-10-23",
+      "mensaje": "Ya tenemos problemas de agua y, según, ya viene el fracking."
+    },
+    {
+      "id": "queretaro-cortes",
+      "estado": "22",
+      "municipio": "",
+      "fecha": "2026-10-23",
+      "mensaje": "Aquí no habíamos tenido problemas de agua, pero desde hace un par de meses de pronto se va. Es difícil."
+    },
+    {
+      "id": "puebla-recicladora",
+      "estado": "21",
+      "municipio": "San José Chiapa y Nopalucan",
+      "fecha": "2026-10-23",
+      "mensaje": "El gobierno del estado quiere instalar en San José Chiapa una megarecicladora para la basura de todo el estado, en una zona donde apenas queda agua en el acuífero. Afectaría también a los municipios vecinos, que están a cinco minutos. En los llanos de Santa María Ixtiyucan, grandes empresas están comprando terrenos a los campesinos para instalarse donde todavía hay agua. Ya pasó antes, cuando compraron tierras a la fuerza para instalar una armadora."
+    },
+    {
+      "id": "yucatan-heces",
+      "estado": "31",
+      "municipio": "",
+      "fecha": "2026-10-23",
+      "mensaje": "Ya detectaron heces en el agua por las granjas de cerdos."
+    },
+    {
+      "id": "nicolas-romero-semana",
+      "estado": "15",
+      "municipio": "Nicolás Romero",
+      "fecha": "2026-10-24",
+      "mensaje": "En mi casa no hubo agua durante una semana. Donde trabajo tampoco había; apenas hoy cayó un poco."
+    }
+  ]
+}

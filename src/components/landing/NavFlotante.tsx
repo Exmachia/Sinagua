@@ -16,8 +16,8 @@ const SECCIONES = [
 ] as const;
 
 /**
- * Barra flotante de todo el sitio. Escritorio: Datos ▾ (secciones de la portada) · Artículos · Urgente · Abrir el mapa.
- * Celular: Urgente · Mapa · ☰ (artículos y secciones). En la portada resalta la sección visible y ofrece volver arriba.
+ * Barra flotante de todo el sitio. Escritorio: Datos ▾ (secciones de la portada) · Denuncias · Urgente · Abrir el mapa.
+ * Celular: Urgente · Mapa · ☰ (denuncias y secciones). En la portada resalta la sección visible y ofrece volver arriba.
  */
 export default function NavFlotante() {
   const ruta = usePathname();
@@ -110,11 +110,11 @@ export default function NavFlotante() {
             </ul>
           )}
         </div>
-        <Link href="/articulos" aria-current={ruta.startsWith("/articulos") ? "page" : undefined}
+        <Link href="/denuncias" aria-current={ruta === "/denuncias" ? "page" : undefined}
           className={`hidden min-h-10 items-center rounded-full px-3.5 text-[14px] transition-colors md:inline-flex ${
-            ruta.startsWith("/articulos") ? "bg-ink/[0.07] font-semibold text-ink" : "text-ink-2 hover:text-ink"
+            ruta === "/denuncias" ? "bg-ink/[0.07] font-semibold text-ink" : "text-ink-2 hover:text-ink"
           }`}>
-          Artículos
+          Denuncias
         </Link>
 
         <Link href="/urgente" aria-current={ruta === "/urgente" ? "page" : undefined}
@@ -142,10 +142,6 @@ export default function NavFlotante() {
 
       {menu && (
         <div id="menu-movil" className="pointer-events-auto mx-auto mt-2 max-w-5xl rounded-2xl bg-surface/95 p-2 shadow-[0_10px_30px_rgba(25,23,20,0.14)] ring-1 ring-black/5 backdrop-blur-xl md:hidden">
-          <Link href="/articulos" onClick={() => setMenu(false)} className="flex min-h-12 items-center rounded-xl px-4 text-[16px] font-semibold">
-            Artículos
-          </Link>
-          <p className="mt-1 border-t border-line px-4 pt-3 pb-1 text-[12px] font-semibold text-ink-3">Datos</p>
           <ul>
             {SECCIONES.map((s) => (
               <li key={s.id}>
@@ -156,10 +152,10 @@ export default function NavFlotante() {
               </li>
             ))}
           </ul>
-          <div className="mt-1 grid grid-cols-2 gap-1 border-t border-line pt-2">
-            <Link href="/presas" onClick={() => setMenu(false)} className="flex min-h-12 items-center rounded-xl px-4 text-[15px]">Mapa de presas</Link>
-            <Link href="/sequia" onClick={() => setMenu(false)} className="flex min-h-12 items-center rounded-xl px-4 text-[15px]">Mapa de sequía</Link>
-          </div>
+          <Link href="/denuncias" onClick={() => setMenu(false)} aria-current={ruta === "/denuncias" ? "page" : undefined}
+            className="mt-2 flex min-h-12 items-center justify-center rounded-xl bg-critico px-4 text-[16px] font-semibold text-white">
+            Denuncias
+          </Link>
         </div>
       )}
 
