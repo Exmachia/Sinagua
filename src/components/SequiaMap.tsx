@@ -106,7 +106,10 @@ export default function SequiaMap({ vista, focus, margen, datos, nombres, onNavi
     // En pantallas táctiles no hay "pasar el cursor": el toque abre la ficha y la etiqueta se quedaría pegada.
     map.on("mousemove", (e) => {
       if (tactil) return;
-      const id = tocar(e.point);
+      const hit = tocar(e.point);
+      const ve = vistaActual().e;
+      // Con un estado abierto, los municipios de otros estados no se resaltan: tocarlos regresa a México.
+      const id = hit && (!ve || hit.slice(0, 2) === ve) ? hit : null;
       if (id !== hovered) limpiar();
       if (!id) {
         map.getCanvas().style.cursor = "";
@@ -125,8 +128,10 @@ export default function SequiaMap({ vista, focus, margen, datos, nombres, onNavi
     });
     map.on("click", (e) => {
       const id = tocar(e.point);
-      if (!id) {
-        if (vistaActual().e) navegar({ e: null, m: null });
+      const v = vistaActual();
+      // Fuera de México, o fuera del estado abierto: regresa a la vista nacional.
+      if (!id || (v.e && id.slice(0, 2) !== v.e)) {
+        if (v.e) navegar({ e: null, m: null });
         return;
       }
       navegar({ e: id.slice(0, 2), m: id });

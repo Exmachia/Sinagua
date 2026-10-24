@@ -243,8 +243,8 @@ export default function AquiferMap({ vista, focus, margen, estados, municipios, 
       if (tactil) return;
       const hit = tocar(e);
       const v = vistaActual();
-      // En la vista estatal, el estado elegido no se resalta: se resaltan sus municipios.
-      const valido = hit && !(hit.capa === "estados-fill" && v.e === hit.id) ? hit : null;
+      // En la vista estatal no se resalta ningún estado: tocar fuera del elegido regresa a México.
+      const valido = hit && !(hit.capa === "estados-fill" && v.e) ? hit : null;
       for (const c of Object.keys(FUENTE)) if (!valido || valido.capa !== c || hovered[c] !== valido.id) limpiar(c);
       if (!valido) {
         map.getCanvas().style.cursor = "";
@@ -289,7 +289,8 @@ export default function AquiferMap({ vista, focus, margen, estados, municipios, 
       }
       else if (hit.capa === "burbujas") navegar({ ...v, a: hit.id });
       else if (hit.capa === "acuiferos-fill") navegar({ e: v.e, m: null, a: hit.id });
-      else if (hit.id !== v.e) navegar({ e: hit.id, m: null, a: null });
+      // Con un estado abierto, tocar otro estado regresa a la vista nacional (no salta al otro).
+      else if (hit.id !== v.e) navegar(v.e ? { e: null, m: null, a: null } : { e: hit.id, m: null, a: null });
     });
 
     return () => {
