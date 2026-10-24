@@ -26,7 +26,7 @@ export default function MuroDenuncias({ denuncias }: { denuncias: Denuncia[] }) 
 
   return (
     <>
-      <div className="mt-10 flex flex-wrap gap-2 max-sm:-mx-4 max-sm:flex-nowrap max-sm:overflow-x-auto max-sm:px-4 max-sm:pb-1 max-sm:[scrollbar-width:none]" role="group" aria-label="Filtrar por estado">
+      <div className="mt-10 flex flex-wrap gap-2 max-sm:-mx-4 max-sm:mt-9 max-sm:flex-nowrap max-sm:overflow-x-auto max-sm:px-4 max-sm:py-1 max-sm:[scrollbar-width:none]" role="group" aria-label="Filtrar por estado">
         {[["", "Todos"] as [string, string], ...estados].map(([cve, nombre]) => {
           const n = cve ? denuncias.filter((d) => d.estado === cve).length : denuncias.length;
           const activo = estado === cve;
