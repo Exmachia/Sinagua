@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { CONTACTO } from "@/lib/sitio";
+import { CONTACTO, CORREO } from "@/lib/sitio";
 import HeroSearch from "@/components/HeroSearch";
 import Marca from "@/components/Marca";
 import Aparecer from "@/components/landing/Aparecer";
@@ -631,8 +631,8 @@ function Pie() {
         </p>
         <p className="mt-6 text-[15px] text-ink">
           ¿Tienes datos, sabes del tema o quieres ayudar?{" "}
-          <a href={CONTACTO} target="_blank" rel="noopener noreferrer" className="font-semibold underline underline-offset-4 hover:text-critico">
-            Escríbeme en LinkedIn
+          <a href={CONTACTO} className="font-semibold underline underline-offset-4 hover:text-critico">
+            Escríbeme a {CORREO}
           </a>
         </p>
       </div>

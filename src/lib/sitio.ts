@@ -7,5 +7,6 @@ export const SITIO =
       ? `https://${process.env.VERCEL_URL}`
       : "http://localhost:3100");
 
-/** Para quien tenga datos, sepa del tema o quiera ayudar. */
-export const CONTACTO = "https://www.linkedin.com/in/eduardo-chacon-171367275/";
+/** Correo de contacto: datos, errores, ayuda, privacidad y quitar denuncias. */
+export const CORREO = "eduardo.chacom12@gmail.com";
+export const CONTACTO = `mailto:${CORREO}`;

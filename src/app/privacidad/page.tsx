@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import NavFlotante from "@/components/landing/NavFlotante";
-import { CONTACTO } from "@/lib/sitio";
+import { CONTACTO, CORREO } from "@/lib/sitio";
 
 export const metadata: Metadata = {
   title: "Aviso de privacidad — Sinagua",
@@ -21,8 +21,8 @@ function Bloque({ titulo, children }: { titulo: string; children: React.ReactNod
 
 export default function Privacidad() {
   const contacto = (
-    <a href={CONTACTO} target="_blank" rel="noopener noreferrer" className="font-semibold text-ink underline underline-offset-2 hover:text-critico">
-      por LinkedIn
+    <a href={CONTACTO} className="font-semibold text-ink underline underline-offset-2 hover:text-critico">
+      a {CORREO}
     </a>
   );
   return (
