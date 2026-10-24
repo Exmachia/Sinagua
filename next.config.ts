@@ -9,11 +9,17 @@ const nextConfig: NextConfig = {
     "/opengraph-image": ["src/og/fuentes/**/*"],
     "/compartir/**": ["src/og/fuentes/**/*"],
     "/urgente/**": ["src/og/fuentes/**/*"],
-    "/articulos/**": ["src/og/fuentes/**/*"],
   },
   partialPrefetching: true,
   // Encabezados de seguridad básicos: nadie puede meter el sitio en un iframe ajeno, el navegador no adivina tipos
   // de archivo y no se piden permisos de cámara, micrófono ni ubicación.
+  // Los artículos se volvieron el muro de denuncias: los enlaces viejos no se rompen.
+  async redirects() {
+    return [
+      { source: "/articulos", destination: "/denuncias", permanent: true },
+      { source: "/articulos/:slug*", destination: "/denuncias", permanent: true },
+    ];
+  },
   async headers() {
     return [
       {

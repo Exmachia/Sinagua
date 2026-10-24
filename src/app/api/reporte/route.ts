@@ -43,6 +43,7 @@ export async function POST(req: Request) {
   const estado = texto(f, "estado", 80);
   const municipio = texto(f, "municipio", 120);
   const mensaje = texto(f, "mensaje", 4000);
+  const publicar = f.get("publicar") === "on";
   if (!CORREO.test(correo)) return Response.json({ error: "Revisa tu correo." }, { status: 400 });
   if (!estado) return Response.json({ error: "Elige tu estado." }, { status: 400 });
   if (mensaje.length < 10) return Response.json({ error: "Cuéntanos un poco más." }, { status: 400 });
@@ -59,6 +60,7 @@ export async function POST(req: Request) {
   const html = `
     <p><strong>Lugar:</strong> ${esc(lugar)}</p>
     <p><strong>Correo:</strong> ${esc(correo)}</p>
+    <p><strong>¿Se puede publicar en el muro?</strong> ${publicar ? "Sí, como anónima" : "No"}</p>
     <p style="white-space:pre-wrap">${esc(mensaje)}</p>
     <p style="color:#888;font-size:12px">${adjuntos.length} foto(s) adjunta(s) · Enviado desde sinagua.org</p>`;
 
@@ -69,7 +71,7 @@ export async function POST(req: Request) {
       from: process.env.REPORTE_DE ?? "Sinagua <onboarding@resend.dev>",
       to: [para],
       reply_to: correo,
-      subject: `Sinagua: reporte desde ${lugar}`,
+      subject: `Sinagua: denuncia desde ${lugar}${publicar ? "" : " (no publicar)"}`,
       html,
       attachments: adjuntos,
     }),

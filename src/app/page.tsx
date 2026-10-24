@@ -626,7 +626,8 @@ function Pie() {
         </div>
         <p className="mt-4 max-w-[70ch]">
           Proyecto ciudadano independiente. No está afiliado a la Comisión Nacional del Agua (CONAGUA) ni a ninguna dependencia de
-          gobierno; el nombre es una parodia.
+          gobierno; el nombre es una parodia.{" "}
+          <Link href="/privacidad" className="underline underline-offset-2 hover:text-ink">Aviso de privacidad</Link>
         </p>
         <p className="mt-6 text-[15px] text-ink">
           ¿Tienes datos, sabes del tema o quieres ayudar?{" "}
