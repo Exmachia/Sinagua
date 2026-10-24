@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import BotonHistoria from "@/components/BotonHistoria";
 import NavFlotante from "@/components/landing/NavFlotante";
-import { CONTACTO } from "@/lib/sitio";
+import { CONTACTO, CORREO } from "@/lib/sitio";
 import { Ayuda } from "@/components/ui";
 import { cacheLife } from "next/cache";
 import { alertas, VIGENCIA, type Alerta } from "@/lib/urgente";
@@ -52,8 +52,8 @@ export default async function Urgente() {
 
         <p className="mt-14 text-[15px] text-ink-2">
           ¿Sabes de un caso que deba estar aquí?{" "}
-          <a href={CONTACTO} target="_blank" rel="noopener noreferrer" className="font-semibold text-ink underline underline-offset-4 hover:text-critico">
-            Escríbeme en LinkedIn
+          <a href={CONTACTO} className="font-semibold text-ink underline underline-offset-4 hover:text-critico">
+            Escríbeme a {CORREO}
           </a>{" "}
           con la nota o el dato.
         </p>

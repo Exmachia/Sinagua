@@ -3,7 +3,7 @@ import Link from "next/link";
 import NavFlotante from "@/components/landing/NavFlotante";
 import MuroDenuncias, { BotonDenunciar } from "@/components/MuroDenuncias";
 import { DENUNCIAS } from "@/lib/denuncias";
-import { CONTACTO } from "@/lib/sitio";
+import { CONTACTO, CORREO } from "@/lib/sitio";
 
 export const metadata: Metadata = {
   title: "Denuncias — Sinagua",
@@ -31,7 +31,7 @@ export default function Denuncias() {
           Estas denuncias las escribe la gente que está viviendo estas situaciones; no las verificamos una por una. Las
           publicamos para que se conozcan.{" "}
           ¿Una denuncia te afecta, o es tuya y quieres que la quitemos?{" "}
-          <a href={CONTACTO} target="_blank" rel="noopener noreferrer" className="underline underline-offset-2 hover:text-ink">Escríbenos</a>{" "}
+          <a href={CONTACTO} className="underline underline-offset-2 hover:text-ink">Escríbenos a {CORREO}</a>{" "}
           y la revisamos. <Link href="/privacidad" className="underline underline-offset-2 hover:text-ink">Aviso de privacidad</Link>.
         </p>
       </main>

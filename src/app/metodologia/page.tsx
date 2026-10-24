@@ -9,7 +9,7 @@ import usos from "@/data/usos.json";
 import { ESTATUS, ORDEN } from "@/lib/acuiferos";
 import { fechaCorta, NIVELES } from "@/lib/presas";
 import { CATEGORIAS } from "@/lib/sequia";
-import { CONTACTO } from "@/lib/sitio";
+import { CONTACTO, CORREO } from "@/lib/sitio";
 import { GRUPOS_USO, SEMAFORO, USO } from "@/lib/usos";
 
 export const metadata: Metadata = {
@@ -142,10 +142,8 @@ export default function Metodologia() {
 
         <p className="mt-12 max-w-[62ch] text-[14px] leading-relaxed text-ink-3">
           Los datos se descargan y procesan solos dos veces por semana; si una fuente publica algo más viejo que lo que ya está
-          publicado, no se reemplaza. El código es abierto:{" "}
-          <a href="https://github.com/Exmachia/Sinagua" target="_blank" rel="noopener noreferrer" className="underline underline-offset-2 hover:text-ink">github.com/Exmachia/Sinagua</a>.
-          ¿Ves un error?{" "}
-          <a href={CONTACTO} target="_blank" rel="noopener noreferrer" className="underline underline-offset-2 hover:text-ink">Escríbeme</a>.
+          publicado, no se reemplaza. ¿Ves un error?{" "}
+          <a href={CONTACTO} className="underline underline-offset-2 hover:text-ink">Escríbeme a {CORREO}</a>.
         </p>
       </main>
     </>
