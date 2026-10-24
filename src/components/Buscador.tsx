@@ -9,6 +9,8 @@ export type Opcion<T> = { key: string; tipo: string; label: string; sub: string;
 type Props<T> = {
   opciones: Opcion<T>[];
   onPick: (valor: T) => void;
+  /** La lista todavía no llega: se puede escribir, y mientras tanto se avisa. */
+  cargando?: boolean;
   etiqueta: string;
   placeholder: string;
   grande?: boolean;
@@ -17,7 +19,7 @@ type Props<T> = {
 };
 
 /** Combobox accesible: teclado (↑ ↓ Enter Esc), coincidencia exacta → inicio de palabra → contiene. */
-export default function Buscador<T>({ opciones, onPick, etiqueta, placeholder, grande, flotante }: Props<T>) {
+export default function Buscador<T>({ opciones, onPick, etiqueta, placeholder, grande, flotante, cargando }: Props<T>) {
   const [q, setQ] = useState("");
   const [open, setOpen] = useState(false);
   const [active, setActive] = useState(0);
@@ -106,7 +108,7 @@ export default function Buscador<T>({ opciones, onPick, etiqueta, placeholder, g
         <ul id={`${id}-list`} role="listbox" className={`absolute inset-x-0 top-full z-30 mt-1.5 max-h-[26rem] overflow-y-auto bg-surface ${flotante ? "rounded-[10px] shadow-[0_10px_40px_rgba(25,23,20,0.2)] ring-1 ring-black/5" : "rounded-2xl shadow-[0_12px_40px_rgba(25,23,20,0.18)] ring-1 ring-black/5"}`}>
           {resultados.length === 0 && (
             <li className="px-4 py-3 text-[15px] text-ink-2">
-              No encontramos “{q}”. Revisa la ortografía o prueba con tu estado.
+              {cargando ? "Cargando…" : <>No encontramos “{q}”. Revisa la ortografía o prueba con tu estado.</>}
             </li>
           )}
           {resultados.map((r, i) => (
