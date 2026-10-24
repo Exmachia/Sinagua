@@ -168,6 +168,11 @@ export default function PresasMap({ vista, focus, margen, presas, estados, nombr
     map.on("click", (e) => {
       const hit = tocar(e.point);
       const v = vistaActual();
+      // Con una presa elegida, tocar fuera de ella la desmarca y deja el estado como estaba.
+      if (v.p) {
+        if (!(hit?.capa === "presas" && hit.id === v.p)) navegar({ e: v.e, p: null });
+        return;
+      }
       if (!hit) {
         if (v.e) navegar({ e: null, p: null });
         return;

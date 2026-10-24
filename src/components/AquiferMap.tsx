@@ -270,6 +270,12 @@ export default function AquiferMap({ vista, focus, margen, estados, municipios, 
     map.on("click", (e) => {
       const hit = tocar(e);
       const v = vistaActual();
+      // Con un acuífero abierto, tocar fuera de él regresa al estado completo (no salta a otro acuífero).
+      if (v.a && hit?.capa !== "calidad") {
+        const mismo = (hit?.capa === "burbujas" || hit?.capa === "acuiferos-fill") && hit.id === v.a;
+        if (!mismo) navegar({ e: v.e, m: null, a: null });
+        return;
+      }
       // Clic fuera de México (mar, otro país): volver a la vista nacional.
       if (!hit) {
         if (v.e) navegar({ e: null, m: null, a: null });
