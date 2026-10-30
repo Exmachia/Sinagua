@@ -37,6 +37,14 @@ jobs:
       - name: Descargar sequía (SMN, cada quincena)
         run: bash scripts/fetch_sequia.sh
 
+      # Picachos y Santa María (Sinaloa) no están en el SIH: salen del reporte del Organismo de Cuenca Pacífico Norte
+      # que publica la CIDH. Si falla, se conserva lo publicado y sigue lo demás.
+      - name: Descargar Picachos y Santa María (CIDH)
+        continue-on-error: true
+        run: |
+          pip install --quiet pypdf==5.1.0
+          python3 -I scripts/fetch_cidh.py
+
       # Los scripts se detienen sin escribir nada si los datos nuevos son más viejos que los publicados.
       - name: Procesar presas
         run: python3 -I scripts/build_presas.py
@@ -63,12 +71,12 @@ jobs:
       - name: ¿Cambió algo?
         id: cambios
         run: |
-          if git diff --quiet -- public/data src/data; then
+          if git diff --quiet -- public/data src/data data/fuentes/cidh_presas.json; then
             echo "hay=false" >> "$GITHUB_OUTPUT"
             echo "Sin datos nuevos."
           else
             echo "hay=true" >> "$GITHUB_OUTPUT"
-            git diff --stat -- public/data src/data | tail -3
+            git diff --stat -- public/data src/data data/fuentes/cidh_presas.json | tail -3
           fi
 
       # Antes de publicar, el sitio debe compilar con los datos nuevos.
@@ -85,6 +93,6 @@ jobs:
           sequia=$(python3 -c "import json;print(json.load(open('src/data/agua.json'))['sequia']['actual']['f'])")
           git config user.name "sinagua-bot"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add public/data src/data
+          git add public/data src/data data/fuentes/cidh_presas.json
           git commit -m "Datos: presas al $presas, sequía al $sequia"
           git push

@@ -19,6 +19,7 @@ export type Presa = {
   desde: string; // primer año con datos
   aviso: boolean; // >20% de registros inválidos en la fuente: fuera de los agregados
   reciente: boolean; // tiene dato del último mes respecto a la fecha de corte
+  fuente?: string; // solo si no viene del monitoreo nacional (p. ej. Picachos y Santa María)
 };
 
 export type Grupo = {

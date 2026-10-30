@@ -42,6 +42,18 @@ ALIAS = {"Coahuila de Zaragoza": "Coahuila", "México": "Estado de México", "Ve
 
 USOS = {"RI": "Riego", "AP": "Abastecimiento público", "GH": "Hidroeléctrica", "CA": "Control de avenidas"}
 
+# Presas que no están en el SINA ni en el SIH pero sí en el reporte diario del Organismo de Cuenca Pacífico Norte
+# de CONAGUA, que publica la CIDH (data/fuentes/cidh_presas.json, scripts/fetch_cidh.py). Aviso de Conselva.
+# Cuentan en el estado actual de Sinaloa, pero no en el panel nacional ni en las series (para no mover la historia).
+# Ubicación: OpenStreetMap; municipio: el polígono de INEGI donde cae el punto.
+OCPN = {
+    "Picachos": {"c": "PICACHOS", "mun": "Mazatlán", "rio": "R. Presidio", "inicio": "2009", "uso": ["AP", "RI"],
+                 "lat": 23.4804, "lon": -106.205},
+    "Santa María": {"c": "SANTAMARIA", "mun": "Rosario", "rio": "R. Baluarte", "inicio": "2023", "uso": ["RI"],
+                    "lat": 23.106, "lon": -105.6694},
+}
+FUENTE_OCPN = "CONAGUA, Organismo de Cuenca Pacífico Norte (reporte diario que publica la CIDH)"
+
 
 def limpio(s) -> str:
     return " ".join(str(s or "").split())
@@ -227,6 +239,35 @@ def main():
         (PUB / "presas" / f"{c}.json").write_text(
             json.dumps([[f, round(v / namo_ * 100, 1)] for f, (v, namo_) in sorted(s.items())], separators=(",", ":")),
             encoding="utf-8")
+
+    ocpn = FUENTES / "cidh_presas.json"
+    for n, dias in (json.loads(ocpn.read_text(encoding="utf-8"))["presas"] if ocpn.exists() else {}).items():
+        meta = OCPN.get(n)
+        if not meta or not dias:
+            continue
+        # Un dato por semana (el último de cada semana) y con el mismo corte que las demás presas.
+        s = {}
+        for f in sorted(f for f in dias if f <= ultima):
+            s[date.fromisoformat(f).isocalendar()[:2]] = f
+        s = {f: dias[f] for f in sorted(s.values())}
+        ult_f = max(s)
+        act, namo = s[ult_f]
+        por_semana = defaultdict(list)
+        for f, (v, cap_) in s.items():
+            if f[:4] != ult_f[:4]:  # lo normal se calcula con otros años, no con el mismo
+                por_semana[semana(f)].append(v / cap_ * 100)
+        hist = por_semana[semana(ult_f)]
+        normal = statistics.median(hist) if len(hist) >= 3 else None
+        presas.append({
+            "c": meta["c"], "n": n, "of": n, "e": "Sinaloa", "ent": "25", "mun": meta["mun"], "reg": "Pacífico Norte",
+            "rio": meta["rio"], "inicio": meta["inicio"], "uso": meta["uso"], "lat": meta["lat"], "lon": meta["lon"],
+            "cap": round(namo, 1), "act": round(act, 1), "pct": round(act / namo * 100, 1), "fecha": ult_f,
+            "normal": round(normal, 1) if normal is not None else None, "desde": min(s)[:4], "aviso": False,
+            "reciente": ult_f >= (date.fromisoformat(ultima) - timedelta(days=28)).isoformat(),
+            "fuente": FUENTE_OCPN,
+        })
+        (PUB / "presas" / f"{meta['c']}.json").write_text(
+            json.dumps([[f, round(v / cap_ * 100, 1)] for f, (v, cap_) in s.items()], separators=(",", ":")), encoding="utf-8")
     presas.sort(key=lambda p: -p["cap"])
 
     # --- panel fijo para agregados (sin presas inconsistentes)
@@ -308,12 +349,13 @@ def main():
             "bajo20": sum(1 for p in ps if p["pct"] < 20),
             "serie": len(en_panel),
         })
+    nacionales = [p for p in actuales if "fuente" not in p]  # el total nacional, solo con el monitoreo nacional
     resumen["actual"] = {
-        "presas": len(actuales),
-        "pct": round(fsum(p["act"] for p in actuales) / fsum(p["cap"] for p in actuales) * 100, 1),
-        "bajo20": sum(1 for p in actuales if p["pct"] < 20),
-        "bajo50": sum(1 for p in actuales if p["pct"] < 50),
-        "debajoNormal": sum(1 for p in actuales if p["normal"] is not None and p["pct"] < p["normal"] - 10),
+        "presas": len(nacionales),
+        "pct": round(fsum(p["act"] for p in nacionales) / fsum(p["cap"] for p in nacionales) * 100, 1),
+        "bajo20": sum(1 for p in nacionales if p["pct"] < 20),
+        "bajo50": sum(1 for p in nacionales if p["pct"] < 50),
+        "debajoNormal": sum(1 for p in nacionales if p["normal"] is not None and p["pct"] < p["normal"] - 10),
     }
 
     (PUB / "presas.json").write_text(json.dumps(presas, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")

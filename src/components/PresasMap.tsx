@@ -69,7 +69,7 @@ export default function PresasMap({ vista, focus, margen, presas, estados, nombr
       maxBounds: [[-130, 6], [-74, 38]],
       dragRotate: false,
       pitchWithRotate: false,
-      attributionControl: { compact: true, customAttribution: "Datos: CONAGUA (SINA, SIH) · INEGI" },
+      attributionControl: { compact: true, customAttribution: "Datos: CONAGUA (SINA, SIH, OC Pacífico Norte vía CIDH) · INEGI" },
       locale: { "NavigationControl.ZoomIn": "Acercar", "NavigationControl.ZoomOut": "Alejar" },
     });
     map.touchZoomRotate.disableRotation();
