@@ -46,7 +46,8 @@ const temas: Tema[] = [
     titulo: "Presas",
     muestra: "Qué tan llenas están las ~210 presas principales, comparado con lo normal para la época del año.",
     colores: [...NIVELES].reverse().map((n) => ({ color: n.color, label: n.label })),
-    fuente: "CONAGUA: Sistema Nacional de Información del Agua (1991–2025) y Sistema de Información Hidrológica (diario).",
+    fuente:
+      "CONAGUA: Sistema Nacional de Información del Agua (1991–2025) y Sistema de Información Hidrológica (diario). Picachos y Santa María (Sinaloa), que no están en el monitoreo nacional: reporte diario del Organismo de Cuenca Pacífico Norte de CONAGUA, que publica la CIDH; gracias a Conselva, Costas y Comunidades A.C. por el aviso.",
     cada: "Diario en la fuente; aquí, un corte por semana. Se descarga solo lunes y jueves.",
     dato: `Al ${fechaCorta(presasResumen.ultima)}`,
     enlace: { href: "/presas", texto: "Ver el mapa de presas" },

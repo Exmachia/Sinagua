@@ -315,7 +315,14 @@ function AyudaPresa({ p }: { p: Presa }) {
           Los registros oficiales de esta presa tienen muchos valores imposibles. Los descartamos y no la incluimos en los promedios.
         </p>
       )}
-      <p className="text-[13px] text-ink-3">Fuente: CONAGUA, monitoreo de presas (SINA) y Sistema de Información Hidrológica (SIH).</p>
+      {p.fuente ? (
+        <p className="text-[13px] text-ink-3">
+          Fuente: {p.fuente}. No aparece en el monitoreo nacional de presas, por eso no cuenta en el promedio del país. Gracias a
+          Conselva, Costas y Comunidades por el aviso.
+        </p>
+      ) : (
+        <p className="text-[13px] text-ink-3">Fuente: CONAGUA, monitoreo de presas (SINA) y Sistema de Información Hidrológica (SIH).</p>
+      )}
     </Ayuda>
   );
 }
