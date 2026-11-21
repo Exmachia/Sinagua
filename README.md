@@ -1,9 +1,45 @@
 # Sinagua — el agua de México
 
-Sitio ciudadano de periodismo de datos sobre la falta de agua en México: agua por persona, sequía, presas y acuíferos.
-El nombre es una parodia de CONAGUA; el proyecto es independiente y no está afiliado a ninguna dependencia de gobierno.
+Sitio ciudadano y sin fines de lucro que reúne los datos oficiales del agua en México y los traduce a lenguaje llano,
+municipio por municipio: sequía, nivel de las presas, acuíferos sobreexplotados, calidad del agua y quién tiene permiso
+de sacarla. También publica denuncias anónimas de la gente sobre lo que vive con el agua donde vive.
 
-Sitio de periodismo de datos sobre la disponibilidad de agua subterránea en los 653 acuíferos de México.
+**Sitio:** https://www.sinagua.org
+
+El nombre es una parodia de CONAGUA. El proyecto es independiente: no está afiliado a CONAGUA, a ninguna dependencia de
+gobierno ni a ningún partido.
+
+## Fuentes
+
+Todo sale de fuentes oficiales y se cita en el sitio, en la página de metodología.
+
+| Tema | Fuente | Actualización |
+|---|---|---|
+| Presas | CONAGUA: Sistema Nacional de Información del Agua (1991–2025) y Sistema de Información Hidrológica | Lunes y jueves, automática |
+| Picachos y Santa María (Sinaloa) | Reporte diario del Organismo de Cuenca Pacífico Norte de CONAGUA, publicado por la [CIDH](https://cidh.org.mx/almacenamiento-de-presas/) | Lunes y jueves, automática |
+| Sequía | Monitor de Sequía de México (Servicio Meteorológico Nacional) | Lunes y jueves, automática |
+| Acuíferos | Disponibilidad de agua de los acuíferos, Diario Oficial de la Federación (2013–2023) | A mano, cuando sale una revisión |
+| Quién usa el agua | Registro Público de Derechos de Agua (REPDA) de CONAGUA | Lunes y jueves, automática |
+| Calidad del agua | Red Nacional de Medición de Calidad del Agua de CONAGUA | Lunes y jueves, automática |
+| Población y municipios | INEGI: Censo 2020 y marco geoestadístico | Fija |
+
+Gracias a Conselva, Costas y Comunidades A.C. por el aviso sobre las presas Picachos y Santa María.
+
+## Denuncias
+
+El formulario del sitio envía las denuncias por correo; no se guardan en este repositorio ni en una base de datos. Solo las
+que se revisan a mano y se publican viven en `src/data/denuncias.json`, siempre anónimas y sin datos que identifiquen a
+nadie. Las reglas de moderación están en el mismo archivo.
+
+## Licencia
+
+- **Código:** [MIT](LICENSE). Puedes usarlo, copiarlo y adaptarlo dando crédito.
+- **Datos:** son públicos de las dependencias citadas arriba; si los reutilizas, cita la fuente original.
+- **Denuncias:** son testimonios de personas. No se permite reutilizarlas fuera de Sinagua.
+
+## Contacto
+
+eduardo.chacom12@gmail.com
 
 ## Desarrollo
 
@@ -51,6 +87,8 @@ python3 -I scripts/build_presas.py
 - Limpieza: se descartan almacenamientos imposibles (> NAME + 5%) y picos aislados (> 40 pts de la mediana de ±4 semanas).
   Presas con > 20% de registros inválidos quedan fuera de los agregados (`aviso: true`).
 - Agregados con panel fijo (presas con ≥ 90% de semanas desde 2000) para que el promedio no cambie por altas/bajas del registro.
+- Picachos y Santa María: `python3 scripts/fetch_cidh.py` (requiere `pypdf`) lee el PDF diario del Organismo de Cuenca
+  Pacífico Norte que publica la CIDH. Cuentan en Sinaloa pero no en el panel nacional ni en sus series.
 
 ### Estatus
 
@@ -86,10 +124,3 @@ La vista vive en el hash y es compartible: `#e=guanajuato&m=11020&a=1113`.
 - `scripts/build_proyecciones.py`: con las 5 actualizaciones del DOF (2013–2023) ajusta una recta (acuíferos en déficit, % de
   territorio y personas) con intervalo de predicción del 95% → `src/data/proyecciones.json`.
   Es un **escenario de continuidad**, no un pronóstico; la landing lo explica en el botón "?".
-
-## Fases
-
-1. **Fase 1 (hecha):** pipeline de datos, mapa estado → municipio → acuífero, búsqueda por municipio/estado/acuífero, ficha con historia 2013–2023, metodología.
-2. ~~Municipios~~ (hecho en la fase 1).
-3. Proyecciones: tendencia por acuífero con intervalos de confianza (+ GRACE, CONAPO).
-4. Contexto: población afectada, usos del agua (REPDA), mapa base con etiquetas (Protomaps).
