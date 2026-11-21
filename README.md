@@ -1,4 +1,4 @@
-# Sinagua — el agua de México
+# Sinagua: El agua de México
 
 Sitio ciudadano y sin fines de lucro que reúne los datos oficiales del agua en México y los traduce a lenguaje llano,
 municipio por municipio: sequía, nivel de las presas, acuíferos sobreexplotados, calidad del agua y quién tiene permiso
